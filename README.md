@@ -1,4 +1,4 @@
-# Latent Space Explorer
+# Latent Space Explorer: Generative VAE framework for molecular topology
 
 **Latent Space Explorer** is a generative framework designed for the visualization and exploration of chemical molecular manifolds. The project aims to bridge the gap between high-dimensional latent space representation and intuitive 3D molecular topology.
 
