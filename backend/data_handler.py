@@ -4,7 +4,8 @@ def load_multiple_molecules(smiles_list):
     valid_mols = []
     for smiles in smiles_list:
         mol = Chem.MolFromSmiles(smiles)
-        if mol:valid_mols.append(mol)
+        if mol:
+            valid_mols.append(mol)
     return valid_mols    
 
 
