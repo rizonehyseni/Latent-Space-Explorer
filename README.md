@@ -8,6 +8,13 @@ Latent Space Explorer is a generative VAE framework designed to navigate the hid
 The system employs a **Variational Autoencoder (VAE)** architecture to project molecular data into a continuous latent space. 
 By leveraging **RDKit** for molecular graph processing and **Three.js** for real-time volumetric rendering, the framework enables seamless, low-latency interpolation between distinct chemical states.
 
+### Why Latent Spaces?
+At the heart of this project lies the **Latent Space**, a compressed representation of chemical structures. Instead of treating molecules as static, discrete data points, the VAE learns to map complex molecular fingerprints into a continuous 16-dimensional coordinate system. 
+
+- **Feature Compression:** We distill massive chemical data into meaningful geometric patterns.
+- **Continuous Exploration:** By moving through this latent space, we can perform "interpolation," transitioning smoothly between different molecular structures to observe how chemical properties evolve.
+- **Explainable Discovery:** This space serves as our canvas, allowing researchers to identify regions of chemical space that may contain undiscovered compounds with specific characteristics.
+
 ##  Technical Specifications
 - **Generative Modeling:** PyTorch-based VAE, trained on the QM9/ZINC molecular datasets to learn efficient graph latent representations.
 - **Backend:** High-throughput API built with FastAPI to handle tensor-based latent projections and property estimation.
