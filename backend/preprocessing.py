@@ -3,12 +3,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from rdkit import Chem, DataStructs
-from rdkit.Chem import Crippen, Descriptors, Lipinski, rdMolDescriptors
+from rdkit.Chem import (
+    Crippen,
+    Descriptors,
+    Lipinski,
+    rdFingerprintGenerator,
+    rdMolDescriptors,
+)
 
 from backend.data_handler import load_smiles_csv
 
 FINGERPRINT_RADIUS = 2
 FINGERPRINT_BITS = 2048
+MORGAN_GENERATOR = rdFingerprintGenerator.GetMorganGenerator(
+    radius=FINGERPRINT_RADIUS,
+    fpSize=FINGERPRINT_BITS,
+)
 
 
 def molecule_properties(molecule: Chem.Mol) -> dict[str, float | int]:
@@ -27,11 +37,7 @@ def molecule_properties(molecule: Chem.Mol) -> dict[str, float | int]:
 
 def morgan_fingerprint(molecule: Chem.Mol) -> np.ndarray:
     """Create a fixed-size Morgan fingerprint for a molecule."""
-    bit_vector = rdMolDescriptors.GetMorganFingerprintAsBitVect(
-        molecule,
-        radius=FINGERPRINT_RADIUS,
-        nBits=FINGERPRINT_BITS,
-    )
+    bit_vector = MORGAN_GENERATOR.GetFingerprint(molecule)
 
     fingerprint = np.zeros((FINGERPRINT_BITS,), dtype=np.float32)
     DataStructs.ConvertToNumpyArray(bit_vector, fingerprint)
