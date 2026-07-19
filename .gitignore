@@ -1,0 +1,17 @@
+# --- Python ---
+venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+
+# --- Node.js / React ---
+node_modules/
+dist/
+build/
+.eslintcache
+
+# --- System / OS ---
+.DS_Store
+Thumbs.db
+.vscode/
