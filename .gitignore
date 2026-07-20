@@ -19,3 +19,5 @@ Thumbs.db
 data/processed/
 __pycache__/
 .pytest_cache/
+
+models/*.pt
