@@ -2,11 +2,12 @@
   
 **Can we decode the geometric language of molecular structures?**
 
-Latent Space Explorer is a generative VAE framework designed to navigate the hidden dimensions of chemical space. By mapping complex latent representations into structural reality, the project enables researchers to see and explore what was previously hidden in the data. The project aims to bridge the gap between high-dimensional latent space representation and intuitive 3D molecular topology.
+Latent Space Explorer is a molecular machine-learning project that maps chemical fingerprints into a continuous latent space. The current implementation establishes a reproducible Fingerprint VAE baseline; later phases will connect its latent representations to an interactive 3D explorer.
 
 ##  Core Architecture
-The system employs a **Variational Autoencoder (VAE)** architecture to project molecular data into a continuous latent space. 
-By leveraging **RDKit** for molecular graph processing and **Three.js** for real-time volumetric rendering, the framework enables seamless, low-latency interpolation between distinct chemical states.
+The implemented pipeline uses **RDKit** to validate SMILES strings, calculate descriptors, and create 2048-bit Morgan fingerprints. A PyTorch **dense VAE** compresses those fingerprints into a 16-dimensional latent vector and reconstructs fingerprint logits using the reparameterization trick.
+
+The React/Vite application is currently a frontend scaffold. Three.js rendering, a browser data pipeline, latent-vector export, and interpolation controls are planned but are not implemented yet.
 
 ### Why Latent Spaces?
 At the heart of this project lies the **Latent Space**, a compressed representation of chemical structures. Instead of treating molecules as static, discrete data points, the VAE learns to map complex molecular fingerprints into a continuous 16-dimensional coordinate system. 
@@ -17,37 +18,43 @@ At the heart of this project lies the **Latent Space**, a compressed representat
 
 <div align=center> <img width="720" height="315" alt="6437e8cb4769a16c5e8b05df_vwvyaj5kzubtpztsq30gubgjbumdkrno_cb57s6bukovkyhcnwzktorvcr8-skmgvobh8mf--_bq2k0hhftkqsejkg_slihkxtzyawtn1lrptioxg10jsdg8ijbgtq6wvtfx5gdubry0e6jwq9p4za" src="https://github.com/user-attachments/assets/af9f4f77-6041-4a5b-9c94-5fb2c7575f6b" /> </div>
 <div align="center">
-<small>Figure: Convolutional Encoder-Decoder architecture overview. Adapted from <a href="https://hackernoon.com/latent-space-visualization-deep-learning-bits-2-bd09a46920df">HackerNoon</a>.</small>
+<small>Figure: Conceptual latent-space encoder-decoder illustration. It is not the current model architecture. Adapted from <a href="https://hackernoon.com/latent-space-visualization-deep-learning-bits-2-bd09a46920df">HackerNoon</a>.</small>
 </div>
 
 
-##  Technical Specifications
-- **Generative Modeling:** PyTorch-based VAE, trained on the QM9/ZINC molecular datasets to learn efficient graph latent representations.
-- **Backend:** High-throughput API built with FastAPI to handle tensor-based latent projections and property estimation.
-- **Frontend:** GPU-accelerated rendering utilizing **React-Three-Fiber** and custom GLSL bloom shaders to facilitate interactive visualization of complex 3D molecular structures.
-- **Dynamic Morphing:** Real-time linear and spherical interpolation (SLERP) of latent vectors to observe structural transitions within the chemical space.
+## Current implementation
+
+- **Preprocessing:** RDKit SMILES validation, canonicalization, descriptor extraction, and 2048-bit Morgan fingerprints.
+- **Generative model:** PyTorch dense/MLP VAE with a 16-dimensional latent space.
+- **Loss:** Binary cross-entropy with logits for reconstruction plus KL divergence.
+- **Artifacts:** processed metadata and fingerprints in `data/processed/`; model checkpoint and per-epoch training history in `models/molecular_vae.pt`.
+- **Frontend:** React/Vite scaffold only; it is not yet connected to model artifacts or a rendering library.
+
+This is a fingerprint-based baseline, not a convolutional or graph VAE. It reconstructs molecular fingerprint features; it does not decode latent vectors directly into chemically valid SMILES or molecular graphs.
 
 ##  Development Roadmap
-- [ ] **Phase I: Generative Pipeline**
+- [ ] **Phase I: Fingerprint VAE baseline**
     - [x] CSV-based SMILES ingestion and validation with RDKit.
     - [x] Molecular descriptor extraction, including molecular weight, LogP, TPSA, atom counts, and ring counts.
     - [x] Morgan fingerprint tensorization into fixed-size 2048-bit vectors.
     - [x] Export of processed metadata and fingerprints for model training.
-    - [ ] Implementation and training of the VAE architecture.
-    - [ ] Latent projection and reconstruction evaluation.
-- [ ] **Phase II: Interactive Visualization Layer**
-    - [ ] Development of the WebGL-based molecular engine.
-    - [ ] Shader-based implementation of post-processing bloom effects for high-fidelity rendering.
-- [ ] **Phase III: System Integration & Analysis**
-    - [ ] Latent space navigation and property-driven exploration tools.
-    - [ ] Optimization of interpolation algorithms for real-time fluidity.
+    - [x] Dense VAE architecture, reparameterization, loss function, and training entry point.
+    - [ ] Train and evaluate on a substantially larger dataset with train/validation/test splits.
+    - [ ] Export latent vectors and reconstruction metrics.
+- [ ] **Phase II: Interactive visualization**
+    - [ ] Export 3D display coordinates and metadata for the browser.
+    - [ ] Replace the React starter screen with a molecular point-cloud explorer.
+    - [ ] Add selection, descriptor filters, and molecule detail panels.
+- [ ] **Phase III: Advanced molecular representations**
+    - [ ] Evaluate a graph VAE or, if an appropriate spatial input representation is chosen, a convolutional VAE.
+    - [ ] Add latent-space interpolation and assess chemical validity of decoded results.
 
 ##  Project Objective
 To provide a scalable framework for **Explainable AI (XAI)** in computational chemistry, allowing researchers to visualize latent representations and gain insights into structural chemical evolution.
 
 ## Current Data Pipeline
 
-The preprocessing pipeline currently uses `data/qm9_sample.csv` as a small development dataset. It validates each SMILES string, calculates molecular descriptors, and produces model-ready Morgan fingerprints.
+The preprocessing pipeline currently uses `data/qm9_sample.csv` as a small development dataset. It validates each SMILES string, calculates molecular descriptors, and produces model-ready Morgan fingerprints. The sample is intended to validate the pipeline, not to train or evaluate a scientific model.
 
 Run the pipeline from the project root:
 
@@ -60,7 +67,17 @@ Generated artifacts are written to `data/processed/`:
 - `molecules_metadata.csv` contains canonical SMILES and molecular properties.
 - `morgan_fingerprints.npy` contains the 2048-bit fingerprint matrix used as the VAE input.
 
-The next milestone is training a VAE on a substantially larger QM9 dataset subset; the three-molecule sample is intended only to validate the pipeline.
+## Training the Fingerprint VAE
+
+After preprocessing, run:
+
+```powershell
+python -m backend.run_training
+```
+
+The default training script uses a 16-dimensional latent space, batch size 64, Adam with learning rate 0.001, and 50 epochs. It automatically uses CUDA when available. The resulting checkpoint is written to `models/molecular_vae.pt`.
+
+For the detailed, implementation-level architecture, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 *License: MIT*
