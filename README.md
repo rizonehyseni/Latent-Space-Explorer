@@ -15,6 +15,12 @@ At the heart of this project lies the **Latent Space**, a compressed representat
 - **Continuous Exploration:** By moving through this latent space, we can perform "interpolation," transitioning smoothly between different molecular structures to observe how chemical properties evolve.
 - **Explainable Discovery:** This space serves as our canvas, allowing researchers to identify regions of chemical space that may contain undiscovered compounds with specific characteristics.
 
+<div align=center> <img width="720" height="315" alt="6437e8cb4769a16c5e8b05df_vwvyaj5kzubtpztsq30gubgjbumdkrno_cb57s6bukovkyhcnwzktorvcr8-skmgvobh8mf--_bq2k0hhftkqsejkg_slihkxtzyawtn1lrptioxg10jsdg8ijbgtq6wvtfx5gdubry0e6jwq9p4za" src="https://github.com/user-attachments/assets/af9f4f77-6041-4a5b-9c94-5fb2c7575f6b" /> </div>
+<div align="center">
+<small>Figure: Convolutional Encoder-Decoder architecture overview. Adapted from <a href="https://hackernoon.com/latent-space-visualization-deep-learning-bits-2-bd09a46920df">HackerNoon</a>.</small>
+</div>
+
+
 ##  Technical Specifications
 - **Generative Modeling:** PyTorch-based VAE, trained on the QM9/ZINC molecular datasets to learn efficient graph latent representations.
 - **Backend:** High-throughput API built with FastAPI to handle tensor-based latent projections and property estimation.
