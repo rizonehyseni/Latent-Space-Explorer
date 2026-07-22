@@ -25,6 +25,8 @@ data/processed/morgan_fingerprints.npy
         v
 backend.run_training
         |
+        +-- configs/fingerprint_vae.yaml
+        +-- backend.config YAML loader
         +-- FingerprintDataset and DataLoader
         +-- MolecularVAE training
         +-- binary reconstruction loss + KL divergence
@@ -43,8 +45,10 @@ models/molecular_vae.pt
 | `backend/dataset.py` | Loads the fingerprint matrix and exposes it as a PyTorch dataset. |
 | `backend/model.py` | Defines `MolecularVAE`, a fully connected VAE. |
 | `backend/training.py` | Defines the VAE loss and epoch-based training loop. |
+| `backend/config.py` | Loads an experiment YAML file and checks that its required sections are present. |
 | `backend/run_preprocessing.py` | Command-line entry point for preprocessing the sample CSV. |
-| `backend/run_training.py` | Command-line entry point for model training and checkpoint creation. |
+| `backend/run_training.py` | Command-line entry point that loads an experiment configuration, trains the model, and writes a checkpoint. |
+| `configs/fingerprint_vae.yaml` | Default Fingerprint VAE experiment settings. |
 | `web/` | Independent React/Vite frontend scaffold; it has no model-data integration yet. |
 
 ## Data preprocessing
@@ -88,17 +92,17 @@ Input: Morgan fingerprint (2048)
 Output: reconstruction logits (2048)
 ```
 
-The default latent dimension is `16`; `run_training.py` also explicitly uses `16`. The decoder returns logits rather than probabilities, which are consumed directly by the binary cross-entropy loss.
+The default configuration sets the latent dimension to `16`. The decoder returns logits rather than probabilities, which are consumed directly by the binary cross-entropy loss.
 
 ## Training
 
-Run training after preprocessing:
+Run the default configured training experiment after preprocessing:
 
 ```powershell
 python -m backend.run_training
 ```
 
-The training entry point uses these fixed defaults:
+The training entry point loads the following default values from `configs/fingerprint_vae.yaml`:
 
 | Setting | Value |
 | --- | --- |
@@ -109,13 +113,15 @@ The training entry point uses these fixed defaults:
 | optimizer | Adam |
 | device | CUDA when available, otherwise CPU |
 
+Use `python -m backend.run_training --config path/to/experiment.yaml` to select another configuration. The selected configuration determines the dataset path, model dimensions, training hyperparameters, seed, and checkpoint path.
+
 For each batch, the objective is:
 
 `total loss = binary cross-entropy with logits + KL divergence`
 
 Both terms use sum reduction within a batch. The training loop reports per-sample total, reconstruction, and KL losses after each epoch. It currently trains on all available processed rows: there is no validation/test split, early stopping, metric logging service, or hyperparameter configuration file.
 
-At the end of training, `models/molecular_vae.pt` contains the model state dictionary, latent/input dimensions, and in-memory training history. Processed data and checkpoints are ignored by Git.
+At the end of training, `models/molecular_vae.pt` contains the model state dictionary, experiment name, model configuration, training configuration, seed, and in-memory training history. Processed data and checkpoints are ignored by Git.
 
 ## Frontend boundary
 
@@ -130,4 +136,4 @@ The `web/` directory is a standard React/Vite application. Its current interface
 
 ## Next architectural increment
 
-The smallest integration-ready next step is an export stage that loads a trained checkpoint, encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
+The next model-quality increment is a deterministic train/validation split and validation metrics. Once a model can be assessed beyond the development sample, the next integration step is an export stage that encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
