@@ -2,7 +2,7 @@
   
 **Can we decode the geometric language of molecular structures?**
 
-Latent Space Explorer is a molecular machine-learning project that maps chemical fingerprints into a continuous latent space. The current implementation establishes a reproducible Fingerprint VAE baseline; later phases will connect its latent representations to an interactive 3D explorer.
+Latent Space Explorer is a molecular machine-learning project that maps chemical fingerprints into a continuous latent space. The current implementation establishes a configurable Fingerprint VAE baseline; later phases will connect its latent representations to an interactive 3D explorer.
 
 ##  Core Architecture
 The implemented pipeline uses **RDKit** to validate SMILES strings, calculate descriptors, and create 2048-bit Morgan fingerprints. A PyTorch **dense VAE** compresses those fingerprints into a 16-dimensional latent vector and reconstructs fingerprint logits using the reparameterization trick.
@@ -27,6 +27,7 @@ At the heart of this project lies the **Latent Space**, a compressed representat
 - **Preprocessing:** RDKit SMILES validation, canonicalization, descriptor extraction, and 2048-bit Morgan fingerprints.
 - **Generative model:** PyTorch dense/MLP VAE with a 16-dimensional latent space.
 - **Loss:** Binary cross-entropy with logits for reconstruction plus KL divergence.
+- **Experiment configuration:** YAML selects the dataset path, model dimensions, training hyperparameters, seed, and checkpoint path.
 - **Artifacts:** processed metadata and fingerprints in `data/processed/`; model checkpoint and per-epoch training history in `models/molecular_vae.pt`.
 - **Frontend:** React/Vite scaffold only; it is not yet connected to model artifacts or a rendering library.
 
@@ -39,6 +40,7 @@ This is a fingerprint-based baseline, not a convolutional or graph VAE. It recon
     - [x] Morgan fingerprint tensorization into fixed-size 2048-bit vectors.
     - [x] Export of processed metadata and fingerprints for model training.
     - [x] Dense VAE architecture, reparameterization, loss function, and training entry point.
+    - [x] YAML-based experiment configuration for reproducible training settings.
     - [ ] Train and evaluate on a substantially larger dataset with train/validation/test splits.
     - [ ] Export latent vectors and reconstruction metrics.
 - [ ] **Phase II: Interactive visualization**
@@ -69,15 +71,21 @@ Generated artifacts are written to `data/processed/`:
 
 ## Training the Fingerprint VAE
 
-After preprocessing, run:
+After preprocessing, run the default experiment configuration:
 
 ```powershell
 python -m backend.run_training
 ```
 
-The default training script uses a 16-dimensional latent space, batch size 64, Adam with learning rate 0.001, and 50 epochs. It automatically uses CUDA when available. The resulting checkpoint is written to `models/molecular_vae.pt`.
+The default settings are in `configs/fingerprint_vae.yaml`: a 16-dimensional latent space, batch size 64, Adam with learning rate 0.001, and 50 epochs. Training automatically uses CUDA when available and writes the resulting checkpoint to `models/molecular_vae.pt`.
 
-For the detailed, implementation-level architecture, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+To run a different experiment configuration, pass its path explicitly:
+
+```powershell
+python -m backend.run_training --config path/to/experiment.yaml
+```
+
+For the detailed architecture and project progress, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
 
 ---
 *License: MIT*
