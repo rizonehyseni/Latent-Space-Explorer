@@ -3,6 +3,7 @@ seed: 42
 
 data:
   fingerprint_path: data/processed/morgan_fingerprints.npy
+  validation_fraction: 0.2
 
 model:
   input_dim: 2048
