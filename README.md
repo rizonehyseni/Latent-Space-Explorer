@@ -1,8 +1,8 @@
-# Documentation Guide
+ <h1>Latent Space Explorer: Generative VAE framework for molecular topology</h1>
 
-This directory is the project’s technical and research record. Documentation is updated only when the related implementation or experiment exists.
+<div align="justify>
 
-## Documents
+Latent Space Explorer is a generative VAE framework designed to navigate the hidden dimensions of chemical space. By mapping complex latent representations into structural reality, the project enables researchers to see and explore what was previously hidden in the data. The project aims to bridge the gap between high-dimensional latent space representation and intuitive 3D molecular topology.
 
 ### System Understanding
 
@@ -63,3 +63,5 @@ Every retained experiment should identify:
 - Git commit;
 - training, validation, and test metrics where available;
 - interpretation and limitations.
+
+</div>
