@@ -8,35 +8,6 @@ This document describes the implementation that exists in the repository today. 
 
 ## System overview
 
-```text
-data/qm9_sample.csv
-        |
-        v
-backend.run_preprocessing
-        |
-        +-- RDKit SMILES parsing and validation
-        +-- canonical SMILES and molecular descriptors
-        +-- 2048-bit Morgan fingerprints
-        |
-        v
-data/processed/molecules_metadata.csv
-data/processed/morgan_fingerprints.npy
-        |
-        v
-backend.run_training
-        |
-        +-- configs/fingerprint_vae.yaml
-        +-- backend.config YAML loader
-        +-- FingerprintDataset and DataLoader
-        +-- deterministic train/validation split
-        +-- MolecularVAE training
-        +-- training and evaluation-only validation metrics
-        +-- binary reconstruction loss + KL divergence
-        |
-        v
-models/molecular_vae.pt
-```
-
 ```mermaid
 flowchart LR
     A[QM9 CSV<br/>SMILES Dataset]
