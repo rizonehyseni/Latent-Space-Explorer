@@ -37,6 +37,25 @@ backend.run_training
 models/molecular_vae.pt
 ```
 
+```mermaid
+flowchart LR
+    A[QM9 CSV<br/>SMILES Dataset]
+
+    B[RDKit Processing<br/>Validation + Descriptors<br/>MW, LogP, TPSA, Rings]
+
+    C[Morgan Fingerprints<br/>2048-bit Representation]
+
+    D[Dense Fingerprint VAE<br/>Encoder + Decoder]
+
+    E[Latent Space<br/>16-dimensional Vector]
+
+    F[Evaluation<br/>Loss + Validation Metrics]
+
+    G[Artifacts<br/>Checkpoint + Training History]
+
+    A --> B --> C --> D --> E --> F --> G
+```
+
 ## Repository components
 
 | Location | Responsibility |
