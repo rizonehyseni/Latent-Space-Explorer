@@ -8,8 +8,8 @@ This directory is the project’s technical and research record. Documentation i
 
 | Document | Description |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System structure, components, and data flow. |
-| [METHODOLOGY.md](METHODOLOGY.md) | Data representation, model design, and training approach. |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System structure, components, and data flow. |
+| [METHODOLOGY.md](docs/METHODOLOGY.md) | Data representation, model design, and training approach. |
 
 ---
 
@@ -17,9 +17,9 @@ This directory is the project’s technical and research record. Documentation i
 
 | Document | Description |
 |---|---|
-| [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) | Scientific questions guiding the project. |
-| [DECISIONS.md](DECISIONS.md) | Design decisions, rationale, and trade-offs. |
-| [LIMITATIONS.md](LIMITATIONS.md) | Current constraints and future improvements. |
+| [RESEARCH_QUESTIONS.md](docs/RESEARCH_QUESTIONS.md) | Scientific questions guiding the project. |
+| [DECISIONS.md](docs/DECISIONS.md) | Design decisions, rationale, and trade-offs. |
+| [LIMITATIONS.md](docs/LIMITATIONS.md) | Current constraints and future improvements. |
 
 ---
 
@@ -27,8 +27,8 @@ This directory is the project’s technical and research record. Documentation i
 
 | Document | Description |
 |---|---|
-| [EXPERIMENTS.md](EXPERIMENTS.md) | Training runs, configurations, and interpretations. |
-| [REPRODUCIBILITY.md](REPRODUCIBILITY.md) | Environment setup and reproduction workflow. |
+| [EXPERIMENTS.md](docs/EXPERIMENTS.md) | Training runs, configurations, and interpretations. |
+| [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) | Environment setup and reproduction workflow. |
 
 ---
 
@@ -36,8 +36,8 @@ This directory is the project’s technical and research record. Documentation i
 
 | Document | Description |
 |---|---|
-| [GLOSSARY.md](GLOSSARY.md) | Machine learning and cheminformatics terminology. |
-| [FIGURES/README.md](FIGURES/README.md) | Documentation assets and visualization guidelines. |
+| [GLOSSARY.md](docs/GLOSSARY.md) | Machine learning and cheminformatics terminology. |
+| [FIGURES/README.md](docsFIGURES/README.md) | Documentation assets and visualization guidelines. |
 
 ## Documentation rule for each completed feature
 
