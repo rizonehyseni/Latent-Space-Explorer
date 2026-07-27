@@ -1,3 +1,5 @@
+<div align="justify">
+    
 # Current Architecture
 
 ## Scope and status
@@ -129,3 +131,4 @@ The `web/` directory is a standard React/Vite application. Its current interface
 ## Next architectural increment
 
 The next model-quality increment is a larger documented QM9 subset with train, validation, and test partitions. Once model quality can be assessed beyond the development sample, the next integration step is an export stage that encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
+</div>
