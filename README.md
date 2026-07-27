@@ -28,6 +28,7 @@ At the heart of this project lies the **Latent Space**, a compressed representat
 - **Generative model:** PyTorch dense/MLP VAE with a 16-dimensional latent space.
 - **Loss:** Binary cross-entropy with logits for reconstruction plus KL divergence.
 - **Experiment configuration:** YAML selects the dataset path, model dimensions, training hyperparameters, seed, and checkpoint path.
+- **Validation:** A deterministic train/validation split reports evaluation-only validation loss, reconstruction loss, and KL divergence after every epoch.
 - **Artifacts:** processed metadata and fingerprints in `data/processed/`; model checkpoint and per-epoch training history in `models/molecular_vae.pt`.
 - **Frontend:** React/Vite scaffold only; it is not yet connected to model artifacts or a rendering library.
 
@@ -41,6 +42,7 @@ This is a fingerprint-based baseline, not a convolutional or graph VAE. It recon
     - [x] Export of processed metadata and fingerprints for model training.
     - [x] Dense VAE architecture, reparameterization, loss function, and training entry point.
     - [x] YAML-based experiment configuration for reproducible training settings.
+    - [x] Deterministic train/validation split and validation metrics.
     - [ ] Train and evaluate on a substantially larger dataset with train/validation/test splits.
     - [ ] Export latent vectors and reconstruction metrics.
 - [ ] **Phase II: Interactive visualization**
@@ -85,7 +87,7 @@ To run a different experiment configuration, pass its path explicitly:
 python -m backend.run_training --config path/to/experiment.yaml
 ```
 
-For the detailed architecture and project progress, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md).
+For the detailed architecture, project progress, and recorded training runs, see [docs/README.md](docs/README.md).
 
 ---
 *License: MIT*
