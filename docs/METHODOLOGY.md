@@ -1,23 +1,21 @@
 # Methodology
 
 ## Overview
-
+<div align="justify">
 The Molecular Latent Space Explorer currently implements a **Fingerprint Variational Autoencoder (VAE) baseline**.
 
 The workflow transforms molecular SMILES strings into fixed-length Morgan fingerprints, compresses them into a 16-dimensional latent representation, and reconstructs the fingerprint representation.
 
-```text
-SMILES CSV
-    ↓
-RDKit validation and canonicalization
-    ↓
-Molecular descriptors and Morgan fingerprints
-    ↓
-Dense Fingerprint VAE
-    ↓
-16-dimensional latent vector
-    ↓
-Fingerprint reconstruction and validation metrics
+```mermaid
+flowchart LR
+    A[SMILES CSV] --> B[RDKit<br/>Validation &<br/>Canonicalization]
+    B --> C[Molecular Features<br/>Descriptors +<br/>Morgan Fingerprints]
+    C --> D[Encoder]
+    D --> E((Latent Vector<br/>z ∈ R¹⁶))
+    E --> F[Decoder]
+    F --> G[Reconstructed<br/>Fingerprint]
+    G --> H[Validation Metrics<br/>BCE Loss<br/>Tanimoto Similarity]
+    E --> I[Latent Space<br/>Visualization]
 ```
 
 ---
@@ -104,40 +102,35 @@ Therefore, the current model learns a latent representation of fingerprint space
 
 The current VAE architecture is:
 
-```text
-Input fingerprint: 2048
+```mermaid
+flowchart LR
 
-        ↓
+    A["Morgan Fingerprint<br/>x ∈ R²⁰⁴⁸"] --> B["Encoder"]
 
-Linear(2048, 512) + ReLU
+    subgraph ENC["Encoder Network"]
+        B --> C["Linear 2048→512<br/>ReLU"]
+        C --> D["Linear 512→128<br/>ReLU"]
+    end
 
-        ↓
+    D --> E["Latent Distribution"]
 
-Linear(512, 128) + ReLU
+    subgraph LAT["Latent Space"]
+        E --> F["μ ∈ R¹⁶"]
+        E --> G["log σ² ∈ R¹⁶"]
+        F --> H["Sampling<br/>z = μ + σϵ"]
+        G --> H
+    end
 
-        ↓
+    H --> I["Decoder"]
 
-Latent parameters:
+    subgraph DEC["Decoder Network"]
+        I --> J["Linear 16→128<br/>ReLU"]
+        J --> K["Linear 128→512<br/>ReLU"]
+        K --> L["Linear 512→2048"]
+    end
 
-μ (mean): Linear(128, 16)
+    L --> M["Reconstructed Fingerprint<br/>x̂ ∈ R²⁰⁴⁸"]
 
-log σ² (log variance): Linear(128, 16)
-
-        ↓
-
-Reparameterization
-
-        ↓
-
-Linear(16, 128) + ReLU
-
-        ↓
-
-Linear(128, 512) + ReLU
-
-        ↓
-
-Reconstructed fingerprint logits: 2048
 ```
 
 The encoder maps the original fingerprint representation into a lower-dimensional latent representation:
@@ -343,3 +336,5 @@ A scientifically meaningful evaluation requires:
 - Held-out test evaluation.
 - Comparison between different model configurations.
 - Analysis of latent-space organization.
+
+</div>
