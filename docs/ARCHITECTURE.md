@@ -28,7 +28,9 @@ backend.run_training
         +-- configs/fingerprint_vae.yaml
         +-- backend.config YAML loader
         +-- FingerprintDataset and DataLoader
+        +-- deterministic train/validation split
         +-- MolecularVAE training
+        +-- training and evaluation-only validation metrics
         +-- binary reconstruction loss + KL divergence
         |
         v
@@ -119,7 +121,7 @@ For each batch, the objective is:
 
 `total loss = binary cross-entropy with logits + KL divergence`
 
-Both terms use sum reduction within a batch. The training loop reports per-sample total, reconstruction, and KL losses after each epoch. It currently trains on all available processed rows: there is no validation/test split, early stopping, metric logging service, or hyperparameter configuration file.
+Both terms use sum reduction within a batch. The training loop reports per-sample total, reconstruction, and KL losses after each epoch. The configured `validation_fraction` creates a deterministic non-empty train/validation split using the experiment seed; validation runs without gradient updates and records the same three metrics. There is still no test split, early stopping, or metric logging service.
 
 At the end of training, `models/molecular_vae.pt` contains the model state dictionary, experiment name, model configuration, training configuration, seed, and in-memory training history. Processed data and checkpoints are ignored by Git.
 
@@ -129,11 +131,11 @@ The `web/` directory is a standard React/Vite application. Its current interface
 
 ## Current constraints
 
-- The tracked sample data contains only a few molecules and is suitable for checking the pipeline, not for scientific training or evaluation.
+- The tracked sample data contains only a few molecules and is suitable for checking the pipeline, not for scientific training or evaluation. Its one-molecule validation subset is not statistically meaningful.
 - A dense VAE over Morgan fingerprints can reconstruct fingerprint features, but does not decode directly to chemically valid SMILES or molecular graphs.
 - The repository does not yet export latent vectors for visualization.
 - No FastAPI application or inference endpoint is currently implemented, despite FastAPI appearing in the dependency list.
 
 ## Next architectural increment
 
-The next model-quality increment is a deterministic train/validation split and validation metrics. Once a model can be assessed beyond the development sample, the next integration step is an export stage that encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
+The next model-quality increment is a larger documented QM9 subset with train, validation, and test partitions. Once model quality can be assessed beyond the development sample, the next integration step is an export stage that encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
