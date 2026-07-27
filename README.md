@@ -37,7 +37,7 @@ This directory is the project’s technical and research record. Documentation i
 | Document | Description |
 |---|---|
 | [GLOSSARY.md](docs/GLOSSARY.md) | Machine learning and cheminformatics terminology. |
-| [FIGURES/README.md](docsFIGURES/README.md) | Documentation assets and visualization guidelines. |
+| [FIGURES/README.md](docs/FIGURES/README.md) | Documentation assets and visualization guidelines. |
 
 ## Documentation rule for each completed feature
 
