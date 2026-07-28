@@ -77,3 +77,18 @@ def extract_archive(archive_path: Path, destination: Path) -> None:
         archive.extractall(destination)
 
     print(f"Extracted archive to: {destination}")
+
+
+def find_extracted_file(directory: Path, filename: str) -> Path:
+    """Find exactly one extracted source file by name."""
+    matches = list(directory.rglob(filename))
+
+    if len(matches) != 1:
+        raise FileNotFoundError(
+            f"Expected exactly one {filename} file in {directory}, "
+            f"but found {len(matches)}."
+        )
+
+    return matches[0]
+
+
