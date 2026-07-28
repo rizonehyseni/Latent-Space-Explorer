@@ -19,7 +19,7 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train the Fingerprint VAE.")
     parser.add_argument(
         "--config",
-        default="configs/fingerprint_vae.yaml",
+        default="configs/qm9_fingerprint_vae.yaml",
         help="Path to the experiment YAML configuration.",
     )
     return parser.parse_args()
