@@ -42,6 +42,21 @@ https://figshare.com/collections/Quantum_chemistry_structures_and_properties_of_
 
 ## Preparation workflow
 
+```mermaid
+flowchart TD
+    A["QM9 source archive<br/>qm9.tar.gz"] --> B["Download and extract"]
+    B --> C["qm9.sdf<br/>Molecular structures"]
+    B --> D["qm9.sdf.csv<br/>Quantum-chemical properties"]
+    C --> E["RDKit sanitization<br/>and canonical SMILES"]
+    D --> F["Read molecule ID<br/>and HOMO-LUMO gap"]
+    E --> G["Reject invalid molecules"]
+    E --> H["Join valid structures<br/>with property rows"]
+    F --> H
+    H --> I["Deterministic subset<br/>10,000 molecules, seed 42"]
+    I --> J["qm9_subset.csv"]
+    I --> K["Provenance manifest<br/>SHA-256, seed, counts"]
+```
+
 Run:
 
 ```bash
