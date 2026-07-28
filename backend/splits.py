@@ -97,5 +97,18 @@ def create_split_indices(
     return split_indices
     
 
+def save_split_indices(
+    split_indices: dict[str, np.ndarray],
+    output_path: str | Path,
+) -> None:
+    """Save split indices as a compressed NumPy artifact."""
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
 
+    np.savez_compressed(
+        path,
+        train=split_indices["train"],
+        validation=split_indices["validation"],
+        test=split_indices["test"],
+    )
     
