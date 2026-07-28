@@ -101,3 +101,73 @@ def calculate_sha256(file_path: Path) -> str:
             digest.update(chunk)
 
     return digest.hexdigest()
+
+
+def build_qm9_subset(
+    sdf_path: Path,
+    properties_path: Path,
+    subset_size: int,
+    seed: int,
+) -> tuple[pd.DataFrame, int]:
+    """Join QM9 structures and properties, then select a reproducible subset."""
+    properties = pd.read_csv(properties_path)
+
+    if "gap" not in properties.columns:
+        raise ValueError("QM9 property table must contain a 'gap' column.")
+
+    supplier = Chem.SDMolSupplier(
+        str(sdf_path),
+        sanitize=True,
+        removeHs=True,
+    )
+
+    records: list[dict[str, object]] = []
+    rejected_molecules = 0
+
+    for source_index, molecule in enumerate(supplier):
+        if molecule is None:
+            rejected_molecules += 1
+            continue
+
+        if source_index >= len(properties):
+            raise ValueError(
+                "The SDF file contains more molecules than the property table."
+            )
+
+        property_row = properties.iloc[source_index]
+        molecule_id = (
+            property_row["mol_id"]
+            if "mol_id" in properties.columns
+            else source_index + 1
+        )
+
+        records.append(
+            {
+                "id": str(molecule_id),
+                "smiles": Chem.MolToSmiles(molecule, canonical=True),
+                "gap": float(property_row["gap"]),
+            }
+        )
+
+    if len(properties) != source_index + 1:
+        raise ValueError(
+            "The SDF file and property table have different molecule counts."
+        )
+
+    dataset = pd.DataFrame(records)
+
+    if subset_size <= 0:
+        raise ValueError("subset.size must be greater than zero.")
+
+    if subset_size > len(dataset):
+        raise ValueError(
+            f"Requested subset size {subset_size}, but only "
+            f"{len(dataset)} valid molecules are available."
+        )
+
+    subset = dataset.sample(
+        n=subset_size,
+        random_state=seed,
+    ).sort_values("id")
+
+    return subset.reset_index(drop=True), rejected_molecules
