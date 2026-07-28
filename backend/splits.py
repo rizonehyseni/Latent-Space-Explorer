@@ -51,4 +51,51 @@ def validate_split_indices(
         raise ValueError("Split indices contain invalid dataset positions.")
 
 
+def create_split_indices(
+    dataset_size: int,
+    train_fraction: float,
+    validation_fraction: float,
+    test_fraction: float,
+    seed: int,
+) -> dict[str, np.ndarray]:
+    """Create deterministic non-empty train, validation, and test indices."""
+    if dataset_size < 3:
+        raise ValueError(
+            "At least three molecules are required for train/validation/test splits."
+        )
+
+    validate_split_fractions(
+        train_fraction=train_fraction,
+        validation_fraction=validation_fraction,
+        test_fraction=test_fraction,
+    )
+
+    validation_size = int(dataset_size * validation_fraction)
+    test_size = int(dataset_size * test_fraction)
+    train_size = dataset_size - validation_size - test_size
+
+    if min(train_size, validation_size, test_size) < 1:
+        raise ValueError(
+            "Each split must contain at least one molecule. "
+            "Increase dataset size or adjust split fractions."
+        )
+
+    generator = np.random.default_rng(seed)
+    shuffled_indices = generator.permutation(dataset_size)
+
+    train_end = train_size
+    validation_end = train_size + validation_size
+
+    split_indices = {
+        "train": shuffled_indices[:train_end],
+        "validation": shuffled_indices[train_end:validation_end],
+        "test": shuffled_indices[validation_end:],
+    }
+
+    validate_split_indices(split_indices, dataset_size)
+
+    return split_indices
+    
+
+
     
