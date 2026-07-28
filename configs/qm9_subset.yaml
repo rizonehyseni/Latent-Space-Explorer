@@ -1,0 +1,15 @@
+dataset_name: qm9_subset
+
+source:
+  url: https://deepchemdata.s3.us-west-1.amazonaws.com/datasets/qm9.tar.gz
+  archive_name: qm9.tar.gz
+  raw_directory: data/raw/qm9
+
+subset:
+  size: 10000
+  seed: 42
+
+output:
+  dataset_csv: data/interim/qm9_subset.csv
+  manifest_json: data/interim/qm9_subset_manifest.json
+  
