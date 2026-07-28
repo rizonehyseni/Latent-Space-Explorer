@@ -17,6 +17,8 @@ Thumbs.db
 .vscode/
 
 data/processed/
+data/raw/
+data/interim/
 __pycache__/
 .pytest_cache/
 
