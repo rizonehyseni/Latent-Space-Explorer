@@ -1,0 +1,9 @@
+dataset:
+  input_csv: data/interim/qm9_subset.csv
+  output_directory: data/processed/qm9
+
+splits:
+  train_fraction: 0.8
+  validation_fraction: 0.1
+  test_fraction: 0.1
+  seed: 42
