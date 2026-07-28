@@ -55,6 +55,13 @@ def load_processing_config(config_path: Path) -> dict[str, Any]:
 
     return config
 
+def resolve_project_path(project_root: Path, path_value: str) -> Path:
+    """Resolve configuration paths relative to the project root."""
+    path = Path(path_value)
+    return path if path.is_absolute() else project_root / path
+
+
+
 
 def main() -> None:
     project_root = Path(__file__).parent.parent
