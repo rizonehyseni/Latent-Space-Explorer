@@ -6,7 +6,7 @@ The repository includes:
 
 ```text
 data/qm9_sample.csv
-
+```
 This three-molecule sample exists only to verify CSV ingestion, RDKit preprocessing, Fingerprint VAE training, validation, and checkpoint generation.
 
 It must not be used for scientific model evaluation.
