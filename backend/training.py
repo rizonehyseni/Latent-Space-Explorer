@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from copy import deepcopy
 
 import torch
 from torch import nn
@@ -32,7 +33,7 @@ def evaluate_vae(
     data_loader: Iterable[torch.Tensor],
     device: torch.device,
 ) -> dict[str, float]:
-    """Evaluate per-sample VAE losses without changing model parameters."""
+    """Evaluate VAE losses using the deterministic latent mean vector."""
     model.eval()
 
     total_loss = 0.0
@@ -43,7 +44,8 @@ def evaluate_vae(
     for fingerprints in data_loader:
         fingerprints = fingerprints.to(device)
 
-        reconstruction_logits, mu, log_var = model(fingerprints)
+        mu, log_var = model.encode(fingerprints)
+        reconstruction_logits = model.decode(mu)
 
         loss, reconstruction_loss, kl_divergence = vae_loss(
             reconstruction_logits,
@@ -73,11 +75,15 @@ def train_vae(
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     epochs: int,
-      validation_data_loader: Iterable[torch.Tensor] | None = None,
-) -> list[dict[str, float]]:
-    """Train a VAE and return training and optional validation metrics."""
+    validation_data_loader: Iterable[torch.Tensor] | None = None,
+) -> dict[str, object]:
+    """Train a VAE and retain the checkpoint with best validation loss."""
     model.to(device)
+
     training_history: list[dict[str, float]] = []
+    best_epoch: int | None = None
+    best_validation_loss: float | None = None
+    best_model_state_dict: dict[str, torch.Tensor] | None = None
 
     for epoch in range(1, epochs + 1):
         model.train()
@@ -123,6 +129,7 @@ def train_vae(
                 data_loader=validation_data_loader,
                 device=device,
             )
+
             epoch_metrics.update(
                 {
                     "validation_loss": validation_metrics["loss"],
@@ -133,8 +140,15 @@ def train_vae(
                         validation_metrics["kl_divergence"]
                     ),
                 }
-            )        
-        
+            )
+
+            if (
+                best_validation_loss is None
+                or validation_metrics["loss"] < best_validation_loss
+            ):
+                best_epoch = epoch
+                best_validation_loss = validation_metrics["loss"]
+                best_model_state_dict = deepcopy(model.state_dict())
 
         training_history.append(epoch_metrics)
 
@@ -152,6 +166,15 @@ def train_vae(
                 "Reconstruction: "
                 f"{epoch_metrics['validation_reconstruction_loss']:.4f} | "
                 f"KL: {epoch_metrics['validation_kl_divergence']:.4f}"
-            )        
+            )
 
-    return training_history
+    if best_model_state_dict is None:
+        best_epoch = epochs
+        best_model_state_dict = deepcopy(model.state_dict())
+
+    return {
+        "history": training_history,
+        "best_epoch": best_epoch,
+        "best_validation_loss": best_validation_loss,
+        "best_model_state_dict": best_model_state_dict,
+    }  
