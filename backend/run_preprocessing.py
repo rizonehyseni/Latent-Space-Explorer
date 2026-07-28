@@ -29,7 +29,31 @@ def parse_arguments() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+def load_processing_config(config_path: Path) -> dict[str, Any]:
+    """Load and validate the QM9 preprocessing configuration."""
+    if not config_path.is_file():
+        raise FileNotFoundError(
+            f"Preprocessing configuration was not found: {config_path}"
+        )
 
+    with config_path.open(encoding="utf-8") as config_file:
+        config = yaml.safe_load(config_file)
+
+    if not isinstance(config, dict):
+        raise ValueError(
+            "Preprocessing configuration must contain a YAML mapping."
+        )
+
+    required_sections = {"dataset", "splits"}
+    missing_sections = required_sections.difference(config)
+
+    if missing_sections:
+        missing = ", ".join(sorted(missing_sections))
+        raise ValueError(
+            f"Preprocessing configuration is missing required sections: {missing}"
+        )
+
+    return config
 
 
 def main() -> None:
