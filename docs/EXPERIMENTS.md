@@ -29,9 +29,39 @@ The run verifies that the deterministic split and evaluation-only validation pat
 
 The validation result is not scientifically meaningful because it represents a single molecule. Its fluctuations are expected and must not be used to compare model quality or select hyperparameters. A larger documented QM9 subset with a held-out test set is required for meaningful evaluation.
 
-### Evidence to retain
+## QM9 Fingerprint VAE baseline
 
-- terminal output showing the dataset split and final checkpoint location;
-- the exact YAML configuration used for the run;
-- the commit containing the validation implementation;
-- training-curve figures once metric export is implemented.
+**Date:** 2026-07-29  
+**Dataset:** 10,000-molecule QM9 subset  
+**Training split:** 8,000 molecules  
+**Validation split:** 1,000 molecules  
+**Test split:** 1,000 molecules  
+**Configuration:** `configs/qm9_fingerprint_vae.yaml`  
+**Seed:** 42  
+**Model:** Dense Fingerprint VAE, 2048-bit Morgan fingerprint input, 16-dimensional latent space  
+**Training:** 50 epochs, batch size 128, Adam, learning rate 0.001  
+
+### Final result
+
+| Metric | Value |
+| --- | ---: |
+| Best validation epoch | 50 |
+| Best validation loss | 75.1559 |
+| Test total loss | 74.8792 |
+| Test reconstruction loss | 68.5376 |
+| Test KL divergence | 6.3416 |
+
+### Interpretation
+
+The model trained on 8,000 QM9 molecules, selected the checkpoint with the lowest validation loss, and evaluated the untouched 1,000-molecule test partition once after model selection.
+
+The test loss is close to the validation loss, suggesting that this baseline generalizes consistently across the held-out partitions. The best validation result occurred at the final epoch, indicating that the model was still improving when the 50-epoch run ended.
+
+These results establish the first meaningful Fingerprint VAE baseline for the project. They do not yet measure fingerprint reconstruction accuracy, chemical validity, latent-space neighborhood quality, or molecular-property organization.
+
+### Retained local artifacts
+
+```text
+models/qm9_fingerprint_vae.pt
+models/qm9_fingerprint_vae_results.json
+```
