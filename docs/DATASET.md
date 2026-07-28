@@ -95,6 +95,39 @@ The manifest records:
 - rejected-molecule count;
 - output columns.
 
+## Preparation run record
+
+**Date:** 2026-07-28  
+**Configuration:** `configs/qm9_subset.yaml`  
+**Source archive:** `qm9.tar.gz`  
+**Subset seed:** 42  
+**Requested subset size:** 10,000 molecules  
+
+### Outcome
+
+The QM9 preparation workflow completed successfully.
+
+| Item | Result |
+| --- | --- |
+| Selected standardized molecules | 10,000 |
+| Rejected during RDKit SDF sanitization | 1,688 |
+| Output dataset | `data/interim/qm9_subset.csv` |
+| Provenance manifest | `data/interim/qm9_subset_manifest.json` |
+
+### Interpretation
+
+RDKit reported valence and sanitization errors for 1,688 source structures. These molecules were excluded because a valid canonical SMILES representation could not be created under the current RDKit sanitization rules.
+
+The generated 10,000-molecule subset is suitable for the next project step: preprocessing, deterministic train/validation/test splitting, and meaningful Fingerprint VAE evaluation.
+
+### Retained local evidence
+
+The following generated artifacts are retained locally and excluded from Git because they can be recreated from the documented configuration:
+
+- `data/raw/qm9/`
+- `data/interim/qm9_subset.csv`
+- `data/interim/qm9_subset_manifest.json`
+
 ## Current limitation
 
 The QM9 subset preparation stage creates a reproducible source dataset. It does not yet create the final train, validation, and test partitions used for scientific evaluation.
