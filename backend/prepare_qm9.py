@@ -171,3 +171,67 @@ def build_qm9_subset(
     ).sort_values("id")
 
     return subset.reset_index(drop=True), rejected_molecules
+
+def main() -> None:
+    """Download QM9 and write a deterministic standardized CSV subset."""
+    arguments = parse_arguments()
+    project_root = Path(__file__).resolve().parent.parent
+
+    config_path = Path(arguments.config)
+    if not config_path.is_absolute():
+        config_path = project_root / config_path
+
+    config = load_dataset_config(config_path)
+
+    source_config = config["source"]
+    subset_config = config["subset"]
+    output_config = config["output"]
+
+    raw_directory = project_root / source_config["raw_directory"]
+    archive_path = raw_directory / source_config["archive_name"]
+    output_csv = project_root / output_config["dataset_csv"]
+    manifest_path = project_root / output_config["manifest_json"]
+
+    download_archive(source_config["url"], archive_path)
+    extract_archive(archive_path, raw_directory)
+
+    sdf_path = find_extracted_file(raw_directory, "qm9.sdf")
+    properties_path = find_extracted_file(raw_directory, "qm9.sdf.csv")
+
+    subset, rejected_molecules = build_qm9_subset(
+        sdf_path=sdf_path,
+        properties_path=properties_path,
+        subset_size=int(subset_config["size"]),
+        seed=int(subset_config["seed"]),
+    )
+
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    subset.to_csv(output_csv, index=False)
+
+    manifest = {
+        "dataset_name": config.get("dataset_name", "qm9_subset"),
+        "source_url": source_config["url"],
+        "archive_sha256": calculate_sha256(archive_path),
+        "source_sdf": str(sdf_path.relative_to(project_root)),
+        "source_properties": str(properties_path.relative_to(project_root)),
+        "subset_size": len(subset),
+        "subset_seed": int(subset_config["seed"]),
+        "rejected_molecules": rejected_molecules,
+        "columns": list(subset.columns),
+    }
+
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2),
+        encoding="utf-8",
+    )
+
+    print("QM9 subset preparation complete.")
+    print(f"Valid subset molecules: {len(subset)}")
+    print(f"Rejected molecules: {rejected_molecules}")
+    print(f"Subset CSV: {output_csv}")
+    print(f"Manifest: {manifest_path}")
+
+
+if __name__ == "__main__":
+    main()
