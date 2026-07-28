@@ -10,6 +10,7 @@ Latent Space Explorer is a generative VAE framework designed to navigate the hid
 |---|---|
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System structure, components, and data flow. |
 | [METHODOLOGY.md](docs/METHODOLOGY.md) | Data representation, model design, and training approach. |
+| [DATASET.md](docs/DATASET.md) | Dataset source, preparation workflow, provenance, and generated artifacts. |
 
 ---
 
