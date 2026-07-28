@@ -1,6 +1,35 @@
-from pathlib import Path
+"""Preprocess a configured molecular dataset and create reproducible splits."""
 
-from backend.preprocessing import FINGERPRINT_BITS, preprocess_dataset
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+from backend.preprocessing import (
+    FINGERPRINT_BITS, 
+    preprocess_dataset
+    )
+
+from backend.splits import (
+    create_split_indices,
+    save_split_indices,
+)
+
+def parse_arguments() -> argparse.Namespace:
+    """Read the QM9 preprocessing configuration path."""
+    parser = argparse.ArgumentParser(
+        description="Preprocess QM9 molecules and create dataset splits."
+    )
+    parser.add_argument(
+        "--config",
+        default="configs/qm9_processing.yaml",
+        help="Path to the QM9 preprocessing YAML configuration.",
+    )
+    return parser.parse_args()
+
+
 
 
 def main() -> None:
