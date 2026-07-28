@@ -47,3 +47,33 @@ def load_dataset_config(config_path: Path) -> dict[str, Any]:
         )
 
     return config
+
+def download_archive(url: str, archive_path: Path) -> None:
+    """Download the QM9 archive only when it is not already available."""
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if archive_path.is_file():
+        print(f"Using existing archive: {archive_path}")
+        return
+
+    print(f"Downloading QM9 archive from: {url}")
+    urlretrieve(url, archive_path)
+    print(f"Downloaded archive to: {archive_path}")
+
+def extract_archive(archive_path: Path, destination: Path) -> None:
+    """Extract a tar archive after checking paths remain inside destination."""
+    destination.mkdir(parents=True, exist_ok=True)
+
+    with tarfile.open(archive_path, "r:gz") as archive:
+        destination_root = destination.resolve()
+
+        for member in archive.getmembers():
+            member_path = (destination / member.name).resolve()
+            if destination_root not in member_path.parents and member_path != destination_root:
+                raise ValueError(
+                    f"Archive member escapes the destination directory: {member.name}"
+                )
+
+        archive.extractall(destination)
+
+    print(f"Extracted archive to: {destination}")
