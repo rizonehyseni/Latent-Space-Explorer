@@ -92,3 +92,12 @@ def find_extracted_file(directory: Path, filename: str) -> Path:
     return matches[0]
 
 
+def calculate_sha256(file_path: Path) -> str:
+    """Calculate the SHA-256 checksum of a source archive."""
+    digest = hashlib.sha256()
+
+    with file_path.open("rb") as source_file:
+        for chunk in iter(lambda: source_file.read(1024 * 1024), b""):
+            digest.update(chunk)
+
+    return digest.hexdigest()
