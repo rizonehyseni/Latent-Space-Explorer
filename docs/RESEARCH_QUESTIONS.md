@@ -68,6 +68,19 @@ What are the practical limitations of a fingerprint-based VAE compared with a fu
 - assess whether valid molecular structures can be decoded;
 - document differences in computational cost and implementation complexity.
 </details>
+
 ## Current scope
 
-The current project stage addresses the training workflow and validation pipeline required to investigate these questions. Meaningful scientific conclusions will require a larger documented QM9 subset, a held-out test set, and latent-space export.
+The first controlled QM9 Fingerprint VAE baseline has been completed using a deterministic 10,000-molecule subset and non-overlapping train, validation, and test splits.
+
+The initial baseline establishes that the pipeline can train, select a checkpoint using validation loss, and evaluate a held-out test split reproducibly.
+
+The following research questions remain open:
+
+- whether nearby latent vectors correspond to chemically similar molecules;
+- whether molecular properties form visible patterns across latent space;
+- whether reconstruction quality is meaningful according to fingerprint similarity metrics;
+- how robust the results are across random seeds;
+- whether alternative latent dimensions or model architectures improve the representation.
+
+These questions require latent-vector export, scientific visualizations, additional evaluation metrics, and repeated experiments.
