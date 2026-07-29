@@ -1,4 +1,4 @@
- <h1>Latent Space Explorer: Generative VAE framework for molecular topology</h1>
+ <h1 align="center">Latent Space Explorer: Generative VAE framework for molecular topology</h1>
 
 <div align="justify">
 
