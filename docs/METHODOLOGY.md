@@ -14,7 +14,7 @@ flowchart LR
     D --> E((Latent Vector<br/>z ∈ R¹⁶))
     E --> F[Decoder]
     F --> G[Reconstructed<br/>Fingerprint]
-    G --> H[Validation Metrics<br/>BCE Loss<br/>Tanimoto Similarity]
+    G --> H[Validation Metrics<br/>Total VAE Loss<br/>Reconstruction Loss<br/>KL Divergence]
     E --> I[Latent Space<br/>Visualization]
 ```
 
@@ -267,28 +267,44 @@ Together, reconstruction loss and KL divergence encourage the model to:
 
 ---
 
-# Training and Validation
+## QM9 baseline training and evaluation
 
-Training configuration is stored in:
+The first controlled experiment uses a deterministic 10,000-molecule QM9 subset.
 
-```text
-configs/fingerprint_vae.yaml
-```
+The processed dataset is divided into non-overlapping partitions:
 
-The configuration defines:
+| Split | Molecules | Purpose |
+|---|---:|---|
+| Training | 8,000 | Learn model parameters |
+| Validation | 1,000 | Select the best checkpoint |
+| Test | 1,000 | Final held-out evaluation |
 
-| Parameter | Description |
-|---|---|
-| Dataset path | Location of processed fingerprint data |
-| Random seed | Ensures reproducible experiments |
-| Model dimensions | Encoder, decoder, and latent sizes |
-| Batch size | Number of samples processed per update |
-| Learning rate | Optimizer step size |
-| Epoch count | Number of training iterations |
-| Validation fraction | Training/validation split ratio |
-| Checkpoint path | Location of saved model artifacts |
+The model is trained for 50 epochs.
 
----
+At each epoch, training and validation total VAE loss, reconstruction loss, and KL divergence are recorded.
+
+The checkpoint with the lowest validation loss is retained. After training is complete, that checkpoint is evaluated once on the held-out test split.
+
+## Current evaluation metrics
+
+The first baseline records:
+
+- total VAE loss;
+- reconstruction loss;
+- KL divergence;
+- training and validation curves;
+- final held-out test metrics.
+
+The current baseline does not yet measure fingerprint bit-level accuracy or Tanimoto similarity. These metrics are planned for future latent-space and reconstruction-quality evaluation.
+
+
+## Baseline interpretation
+
+The first baseline demonstrates that the project can complete a reproducible end-to-end experiment from QM9 source preparation to held-out evaluation.
+
+However, decreasing VAE loss alone does not prove that the latent space is chemically meaningful.
+
+The next stage must export latent vectors and evaluate whether molecules that are nearby in latent space also share fingerprint similarity or molecular-property patterns.
 
 ## Training Workflow
 
