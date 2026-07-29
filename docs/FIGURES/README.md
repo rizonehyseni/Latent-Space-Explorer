@@ -1,22 +1,20 @@
-# Figures and Media Guide
+# Figures 
 
-Store only meaningful research figures in this directory. File names should be lowercase, descriptive, and use hyphens, for example `fingerprint-vae-training-curves-v1.png`.
+This directory contains versioned scientific figures generated from reproducible project artifacts.
 
-## When to capture evidence
+## Figure rules
 
-| Milestone | Save |
-| --- | --- |
-| Preprocessing on a larger dataset | Terminal summary and a dataset-quality table or chart. |
-| First meaningful training run | Training and validation loss curves, configuration, and checkpoint metadata. |
-| Latent export | PCA and UMAP plots with a caption describing the color property. |
-| Explorer MVP | One clean full-window screenshot and a 10–30 second interaction recording. |
-| Nearest-neighbor feature | Selected molecule plus its neighbors and similarity values. |
-| Interpolation feature | A trajectory figure or short video showing the changing latent position. |
+Every figure added to this directory should:
 
-## Caption format
+1. use a descriptive, versioned filename;
+2. be generated from saved experiment data or scripts;
+3. be explained in the relevant experiment document;
+4. include the dataset, model configuration, and metric context;
+5. avoid unsupported scientific conclusions.
 
-Every saved figure should have a nearby caption in `RESULTS.md` or `EXPERIMENTS.md` stating what the figure shows, which dataset/configuration/projection produced it, what observation it supports, and its limitation.
+Example filename format:
 
-## Video guidance
-
-Keep repository media lightweight. Store large recordings on a release page or video host and link them from the relevant documentation. Use video to demonstrate an interaction, not to replace a written scientific result.
+```text
+qm9-fingerprint-vae-training-curves-v2.png
+qm9-latent-space-umap-v1.png
+qm9-property-colored-latent-space-v1.png
