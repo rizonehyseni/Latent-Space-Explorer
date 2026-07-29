@@ -9,7 +9,7 @@
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System structure, components, and data flow. |
 | [METHODOLOGY.md](docs/METHODOLOGY.md) | Data representation, model design, and training approach. |
 | [DATASET.md](docs/DATASET.md) | Dataset source, preparation workflow, provenance, and generated artifacts. |
-
+| [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Current completed milestones, known limitations, and the next planned step. |
 
 
 ### Research Process
