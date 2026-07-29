@@ -37,6 +37,12 @@ flowchart LR
 | `backend/config.py` | Loads an experiment YAML file and checks that its required sections are present. |
 | `backend/run_preprocessing.py` | Command-line entry point for preprocessing the sample CSV. |
 | `backend/run_training.py` | Command-line entry point that loads an experiment configuration, trains the model, and writes a checkpoint. |
+| `backend/prepare_qm9.py` | Downloads, validates, and prepares the deterministic QM9 subset. |
+| `backend/splits.py` | Creates deterministic, non-overlapping train, validation, and test split indices. |
+| `backend/plot_training_history.py` | Generates the versioned QM9 training-history figure. |
+| `configs/qm9_subset.yaml` | Defines deterministic QM9 subset preparation settings. |
+| `configs/qm9_processing.yaml` | Defines QM9 preprocessing and split settings. |
+| `configs/qm9_fingerprint_vae.yaml` | Defines the QM9 Fingerprint VAE baseline training settings. |
 | `configs/fingerprint_vae.yaml` | Default Fingerprint VAE experiment settings. |
 | `web/` | Independent React/Vite frontend scaffold; it has no model-data integration yet. |
 
