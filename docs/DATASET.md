@@ -143,6 +143,33 @@ The following generated artifacts are retained locally and excluded from Git bec
 - `data/interim/qm9_subset.csv`
 - `data/interim/qm9_subset_manifest.json`
 
+## QM9 preprocessing and split record
+
+**Date:** 2026-07-29  
+**Input dataset:** `data/interim/qm9_subset.csv`  
+**Processing configuration:** `configs/qm9_processing.yaml`  
+**Fingerprint representation:** Morgan fingerprint, radius 2, 2048 bits  
+**Split seed:** 42  
+
+### Outcome
+
+| Item | Result |
+| --- | ---: |
+| Input molecules | 10,000 |
+| Valid processed molecules | 10,000 |
+| Rejected during preprocessing | 0 |
+| Training partition | 8,000 |
+| Validation partition | 1,000 |
+| Test partition | 1,000 |
+
+### Generated local artifacts
+
+```text
+data/processed/qm9/molecules_metadata.csv
+data/processed/qm9/morgan_fingerprints.npy
+data/processed/qm9/split_indices.npz
+data/processed/qm9/preparation_summary.json
+
 ## Current limitation
 
 The QM9 subset preparation stage creates a reproducible source dataset. It does not yet create the final train, validation, and test partitions used for scientific evaluation.
