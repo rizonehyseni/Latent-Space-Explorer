@@ -60,14 +60,14 @@ How does latent dimensionality affect reconstruction quality, latent-space organ
 
 What are the practical limitations of a fingerprint-based VAE compared with a future graph-based molecular VAE?
 
-</details>
+
 
 **Evaluation direction:**
 
 - compare interpretability and neighborhood structure;
 - assess whether valid molecular structures can be decoded;
 - document differences in computational cost and implementation complexity.
-
+</details>
 ## Current scope
 
 The current project stage addresses the training workflow and validation pipeline required to investigate these questions. Meaningful scientific conclusions will require a larger documented QM9 subset, a held-out test set, and latent-space export.

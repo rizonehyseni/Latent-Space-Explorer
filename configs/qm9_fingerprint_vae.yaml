@@ -1,0 +1,20 @@
+experiment_name: qm9_fingerprint_vae_baseline
+seed: 42
+
+data:
+  fingerprint_path: data/processed/qm9/morgan_fingerprints.npy
+  split_indices_path: data/processed/qm9/split_indices.npz
+
+model:
+  input_dim: 2048
+  hidden_dim: 512
+  latent_dim: 16
+
+training:
+  batch_size: 128
+  learning_rate: 0.001
+  epochs: 50
+
+artifacts:
+  checkpoint_path: models/qm9_fingerprint_vae.pt
+  results_path: models/qm9_fingerprint_vae_results.json
