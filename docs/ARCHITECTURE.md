@@ -12,21 +12,16 @@ This document describes the implementation that exists in the repository today. 
 
 ```mermaid
 flowchart LR
-    A[QM9 CSV<br/>SMILES Dataset]
-
-    B[RDKit Processing<br/>Validation + Descriptors<br/>MW, LogP, TPSA, Rings]
-
-    C[Morgan Fingerprints<br/>2048-bit Representation]
-
-    D[Dense Fingerprint VAE<br/>Encoder + Decoder]
-
-    E[Latent Space<br/>16-dimensional Vector]
-
-    F[Evaluation<br/>Loss + Validation Metrics]
-
-    G[Artifacts<br/>Checkpoint + Training History]
-
-    A --> B --> C --> D --> E --> F --> G
+    A["QM9 source archive"] --> B["QM9 preparation<br/>backend/prepare_qm9.py"]
+    B --> C["Deterministic QM9 subset<br/>10,000 molecules"]
+    C --> D["RDKit validation and canonical SMILES"]
+    D --> E["Morgan fingerprints"]
+    E --> F["Deterministic split generation<br/>8,000 / 1,000 / 1,000"]
+    F --> G["Fingerprint VAE training"]
+    G --> H["Validation-based checkpoint selection"]
+    H --> I["Held-out test evaluation"]
+    I --> J["Saved model, metrics, and training figure"]
+    J --> K["Next: latent-vector export and explorer data"]
 ```
 
 ## Repository components
@@ -130,5 +125,18 @@ The `web/` directory is a standard React/Vite application. Its current interface
 
 ## Next architectural increment
 
-The next model-quality increment is a larger documented QM9 subset with train, validation, and test partitions. Once model quality can be assessed beyond the development sample, the next integration step is an export stage that encodes each processed fingerprint with its mean latent vector (`mu`), reduces those vectors to three display coordinates, and writes a versioned JSON artifact joined with `molecules_metadata.csv`. The frontend can then render a real molecular point cloud without requiring a live API.
+## Next increment
+
+The next implementation stage is latent-vector export.
+
+The export workflow should load the selected QM9 Fingerprint VAE checkpoint and create a documented latent-space dataset containing:
+
+- molecule identifiers;
+- canonical SMILES;
+- train, validation, and test labels;
+- selected molecular descriptors;
+- 16-dimensional latent coordinates;
+- model and configuration metadata.
+
+That artifact will support the first PCA or UMAP visualization, nearest-neighbor analysis, and the future frontend explorer.
 </div>
