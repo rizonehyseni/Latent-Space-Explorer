@@ -1,43 +1,75 @@
 # Project Status
 
-## Current point in the project
+## Current phase
 
-The project is in **Phase I: Fingerprint VAE baseline**. The data-to-model path is implemented and the training experiment is now configured through YAML. The project is not yet at the visualization or molecular-generation stage.
+The project has completed its first reproducible QM9 Fingerprint VAE baseline.
 
-The current system can process SMILES data, create Morgan fingerprints, train a dense VAE, and save a checkpoint with its experiment metadata. Its current sample dataset is deliberately small and exists to confirm that the pipeline works end to end.
+The current system can prepare a deterministic QM9 subset, generate Morgan fingerprints, create non-overlapping train/validation/test splits, train a dense Variational Autoencoder, select the best checkpoint using validation loss, evaluate the held-out test split, and generate a training-history figure.
 
 ## Completed work
 
-| Area | Completed capability |
-| --- | --- |
-| Data ingestion | Reads a CSV containing a required `smiles` column and reports missing files or columns. |
-| Molecular preprocessing | Validates SMILES with RDKit, canonicalizes valid molecules, and skips invalid entries. |
-| Molecular metadata | Calculates molecular weight, LogP, atom counts, hydrogen-bond counts, TPSA, and ring count. |
-| Model input | Produces fixed-length 2048-bit Morgan fingerprints and stores them as a NumPy matrix. |
-| VAE model | Implements a dense encoder/decoder, 16-dimensional latent representation, reparameterization, and fingerprint reconstruction logits. |
-| Training | Uses binary cross-entropy with logits plus KL divergence, Adam optimization, CPU/CUDA selection, epoch metrics, and checkpoint saving. |
-| Reproducibility | Uses `configs/fingerprint_vae.yaml` for the seed, paths, model dimensions, training settings, and checkpoint destination. |
-| Validation | Creates a deterministic train/validation split and reports evaluation-only validation total, reconstruction, and KL losses. |
-| Documentation | Documents the current architecture and separates implemented features from planned work. |
+| Area | Completed work |
+|---|---|
+| Repository foundation | Modular backend, configuration files, documentation structure, and Git workflow established |
+| Molecular preprocessing | RDKit validation, canonical SMILES generation, Morgan fingerprint generation |
+| Development smoke dataset | Three-molecule sample dataset for ingestion and pipeline checks |
+| QM9 dataset preparation | Deterministic 10,000-molecule QM9 subset with provenance manifest |
+| Dataset splitting | Deterministic 8,000 / 1,000 / 1,000 train, validation, and test partitions |
+| Baseline model | Dense Fingerprint VAE with a 16-dimensional latent space |
+| Training evaluation | Best checkpoint selected by validation loss and evaluated once on the held-out test split |
+| Result documentation | Baseline metrics and training curves recorded in the experiment documentation |
 
-## What is not complete yet
+## Current baseline result
 
-- The tracked dataset has only a few molecules; it is not large enough for meaningful scientific evaluation.
-- The development sample produces a 2/1 train/validation split, which verifies the workflow but is not suitable for scientific evaluation.
-- There is no held-out test split, early stopping, reconstruction-quality metric, chemical-validity metric, or property-prediction evaluation.
-- Latent vectors are not exported for use by the browser.
-- The React/Vite frontend is still a starter scaffold; it has no Three.js scene, molecular data loader, or model integration.
-- The model operates on fingerprints. It does not decode into valid SMILES or molecular graphs.
+The first QM9 Fingerprint VAE baseline was trained for 50 epochs on CPU.
 
-## Planned sequence
+| Metric | Result |
+|---|---:|
+| Best validation epoch | 50 |
+| Best validation loss | 75.1559 |
+| Test total VAE loss | 74.8792 |
+| Test reconstruction loss | 68.5376 |
+| Test KL divergence | 6.3416 |
 
-1. **Larger dataset:** replace the development sample with a documented QM9 subset and retain a held-out test set.
-2. **Training evaluation:** assess reconstruction and latent-space quality on meaningful validation and test partitions.
-3. **Latent export:** encode processed molecules with their mean latent vector and write metadata plus display coordinates to a versioned JSON artifact.
-4. **Explorer MVP:** replace the frontend starter screen with a point-cloud view of exported molecules, then add selection and descriptor filtering.
-5. **Interpolation:** support selecting two molecules and inspect a latent-space trajectory before claiming decoded molecular validity.
-6. **Advanced representation:** evaluate a graph VAE or another structured molecular representation. A convolutional VAE should be considered only after defining an input representation where convolution is meaningful.
+These values establish a baseline. They do not yet demonstrate that the latent space is chemically meaningful.
 
-## Definition of success for the current phase
+## Current evidence
 
-Phase I is complete when the project can train and evaluate the Fingerprint VAE on a meaningful held-out dataset, record the experiment configuration and metrics, and export stable latent representations for visualization. The model does not need to generate chemically valid molecules to complete this phase.
+The repository currently includes:
+
+- a reproducible QM9 preparation workflow;
+- deterministic dataset splits;
+- unit tests for split determinism and non-overlap;
+- a saved best model checkpoint;
+- saved test metrics;
+- a training-history figure showing total loss, reconstruction loss, and KL divergence.
+
+See [EXPERIMENTS.md](EXPERIMENTS.md) for the documented baseline result.
+
+## Known limitations
+
+The current model reconstructs fixed-length Morgan fingerprints rather than molecular graphs or SMILES strings. Therefore, it cannot directly generate chemically valid molecular structures.
+
+The model has not yet been evaluated with:
+
+- fingerprint bit-level reconstruction accuracy;
+- Tanimoto similarity;
+- nearest-neighbor retrieval;
+- molecular-property prediction;
+- latent-space visualization;
+- repeated runs across multiple seeds;
+- comparisons against alternative model architectures.
+
+## Next planned step
+
+The next implementation branch should export latent vectors for the QM9 dataset.
+
+That branch should:
+
+1. load the selected QM9 Fingerprint VAE checkpoint;
+2. encode molecules into latent vectors;
+3. save molecule identifiers, SMILES, descriptors, split labels, and latent coordinates;
+4. create a reproducible latent-space artifact for later PCA or UMAP visualization;
+5. document the export schema and capture the first latent-space figure.
+
+This is the transition from model training toward latent-space analysis and the future interactive explorer.
