@@ -70,46 +70,60 @@ The selected dimension has not yet been compared with alternative latent sizes.
 **Future reconsideration:**  
 Compare 8, 16, 32, and 64 dimensions after a larger dataset and test protocol are available.
 
-## Decision 004 — Use YAML experiment configuration
+## Decision 004 
 
 **Date:** July 2026
 
-**Context:**  
-Training settings were originally hard-coded in the training script.
-
 **Choice:**  
-Store dataset paths, model dimensions, training hyperparameters, seed, and checkpoint path in `configs/fingerprint_vae.yaml`.
+Use separate YAML configuration profiles for development, dataset preparation, preprocessing, and QM9 baseline training.
 
+Current configuration files:
+
+```text
+configs/fingerprint_vae.yaml
+configs/qm9_subset.yaml
+configs/qm9_processing.yaml
+configs/qm9_fingerprint_vae.yaml
+```
 **Reason:**  
-
-- Improves reproducibility.
-- Separates experiment settings from implementation logic.
-- Allows later experiments to be compared through version-controlled configuration files.
+Different project stages require different parameters. Keeping configurations separate makes experiments easier to reproduce and prevents development settings from being confused with QM9 baseline settings.
 
 **Tradeoff:**  
-Configuration validation is intentionally lightweight at the current project stage.
+More configuration files require clearer documentation and validation.
 
-**Future reconsideration:**  
-Add stronger schema validation and per-experiment configuration files when multiple datasets and model variants are introduced.
+**Outcome:**
+The current QM9 baseline can be reproduced from explicit dataset and training configurations.
 
-## Decision 005 — Add deterministic validation before scaling the dataset
+## Decision 005 
 
 **Date:** July 2026
 
-**Context:**  
-The original training workflow used every processed molecule for optimization and had no evaluation-only metric path.
-
 **Choice:**  
-Create a deterministic train/validation split using the configured seed and validation fraction.
+Use a deterministic 10,000-molecule QM9 subset with 8,000 training, 1,000 validation, and 1,000 test molecules for the first baseline.
 
 **Reason:**  
 
-- Separates optimization data from evaluation data.
-- Makes training runs more reproducible.
-- Establishes the workflow needed before introducing a larger QM9 subset.
+The subset is large enough to move beyond a smoke test while remaining practical for CPU-based development and reproducible experimentation.
 
 **Tradeoff:**  
-The current three-molecule development sample creates only a one-molecule validation set, which is not scientifically meaningful.
+The subset does not represent the full QM9 collection and may not capture all molecular diversity.
 
-**Future reconsideration:**  
-Replace the development sample with a documented QM9 subset containing meaningful train, validation, and test partitions.
+**Outcome:**
+The first baseline now uses validation loss for checkpoint selection and evaluates the selected checkpoint once on a held-out test split.
+
+## Decision 006
+
+Date:  
+July 2026
+
+**Choice:** 
+Select the QM9 Fingerprint VAE checkpoint using validation loss and reserve the test split for final evaluation.
+
+**Reason:**
+Using the test split during model selection would bias the reported test result. Validation performance provides a separate signal for checkpoint selection.
+
+**Tradeoff:**  
+The project must maintain deterministic and non-overlapping split indices.
+
+**Outcome:**
+The baseline selected epoch 50 as the best validation checkpoint and reported held-out test metrics only after selection.
