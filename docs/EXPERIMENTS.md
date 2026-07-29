@@ -65,3 +65,11 @@ These results establish the first meaningful Fingerprint VAE baseline for the pr
 models/qm9_fingerprint_vae.pt
 models/qm9_fingerprint_vae_results.json
 ```
+
+### Training curves
+
+**Figure generated:** 2026-07-30
+
+![QM9 Fingerprint VAE training and validation curves](FIGURES/qm9-fingerprint-vae-training-curves-v1.png)
+
+*Figure 1. Per-sample training and validation total loss, reconstruction loss, and KL divergence for the 16-dimensional Fingerprint VAE trained on the 10,000-molecule QM9 subset. Validation loss decreased throughout the 50-epoch experiment, with the best validation result occurring at epoch 50. The final held-out test loss was comparable to the validation loss, supporting consistent baseline generalization across the prepared QM9 partitions.*
