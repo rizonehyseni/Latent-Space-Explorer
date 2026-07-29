@@ -1,107 +1,91 @@
 # Current Limitations
 
-This document describes the current technical and scientific limitations of the project. These limitations are recorded explicitly so that results are interpreted responsibly and future work can address them systematically.
+This document records the current scientific and engineering limitations of the Molecular Latent Space Explorer.
 
-## Dataset scale
+## Molecular representation
 
-The tracked development dataset contains only three molecules.
+The current baseline uses Morgan fingerprints as input and output.
 
-This dataset is useful for:
-
-- verifying CSV ingestion;
-- validating RDKit preprocessing;
-- confirming fingerprint generation;
-- testing training and checkpoint creation;
-- verifying the train/validation workflow.
-
-It is not suitable for:
-
-- scientific model evaluation;
-- hyperparameter selection;
-- cluster analysis;
-- molecular-property conclusions;
-- generalization claims.
-
-## Validation sample size
-
-The current validation configuration reserves 20% of the three-molecule development dataset.
-
-This produces:
-
-- 2 training molecules;
-- 1 validation molecule.
-
-The validation workflow is technically correct, but one validation molecule cannot provide a stable or statistically meaningful measure of model quality.
-
-## No held-out test set
-
-The current workflow includes training and validation data only.
-
-A future larger dataset must contain:
-
-- training data for model optimization;
-- validation data for model selection;
-- test data for final unbiased evaluation.
-
-## Fingerprint reconstruction is not molecular generation
-
-The current model reconstructs Morgan fingerprints.
+This means the model learns a compressed representation of fixed-length molecular fingerprints, not a direct representation of molecular graphs.
 
 Therefore:
 
-- latent exploration is possible;
-- fingerprint reconstruction is measurable;
-- similarity analysis is possible.
+- latent-space exploration is possible;
+- fingerprint reconstruction is possible;
+- direct molecular-graph generation is not implemented;
+- generated latent vectors cannot yet be decoded into guaranteed valid SMILES strings.
 
-However:
+A future Graph VAE, sequence-based VAE, or molecular diffusion model would be required for chemically valid molecular generation.
 
-- latent vectors do not decode directly into valid SMILES;
-- generated molecular graphs are not available;
-- chemical validity cannot yet be guaranteed;
-- interpolation does not yet produce chemically valid molecular structures.
+## Evaluation coverage
 
-## Dense VAE representation limits
+The first QM9 baseline includes deterministic train, validation, and held-out test partitions.
 
-The current VAE uses fixed-size fingerprint vectors and dense neural-network layers.
+However, the current evaluation is limited to total VAE loss, reconstruction loss, and KL divergence.
 
-This is appropriate for the baseline, but it does not explicitly model:
+The project does not yet measure:
 
-- atoms;
-- bond types;
-- graph topology;
-- stereochemistry;
-- molecular conformations;
-- three-dimensional geometry.
+- fingerprint bit-level reconstruction accuracy;
+- Tanimoto similarity between original and reconstructed fingerprints;
+- nearest-neighbor molecular similarity;
+- molecular-property preservation;
+- latent-cluster quality;
+- variance across multiple random seeds.
 
-A future Graph VAE or another graph-based representation would address some of these limitations.
+The current result is therefore a training baseline, not yet evidence of chemically meaningful latent organization.
 
-## No latent-space export yet
+## Dataset scope
 
-The project does not yet export encoded latent vectors and display coordinates for browser visualization.
+The current experiment uses a deterministic 10,000-molecule subset of QM9.
 
-As a result, the current React/Vite frontend cannot yet display:
+This is appropriate for an initial CPU-friendly baseline, but it is not the complete QM9 collection.
 
-- molecular point clouds;
-- PCA or UMAP projections;
-- nearest-neighbor regions;
-- property-colored latent spaces;
-- interpolation trajectories.
+Future experiments should compare:
 
-## No molecular property prediction model
+- different subset sizes;
+- the full QM9 dataset where practical;
+- multiple random seeds;
+- additional molecular datasets;
+- property-balanced or scaffold-aware splits.
 
-The project calculates observed molecular descriptors during preprocessing, but it does not yet predict properties from latent vectors.
+## Latent-space analysis
 
-Therefore, interpolated or generated latent points cannot yet be assigned reliable property estimates.
+Latent vectors are not yet exported as a documented dataset artifact.
 
-## No chemical-validity evaluation
+As a result, the project does not yet provide:
 
-The project does not currently evaluate:
+- PCA, UMAP, or t-SNE projections;
+- latent-space cluster analysis;
+- property-colored latent maps;
+- nearest-neighbor exploration;
+- interpolation trajectories;
+- interactive 3D exploration.
 
-- valid SMILES rate;
-- synthetic accessibility;
-- drug-likeness;
-- molecular novelty;
-- molecular diversity;
-- property constraint satisfaction.
+Latent export and analysis are the next planned research stage.
 
-These metrics become relevant after a model can generate molecular structures rather than only fingerprint reconstructions.
+## Frontend scope
+
+The frontend is currently a React and Vite foundation.
+
+It does not yet load trained-model artifacts or display molecular data.
+
+The future explorer will require:
+
+- a latent-coordinate data format;
+- molecular metadata and descriptor files;
+- a 2D or 3D projection pipeline;
+- molecule selection and inspection;
+- a rendering layer such as Three.js or React Three Fiber.
+
+## Reproducibility scope
+
+The dataset preparation, split creation, training configuration, and baseline result are reproducible.
+
+However, fully repeatable research reporting will later require:
+
+- environment lock files;
+- recorded package versions;
+- hardware metadata;
+- seed logging for every experiment;
+- experiment comparison tables;
+- automated report generation.
