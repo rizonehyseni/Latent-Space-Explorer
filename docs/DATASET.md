@@ -11,7 +11,7 @@ This three-molecule sample exists only to verify CSV ingestion, RDKit preprocess
 
 It must not be used for scientific model evaluation.
 
-# QM9 subset for baseline experiments
+## QM9 subset for baseline experiments
 
 The next training dataset is a deterministic subset of QM9.
 
@@ -169,9 +169,39 @@ data/processed/qm9/molecules_metadata.csv
 data/processed/qm9/morgan_fingerprints.npy
 data/processed/qm9/split_indices.npz
 data/processed/qm9/preparation_summary.json
+```
+## Current project status
 
-## Current limitation
+The QM9 baseline dataset pipeline is complete for the first controlled experiment:
 
-The QM9 subset preparation stage creates a reproducible source dataset. It does not yet create the final train, validation, and test partitions used for scientific evaluation.
+| Stage | Status |
+|---|---|
+| QM9 source download and provenance capture | Complete |
+| RDKit structure validation and canonical SMILES generation | Complete |
+| Deterministic 10,000-molecule subset creation | Complete |
+| Morgan fingerprint generation | Complete |
+| Deterministic train, validation, and test split creation | Complete |
+| Baseline Fingerprint VAE training and held-out test evaluation | Complete |
 
-Those partitions will be introduced in the next training-evaluation feature.
+The processed QM9 subset contains:
+
+| Split | Molecules |
+|---|---:|
+| Training | 8,000 |
+| Validation | 1,000 |
+| Test | 1,000 |
+| Total | 10,000 |
+
+The first QM9 Fingerprint VAE baseline was trained using this dataset. The model selected the checkpoint with the lowest validation loss and evaluated the held-out test split only after checkpoint selection.
+
+## Current limitations
+
+The dataset pipeline is reproducible, but the current baseline does not yet include:
+
+- fingerprint bit-level reconstruction accuracy;
+- Tanimoto similarity between original and reconstructed fingerprints;
+- latent-coordinate export;
+- molecular-property analysis across latent space;
+- repeated runs across multiple random seeds.
+
+These capabilities belong to the next research stages.
