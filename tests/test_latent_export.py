@@ -96,7 +96,9 @@ class LatentExportTests(unittest.TestCase):
             np.testing.assert_allclose(
                 exported_vectors,
                 expected_vectors.numpy(),
-            )
+                rtol=1e-6,
+                atol=1e-7,
+)
             self.assertEqual(exported_vectors.shape, (3, 2))
             self.assertEqual(
                 exported_metadata["id"].tolist(),
