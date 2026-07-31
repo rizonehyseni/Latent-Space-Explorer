@@ -1,5 +1,6 @@
-"""Configuration loading for Fingerprint VAE experiments."""
+"""Configuration loading for project experiments."""
 
+from collections.abc import Set
 from pathlib import Path
 from typing import Any
 
@@ -9,9 +10,13 @@ import yaml
 REQUIRED_SECTIONS = {"data", "model", "training", "artifacts"}
 
 
-def load_experiment_config(config_path: str | Path) -> dict[str, Any]:
-    """Load and validate the required sections of an experiment YAML file."""
+def load_experiment_config(
+    config_path: str | Path,
+    required_sectiona: Set[str] | None = None,
+) -> dict[str, Any]:
+    """Load a YAML configuration and validate its required sections."""
     path = Path(config_path)
+
     if not path.is_file():
         raise FileNotFoundError(f"Configuration file was not found: {path}")
 
@@ -21,7 +26,10 @@ def load_experiment_config(config_path: str | Path) -> dict[str, Any]:
     if not isinstance(config, dict):
         raise ValueError("Configuration must contain a YAML mapping.")
 
-    missing_sections = REQUIRED_SECTIONS.difference(config)
+    sections = REQUIRED_SECTIONS if required_sections is None else required_sections
+    missing_sections = sections.difference(config)
+
+
     if missing_sections:
         missing = ", ".join(sorted(missing_sections))
         raise ValueError(f"Configuration is missing required sections: {missing}")
