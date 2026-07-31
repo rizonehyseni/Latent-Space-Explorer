@@ -60,16 +60,25 @@ The model has not yet been evaluated with:
 - repeated runs across multiple seeds;
 - comparisons against alternative model architectures.
 
+## Current work
+
+The QM9 latent-vector export workflow is implemented.
+
+It exports deterministic 16-dimensional encoder mean vectors for all 10,000 processed QM9 molecules. Each vector is aligned with molecule metadata, descriptors, canonical SMILES, and the deterministic train, validation, or test label.
+
+See [LATENT_EXPORT.md](LATENT_EXPORT.md) for the artifact schema and reproducible command.
+
 ## Next planned step
 
-The next implementation branch should export latent vectors for the QM9 dataset.
+The next branch should create the first scientific latent-space visualizations.
 
 That branch should:
 
-1. load the selected QM9 Fingerprint VAE checkpoint;
-2. encode molecules into latent vectors;
-3. save molecule identifiers, SMILES, descriptors, split labels, and latent coordinates;
-4. create a reproducible latent-space artifact for later PCA or UMAP visualization;
-5. document the export schema and capture the first latent-space figure.
+1. load `latent_vectors.npy` and `latent_metadata.csv`;
+2. create a PCA projection as a simple interpretable baseline;
+3. create a UMAP projection for local-structure exploration;
+4. color points by a molecular property such as molecular weight, LogP, or HOMO-LUMO gap;
+5. save versioned figures under `docs/FIGURES/`;
+6. document careful interpretations and limitations in `EXPERIMENTS.md`.
 
-This is the transition from model training toward latent-space analysis and the future interactive explorer.
+The first PCA or UMAP figure is the next screenshot milestone for the project.
