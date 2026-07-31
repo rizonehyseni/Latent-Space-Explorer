@@ -1,0 +1,21 @@
+experiment_name: qm9_fingerprint_vae_latent_export
+seed: 42
+
+data:
+  fingerprint_path: data/processed/qm9/morgan_fingerprints.npy
+  metadata_path: data/processed/qm9/molecules_metadata.csv
+  split_indices_path: data/processed/qm9/split_indices.npz
+
+model:
+  input_dim: 2048
+  hidden_dim: 512
+  latent_dim: 16
+
+export:
+  batch_size: 256
+
+artifacts:
+  checkpoint_path: models/qm9_fingerprint_vae.pt
+  latent_vectors_path: data/processed/qm9/latent_vectors.npy
+  latent_metadata_path: data/processed/qm9/latent_metadata.csv
+  manifest_path: data/processed/qm9/latent_export_manifest.json
