@@ -1,4 +1,3 @@
-````md
 # QM9 Latent PCA Analysis
 
 ## Purpose
@@ -47,7 +46,7 @@ Fitting PCA only on training vectors prevents the validation and test partitions
 
 ## Figure
 
-![qm9-latent-pca-by-split](docs\FIGURES\qm9-latent-pca-by-split-v1.png)
+![qm9-latent-pca-by-split](FIGURES\qm9-latent-pca-by-split-v1.png)
 
 
 Figure 2. PCA projection of deterministic 16-dimensional QM9 Fingerprint VAE latent mean vectors. PCA was fitted on the 8,000-molecule training split and then applied to validation and test molecules. The three deterministic splits overlap across the same broad regions, indicating that they are distributed similarly in the projected latent space.
