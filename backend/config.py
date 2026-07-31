@@ -12,7 +12,7 @@ REQUIRED_SECTIONS = {"data", "model", "training", "artifacts"}
 
 def load_experiment_config(
     config_path: str | Path,
-    required_sectiona: Set[str] | None = None,
+    required_sections: Set[str] | None = None,
 ) -> dict[str, Any]:
     """Load a YAML configuration and validate its required sections."""
     path = Path(config_path)
