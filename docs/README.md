@@ -9,6 +9,7 @@ This directory is the project’s technical and research record. Documentation i
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Implemented system design, data flow, and current technical boundaries. |
 | [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed milestones, current phase, and planned sequence. |
 | [LATENT_EXPORT.md](LATENT_EXPORT.md) | Latent-vector artifact schema, provenance, and reproducible export workflow. |
+| [PCA_ANALYSIS.md](PCA_ANALYSIS.md) | Reproducible PCA projection, result, interpretation, and limitations. |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | Reproducible records of completed training runs and their interpretation. |
 | [FIGURES/README.md](FIGURES/README.md) | Figure, screenshot, and video capture conventions. |
 

@@ -2,9 +2,9 @@
 
 ## Current phase
 
-The project has completed its first reproducible QM9 Fingerprint VAE baseline.
+The project has completed its first reproducible QM9 Fingerprint VAE baseline and its first latent-space visualization.
 
-The current system can prepare a deterministic QM9 subset, generate Morgan fingerprints, create non-overlapping train/validation/test splits, train a dense Variational Autoencoder, select the best checkpoint using validation loss, evaluate the held-out test split, and generate a training-history figure.
+The current system can prepare a deterministic QM9 subset, generate Morgan fingerprints, create non-overlapping train/validation/test splits, train a dense Variational Autoencoder, select the best checkpoint using validation loss, evaluate the held-out test split, export deterministic latent vectors, and generate a PCA latent-space figure.
 
 ## Completed work
 
@@ -18,6 +18,8 @@ The current system can prepare a deterministic QM9 subset, generate Morgan finge
 | Baseline model | Dense Fingerprint VAE with a 16-dimensional latent space |
 | Training evaluation | Best checkpoint selected by validation loss and evaluated once on the held-out test split |
 | Result documentation | Baseline metrics and training curves recorded in the experiment documentation |
+| Latent export | Deterministic 16-dimensional latent mean vectors exported for all 10,000 QM9 molecules |
+| PCA visualization | Training-fitted two-dimensional PCA projection generated and documented |
 
 ## Current baseline result
 
@@ -35,6 +37,8 @@ These values establish a baseline. They do not yet demonstrate that the latent s
 
 ## Current evidence
 
+## Current evidence
+
 The repository currently includes:
 
 - a reproducible QM9 preparation workflow;
@@ -42,9 +46,11 @@ The repository currently includes:
 - unit tests for split determinism and non-overlap;
 - a saved best model checkpoint;
 - saved test metrics;
-- a training-history figure showing total loss, reconstruction loss, and KL divergence.
+- a training-history figure showing total loss, reconstruction loss, and KL divergence;
+- deterministic latent vectors aligned with molecular metadata and split labels;
+- a PCA latent-space figure with 42.8% total explained variance.
 
-See [EXPERIMENTS.md](EXPERIMENTS.md) for the documented baseline result.
+See [EXPERIMENTS.md](EXPERIMENTS.md) and [PCA_ANALYSIS.md](PCA_ANALYSIS.md) for the documented results.
 
 ## Known limitations
 
@@ -62,23 +68,23 @@ The model has not yet been evaluated with:
 
 ## Current work
 
-The QM9 latent-vector export workflow is implemented.
+The first QM9 latent-space visualization is complete.
 
-It exports deterministic 16-dimensional encoder mean vectors for all 10,000 processed QM9 molecules. Each vector is aligned with molecule metadata, descriptors, canonical SMILES, and the deterministic train, validation, or test label.
+PCA was fitted on the 8,000-molecule training split and applied to all 10,000 latent vectors. The first two components explain 42.8% of the variance, while training, validation, and test molecules overlap across the same broad projected regions.
 
-See [LATENT_EXPORT.md](LATENT_EXPORT.md) for the artifact schema and reproducible command.
+See [PCA_ANALYSIS.md](PCA_ANALYSIS.md) for the method, figure, interpretation, and limitations.
 
 ## Next planned step
 
-The next branch should create the first scientific latent-space visualizations.
+The next branch should generate a UMAP projection of the same QM9 latent vectors.
 
 That branch should:
 
-1. load `latent_vectors.npy` and `latent_metadata.csv`;
-2. create a PCA projection as a simple interpretable baseline;
-3. create a UMAP projection for local-structure exploration;
-4. color points by a molecular property such as molecular weight, LogP, or HOMO-LUMO gap;
-5. save versioned figures under `docs/FIGURES/`;
-6. document careful interpretations and limitations in `EXPERIMENTS.md`.
+1. use the same exported latent vectors and aligned metadata;
+2. define and save explicit UMAP parameters;
+3. fit the projection using the training split;
+4. transform or document the treatment of validation and test molecules;
+5. generate a versioned UMAP figure colored by split;
+6. compare PCA and UMAP without claiming chemical meaning prematurely.
 
-The first PCA or UMAP figure is the next screenshot milestone for the project.
+After UMAP, the project can begin property-colored visualizations and nearest-neighbor similarity analysis.

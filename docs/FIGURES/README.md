@@ -2,7 +2,12 @@
 
 This directory contains versioned scientific figures generated from reproducible project artifacts.
 
-## Figure rules
+## Current figures
+
+| File | Description | Documentation |
+|---|---|---|
+| `qm9-fingerprint-vae-training-curves-v1.png` | Training and validation total VAE loss, reconstruction loss, and KL divergence for the first QM9 Fingerprint VAE baseline. | [EXPERIMENTS.md](../EXPERIMENTS.md) |
+| `qm9-latent-pca-by-split-v1.png` | PCA projection of QM9 latent vectors, colored by train, validation, and test split. | [PCA_ANALYSIS.md](../PCA_ANALYSIS.md) |
 
 Every figure added to this directory should:
 
