@@ -1,4 +1,3 @@
-````markdown
 # QM9 Latent UMAP Analysis
 
 ## Purpose
@@ -78,4 +77,4 @@ Together, PCA and UMAP show that the dataset splits cover similar projected regi
 - Latent-space neighbors have not been compared using Tanimoto similarity.
 - The visualization does not measure fingerprint reconstruction quality.
 - A two-dimensional projection cannot preserve every relationship in the original 16-dimensional latent space.
-````
+
