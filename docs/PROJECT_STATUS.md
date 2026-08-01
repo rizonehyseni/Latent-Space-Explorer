@@ -2,9 +2,10 @@
 
 ## Current phase
 
-The project has completed its first reproducible QM9 Fingerprint VAE baseline, deterministic latent-vector export, and initial PCA and UMAP latent-space visualizations.
+The project has completed its first reproducible QM9 Fingerprint VAE baseline, deterministic latent-vector export, PCA and UMAP projections, and molecular-property-colored latent-space visualizations.
 
-The system can prepare a deterministic QM9 subset, generate Morgan fingerprints, create non-overlapping train/validation/test splits, train a dense Variational Autoencoder, select the best checkpoint using validation loss, evaluate the held-out test split, export deterministic latent vectors, and generate training-fitted PCA and UMAP projections.
+The current system can prepare a deterministic QM9 subset, generate Morgan fingerprints, create non-overlapping train/validation/test splits, train and evaluate a dense Variational Autoencoder, export deterministic latent vectors, and visualize the latent space by dataset split and molecular properties.
+
 
 ## Completed work
 
@@ -21,6 +22,7 @@ The system can prepare a deterministic QM9 subset, generate Morgan fingerprints,
 | Latent export | Deterministic 16-dimensional latent mean vectors exported for all 10,000 QM9 molecules |
 | PCA visualization | Training-fitted two-dimensional PCA projection generated and documented |
 | UMAP visualization | Training-fitted two-dimensional UMAP projection generated and documented |
+| Property visualization | PCA and UMAP projections colored by five aligned molecular properties |
 
 ## Current baseline result
 
@@ -38,24 +40,24 @@ These values establish a baseline. They do not yet demonstrate that the latent s
 
 ## Current evidence
 
-## Current evidence
 
 The repository currently includes:
 
 - a reproducible QM9 preparation workflow;
-- deterministic dataset splits;
-- unit tests for split determinism and non-overlap;
-- a saved best model checkpoint;
-- saved test metrics;
-- a training-history figure showing total loss, reconstruction loss, and KL divergence;
-- deterministic latent vectors aligned with molecular metadata and split labels;
-- a PCA latent-space figure with 42.8% total explained variance.
-- a UMAP projection fitted on training vectors;
-- tests covering artifact alignment and train-only projection fitting.
+- deterministic and non-overlapping dataset splits;
+- a saved best model checkpoint and held-out test metrics;
+- deterministic 16-dimensional latent vectors aligned with molecule metadata;
+- a PCA projection retaining 42.8% of latent variance in two components;
+- a training-fitted nonlinear UMAP projection;
+- PCA and UMAP figures colored by dataset split;
+- PCA and UMAP figures colored by molecular weight, LogP, TPSA, ring count, and heavy-atom count;
+- automated tests for projection fitting, artifact alignment, property alignment, and figure generation.
 
-PCA retains 42.8% of the latent variance in its first two components. UMAP produces several nonlinear projected regions. In both figures, training, validation, and test molecules occupy the same broad regions.
+The property-colored figures show visible variation across parts of the projected latent space. LogP, TPSA, and ring count exhibit local patterns, particularly in the UMAP projection.
 
-See [PCA_ANALYSIS.md](PCA_ANALYSIS.md) and [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md) for interpretation and limitations.
+These figures provide exploratory evidence that molecular-property information may be represented in the latent vectors. They do not quantify chemical similarity or prove that visible UMAP regions are chemically meaningful clusters.
+
+See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md) for the documented methods, results, interpretations, and limitations.
 
 ## Known limitations
 
@@ -64,28 +66,36 @@ The current model reconstructs fixed-length Morgan fingerprints rather than mole
 The model has not yet been evaluated with:
 
 - fingerprint bit-level reconstruction accuracy;
-- Tanimoto similarity;
-- nearest-neighbor retrieval;
+- reconstructed-fingerprint Tanimoto similarity;
+- latent nearest-neighbor retrieval;
+- quantitative latent-distance versus fingerprint-similarity analysis;
 - molecular-property prediction;
-- latent-space visualization;
 - repeated runs across multiple seeds;
-- comparisons against alternative model architectures.
+- alternative latent dimensions;
+- alternative model architectures.
 
-PCA and UMAP alone cannot establish that the learned latent space is chemically meaningful.
+Two-dimensional PCA and UMAP visualizations cannot establish that the original 16-dimensional latent space is chemically meaningful.
 
 ## Current work
 
-The initial split-colored PCA and UMAP visualizations are complete.
+The molecular-property-colored PCA and UMAP analysis is complete.
 
-Both projections were fitted using only the 8,000-molecule training split and then applied to the validation and test molecules. The dataset splits overlap throughout both projections, providing no evidence of split-specific latent distributions.
+The visualization workflow validates row-level alignment across latent coordinates, molecule identifiers, canonical SMILES, split labels, and molecular properties. Both projection methods use the same property values and consistent color limits.
+
 
 ## Next planned step
 
-1. select well-defined molecular properties available from QM9 metadata or reproducibly calculate them;
-2. validate property alignment with latent-vector rows;
-3. produce versioned PCA and UMAP figures using consistent color scales;
-4. document visible gradients, regions, and outliers conservatively;
-5. avoid treating projected patterns as proof of chemical similarity;
-6. add automated tests for property alignment and artifact generation.
+The next branch should evaluate nearest neighbors in the original 16-dimensional latent space and compare latent distance with Morgan-fingerprint Tanimoto similarity.
 
-After property visualization, the project should compare latent-space nearest neighbors with Morgan-fingerprint Tanimoto similarity.
+That branch should:
+
+1. use held-out test molecules as queries;
+2. use training molecules as the reference set;
+3. identify nearest neighbors using the original 16-dimensional latent vectors rather than PCA or UMAP coordinates;
+4. calculate Morgan-fingerprint Tanimoto similarity for retrieved neighbors;
+5. compare nearest-neighbor similarity against a deterministic random baseline;
+6. export aligned, versioned neighbor and summary artifacts;
+7. generate quantitative figures and representative molecule examples;
+8. document whether smaller latent distances correspond to higher fingerprint similarity.
+
+After nearest-neighbor analysis, the project should add fingerprint reconstruction-quality metrics and repeated experiments across multiple seeds.
