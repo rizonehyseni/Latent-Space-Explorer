@@ -11,6 +11,8 @@ This directory contains versioned scientific figures generated from reproducible
 | `qm9-latent-umap-by-split-v1.png` | UMAP projection of QM9 latent vectors, colored by train, validation, and test split. | [UMAP_ANALYSIS.md](../UMAP_ANALYSIS.md) |
 | `qm9-latent-pca-by-property-v1.png` | PCA projection colored by molecular weight, LogP, TPSA, ring count, and heavy-atom count. | [PROPERTY_ANALYSIS.md](../PROPERTY_ANALYSIS.md) |
 | `qm9-latent-umap-by-property-v1.png` | UMAP projection colored by molecular weight, LogP, TPSA, ring count, and heavy-atom count. | [PROPERTY_ANALYSIS.md](../PROPERTY_ANALYSIS.md) |
+| `qm9-latent-distance-vs-tanimoto-v1.png` | Relationship between 16D latent distance and Morgan-fingerprint Tanimoto similarity. | [LATENT_NEIGHBOR_ANALYSIS.md](../LATENT_NEIGHBOR_ANALYSIS.md) |
+| `qm9-neighbor-tanimoto-vs-random-v1.png` | Tanimoto distributions for latent nearest neighbors and random training references. | [LATENT_NEIGHBOR_ANALYSIS.md](../LATENT_NEIGHBOR_ANALYSIS.md) |
 
 Every figure added to this directory should:
 
