@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This guide describes how to reproduce the first QM9 Fingerprint VAE baseline.
+This guide describes how to reproduce the QM9 Fingerprint VAE baseline, deterministic latent-vector export, PCA and UMAP projections, and molecular-property-colored visualizations.
 
-The workflow prepares a deterministic QM9 subset, creates train/validation/test partitions, trains the model, evaluates the held-out test split, and generates the training-history figure.
+The workflow prepares a deterministic QM9 subset, creates train/validation/test partitions, trains and evaluates the model, exports latent vectors, and generates the documented scientific figures.
 
 ## Requirements
 
@@ -15,6 +15,8 @@ The workflow prepares a deterministic QM9 subset, creates train/validation/test 
 - Pandas
 - PyYAML
 - Matplotlib
+- Scikit-learn
+- UMAP-learn
 
 Install the project dependencies in an activated virtual environment:
 
@@ -104,6 +106,67 @@ python -m backend.plot_training_history
 **Expected artifact:**
 
 - `docs/FIGURES/qm9-fingerprint-vae-training-curves-v1.png`
+
+## 6. Export deterministic latent vectors
+
+Run:
+
+`python -m backend.export_latent_vectors --config configs/qm9_latent_export.yaml`
+
+Expected artifacts:
+
+- `data/processed/qm9/latent_vectors.npy`
+- `data/processed/qm9/latent_metadata.csv`
+- `data/processed/qm9/latent_export_manifest.json`
+
+## 7. Generate the PCA projection
+
+Run:
+
+`python -m backend.plot_latent_pca --config configs/qm9_latent_pca.yaml`
+
+Expected artifacts:
+
+- `data/processed/qm9/pca_coordinates.npy`
+- `data/processed/qm9/pca_metadata.csv`
+- `data/processed/qm9/pca_manifest.json`
+- `docs/FIGURES/qm9-latent-pca-by-split-v1.png`
+
+## 8. Generate the UMAP projection
+
+Run:
+
+`python -m backend.plot_latent_umap --config configs/qm9_latent_umap.yaml`
+
+Expected artifacts:
+
+- `data/processed/qm9/umap_coordinates.npy`
+- `data/processed/qm9/umap_metadata.csv`
+- `data/processed/qm9/umap_manifest.json`
+- `docs/FIGURES/qm9-latent-umap-by-split-v1.png`
+
+UMAP is fitted only on the training split and then used to transform validation and test molecules.
+
+## 9. Generate property-colored figures
+
+Run:
+
+`python -m backend.plot_latent_properties --config configs/qm9_property_visualizations.yaml`
+
+Expected artifacts:
+
+- `data/processed/qm9/property_visualization_manifest.json`
+- `docs/FIGURES/qm9-latent-pca-by-property-v1.png`
+- `docs/FIGURES/qm9-latent-umap-by-property-v1.png`
+
+The workflow validates molecule and property alignment between PCA and UMAP metadata before generating either figure.
+
+## 10. Run the complete test suite
+
+Run:
+
+`python -m unittest discover -s tests -p "test_*.py" -v`
+
 
 ## Expected baseline result
 

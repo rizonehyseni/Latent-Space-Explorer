@@ -1,0 +1,35 @@
+experiment_name: qm9_fingerprint_vae_property_visualizations
+seed: 42
+
+data:
+  pca_metadata_path: data/processed/qm9/pca_metadata.csv
+  umap_metadata_path: data/processed/qm9/umap_metadata.csv
+
+properties:
+  molecular_weight:
+    label: Molecular weight (Da)
+    colormap: viridis
+  logp:
+    label: LogP
+    colormap: viridis
+  tpsa:
+    label: TPSA (A^2)
+    colormap: viridis
+  ring_count:
+    label: Ring count
+    colormap: viridis
+  num_heavy_atoms:
+    label: Heavy-atom count
+    colormap: viridis
+
+visualization:
+  lower_quantile: 0.01
+  upper_quantile: 0.99
+  point_size: 8
+  point_alpha: 0.7
+  figure_dpi: 160
+
+artifacts:
+  manifest_path: data/processed/qm9/property_visualization_manifest.json
+  pca_figure_path: docs/FIGURES/qm9-latent-pca-by-property-v1.png
+  umap_figure_path: docs/FIGURES/qm9-latent-umap-by-property-v1.png
