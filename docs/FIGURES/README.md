@@ -9,6 +9,8 @@ This directory contains versioned scientific figures generated from reproducible
 | `qm9-fingerprint-vae-training-curves-v1.png` | Training and validation total VAE loss, reconstruction loss, and KL divergence for the first QM9 Fingerprint VAE baseline. | [EXPERIMENTS.md](../EXPERIMENTS.md) |
 | `qm9-latent-pca-by-split-v1.png` | PCA projection of QM9 latent vectors, colored by train, validation, and test split. | [PCA_ANALYSIS.md](../PCA_ANALYSIS.md) |
 | `qm9-latent-umap-by-split-v1.png` | UMAP projection of QM9 latent vectors, colored by train, validation, and test split. | [UMAP_ANALYSIS.md](../UMAP_ANALYSIS.md) |
+| `qm9-latent-pca-by-property-v1.png` | PCA projection colored by molecular weight, LogP, TPSA, ring count, and heavy-atom count. | [PROPERTY_ANALYSIS.md](../PROPERTY_ANALYSIS.md) |
+| `qm9-latent-umap-by-property-v1.png` | UMAP projection colored by molecular weight, LogP, TPSA, ring count, and heavy-atom count. | [PROPERTY_ANALYSIS.md](../PROPERTY_ANALYSIS.md) |
 
 Every figure added to this directory should:
 
