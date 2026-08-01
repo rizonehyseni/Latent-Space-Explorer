@@ -1,0 +1,22 @@
+experiment_name: qm9_fingerprint_vae_latent_umap
+seed: 42
+
+data:
+  latent_vectors_path: data/processed/qm9/latent_vectors.npy
+  latent_metadata_path: data/processed/qm9/latent_metadata.csv
+  latent_export_manifest_path: data/processed/qm9/latent_export_manifest.json
+
+projection:
+  components: 2
+  fit_split: train
+  n_neighbors: 15
+  min_dist: 0.1
+  metric: euclidean
+  random_state: 42
+  transform_seed: 42
+
+artifacts:
+  coordinates_path: data/processed/qm9/umap_coordinates.npy
+  metadata_path: data/processed/qm9/umap_metadata.csv
+  manifest_path: data/processed/qm9/umap_manifest.json
+  figure_path: docs/FIGURES/qm9-latent-umap-by-split-v1.png
