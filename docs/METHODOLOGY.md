@@ -121,17 +121,16 @@ The current VAE architecture is:
 
 ```mermaid
 flowchart LR
+    A["Morgan fingerprint<br/>x ∈ {0,1}²⁰⁴⁸"] --> B["Encoder"]
 
-    A["Morgan Fingerprint<br/>x ∈ R²⁰⁴⁸"] --> B["Encoder"]
-
-    subgraph ENC["Encoder Network"]
+    subgraph ENC["Encoder network"]
         B --> C["Linear 2048→512<br/>ReLU"]
         C --> D["Linear 512→128<br/>ReLU"]
     end
 
-    D --> E["Latent Distribution"]
+    D --> E["Latent distribution"]
 
-    subgraph LAT["Latent Space"]
+    subgraph LAT["Latent space"]
         E --> F["μ ∈ R¹⁶"]
         E --> G["log σ² ∈ R¹⁶"]
         F --> H["Sampling<br/>z = μ + σϵ"]
@@ -139,14 +138,18 @@ flowchart LR
     end
 
     H --> I["Decoder"]
+    F -->|"Deterministic evaluation"| I
+    F --> N["Deterministic latent export<br/>μ ∈ R¹⁶"]
 
-    subgraph DEC["Decoder Network"]
+    subgraph DEC["Decoder network"]
         I --> J["Linear 16→128<br/>ReLU"]
         J --> K["Linear 128→512<br/>ReLU"]
         K --> L["Linear 512→2048"]
     end
 
-    L --> M["Reconstructed Fingerprint<br/>x̂ ∈ R²⁰⁴⁸"]
+    L --> M["Reconstruction logits<br/>ℓ ∈ R²⁰⁴⁸"]
+    A --> O["Binary cross-entropy<br/>with logits"]
+    M --> O
 
 ```
 
