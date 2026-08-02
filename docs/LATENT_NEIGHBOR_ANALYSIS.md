@@ -6,6 +6,12 @@ This analysis evaluates whether molecules that are close in the original 16-dime
 
 Unlike PCA and UMAP, this analysis uses the original latent vectors and provides a quantitative measure of local molecular-representation quality.
 
+> [!IMPORTANT]
+> **Key finding:** Latent nearest neighbors achieve a mean Tanimoto similarity of `0.2312`, compared with `0.0774` for random training molecules.
+
+> [!CAUTION]
+> **Interpretation boundary:** The distance/similarity Spearman correlation is only `-0.1252`. Euclidean latent distance is therefore useful for enrichment, but not a strong standalone molecular-similarity measure.
+
 ## Reproducible command
 
 Run `python -m backend.analyze_latent_neighbors --config configs/qm9_latent_neighbor_tanimoto.yaml`.
@@ -25,6 +31,7 @@ The analysis uses:
 - ten deterministic random training references per query as a baseline.
 
 Validation molecules are not used in this analysis.
+
 
 ## Results
 
