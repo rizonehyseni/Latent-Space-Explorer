@@ -6,7 +6,7 @@ This artifact converts the selected QM9 Fingerprint VAE checkpoint into a reusab
 
 Each processed QM9 molecule receives one deterministic 16-dimensional latent vector. The exported vectors are aligned with molecule identifiers, canonical SMILES, descriptors, and train/validation/test labels.
 
-This artifact is the input for future PCA, UMAP, nearest-neighbor analysis, property-colored latent maps, and the interactive explorer.
+This artifact is the shared input for the implemented PCA, UMAP, property-colored, and nearest-neighbor analyses, as well as the future interactive explorer.
 
 ## Reproducible command
 
@@ -82,6 +82,6 @@ A provenance file recording:
 
 ## Current scientific scope
 
-The exported coordinates make latent-space analysis possible, but they do not alone prove that the representation is chemically meaningful.
+PCA, UMAP, molecular-property visualization, and latent-neighbor fingerprint-similarity analyses have now been completed using these exported coordinates.
 
-The next step is to project the 16-dimensional vectors with PCA and UMAP, then test whether nearby points share fingerprint similarity or molecular-property patterns.
+The next evaluation step is held-out fingerprint reconstruction quality.

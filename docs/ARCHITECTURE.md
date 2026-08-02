@@ -126,23 +126,24 @@ The `web/` directory is a standard React/Vite application. Its current interface
 
 - The tracked sample data contains only a few molecules and is suitable for checking the pipeline, not for scientific training or evaluation. Its one-molecule validation subset is not statistically meaningful.
 - A dense VAE over Morgan fingerprints can reconstruct fingerprint features, but does not decode directly to chemically valid SMILES or molecular graphs.
-- The repository does not yet export latent vectors for visualization.
+- The repository exports deterministic latent vectors and generates PCA, UMAP, property-colored, and nearest-neighbor analysis artifacts.
 - No FastAPI application or inference endpoint is currently implemented, despite FastAPI appearing in the dependency list.
 
 ## Next architectural increment
 
 ## Next increment
 
-The next implementation stage is latent-vector export.
+The next backend increment is held-out fingerprint reconstruction evaluation.
 
-The export workflow should load the selected QM9 Fingerprint VAE checkpoint and create a documented latent-space dataset containing:
+The workflow should:
 
-- molecule identifiers;
-- canonical SMILES;
-- train, validation, and test labels;
-- selected molecular descriptors;
-- 16-dimensional latent coordinates;
-- model and configuration metadata.
+- load the selected best Fingerprint VAE checkpoint;
+- encode test fingerprints using deterministic latent means;
+- decode reconstructed fingerprint probabilities;
+- apply an explicitly configured binary threshold;
+- calculate accuracy, precision, recall, F1, and per-molecule Tanimoto similarity;
+- compare the model with simple sparse-fingerprint baselines;
+- export aligned metrics, figures, and provenance metadata.
 
-That artifact will support the first PCA or UMAP visualization, nearest-neighbor analysis, and the future frontend explorer.
+The frontend remains a separate future increment after the scientific evaluation pipeline is complete.
 </div>
