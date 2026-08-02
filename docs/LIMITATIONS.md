@@ -27,7 +27,6 @@ The project does not yet measure:
 
 - fingerprint bit-level reconstruction accuracy;
 - Tanimoto similarity between original and reconstructed fingerprints;
-- nearest-neighbor molecular similarity;
 - molecular-property preservation;
 - latent-cluster quality;
 - variance across multiple random seeds.
@@ -50,18 +49,25 @@ Future experiments should compare:
 
 ## Latent-space analysis
 
-Latent vectors are not yet exported as a documented dataset artifact.
+Deterministic latent vectors are exported as an aligned dataset artifact. The project now includes:
 
-As a result, the project does not yet provide:
+- training-fitted PCA and UMAP projections;
+- molecular-property-colored latent maps;
+- held-out test-to-training nearest-neighbor retrieval;
+- Morgan-fingerprint Tanimoto comparison;
+- a deterministic random-similarity baseline.
 
-- PCA, UMAP, or t-SNE projections;
-- latent-space cluster analysis;
-- property-colored latent maps;
-- nearest-neighbor exploration;
+Latent nearest neighbors have higher mean fingerprint similarity than random training molecules. However, the relationship between Euclidean latent distance and Tanimoto similarity is weak.
+
+The project does not yet provide:
+
+- statistically validated latent-cluster analysis;
+- repeated neighbor evaluation across multiple trained seeds;
+- alternative latent-distance metrics;
 - interpolation trajectories;
 - interactive 3D exploration.
 
-Latent export and analysis are the next planned research stage.
+The next evaluation stage is held-out fingerprint reconstruction quality.
 
 ## Frontend scope
 
