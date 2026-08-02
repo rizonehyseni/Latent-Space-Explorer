@@ -163,24 +163,31 @@ The workflow validates molecule and property alignment between PCA and UMAP meta
 
 ## 10. Run the complete test suite
 
+## 10. Run the latent-neighbor Tanimoto analysis
+
 Run:
 
-`python -m unittest discover -s tests -p "test_*.py" -v`
+`python -m backend.analyze_latent_neighbors --config configs/qm9_latent_neighbor_tanimoto.yaml`
 
+Expected generated artifacts:
 
-## Expected baseline result
+- `data/processed/qm9/latent_neighbor_tanimoto.csv`
+- `data/processed/qm9/latent_neighbor_tanimoto_summary.json`
+- `docs/FIGURES/qm9-latent-distance-vs-tanimoto-v1.png`
+- `docs/FIGURES/qm9-neighbor-tanimoto-vs-random-v1.png`
 
-The first recorded QM9 baseline used 50 training epochs.
+The analysis uses held-out test molecules as queries, training molecules as references, and the original 16-dimensional latent vectors for nearest-neighbor retrieval.
+
+Expected recorded results:
 
 | Metric | Result |
-|--------|-------:|
-| Best validation epoch | 50 |
-| Best validation loss | 75.1559 |
-| Test total VAE loss | 74.8792 |
-| Test reconstruction loss | 68.5376 |
-| Test KL divergence | 6.3416 |
+|---|---:|
+| Mean nearest-neighbor Tanimoto | 0.2312 |
+| Mean random-baseline Tanimoto | 0.0774 |
+| Absolute mean improvement | 0.1537 |
+| Nearest neighbor beats paired random | 94.94% |
+| Spearman distance/similarity correlation | -0.1252 |
 
-Small numeric differences may occur when package versions, hardware, or floating-point behavior differ.
 
 ## Reproducibility notes
 

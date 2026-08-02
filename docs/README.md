@@ -12,6 +12,7 @@ This directory is the project’s technical and research record. Documentation i
 | [PCA_ANALYSIS.md](PCA_ANALYSIS.md) | Reproducible PCA projection, result, interpretation, and limitations. |
 | [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md) | Reproducible UMAP projection, nonlinear latent-space interpretation, PCA comparison, and limitations. |
 | [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md) | Molecular-property-colored PCA and UMAP visualizations, interpretation, and limitations. |
+| [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md) | Quantitative latent-neighbor retrieval and Morgan-fingerprint Tanimoto similarity analysis. |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | Reproducible records of completed training runs and their interpretation. |
 | [FIGURES/README.md](FIGURES/README.md) | Figure, screenshot, and video capture conventions. |
 

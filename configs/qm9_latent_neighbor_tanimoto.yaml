@@ -1,0 +1,33 @@
+experiment_name: qm9_latent_neighbor_tanimoto_analysis
+seed: 42
+
+data:
+  latent_vectors_path: data/processed/qm9/latent_vectors.npy
+  latent_metadata_path: data/processed/qm9/latent_metadata.csv
+  fingerprints_path: data/processed/qm9/morgan_fingerprints.npy
+  latent_export_manifest_path: data/processed/qm9/latent_export_manifest.json
+
+analysis:
+  query_split: test
+  reference_split: train
+  latent_distance_metric: euclidean
+  neighbors_per_query: 10
+  random_neighbors_per_query: 10
+  random_seed: 42
+
+fingerprint:
+  type: morgan
+  radius: 2
+  bits: 2048
+  similarity_metric: tanimoto
+
+visualization:
+  figure_dpi: 160
+  point_alpha: 0.35
+  histogram_bins: 40
+
+artifacts:
+  neighbors_path: data/processed/qm9/latent_neighbor_tanimoto.csv
+  summary_path: data/processed/qm9/latent_neighbor_tanimoto_summary.json
+  distance_similarity_figure_path: docs/FIGURES/qm9-latent-distance-vs-tanimoto-v1.png
+  baseline_figure_path: docs/FIGURES/qm9-neighbor-tanimoto-vs-random-v1.png

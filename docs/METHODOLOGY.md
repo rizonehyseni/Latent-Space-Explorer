@@ -7,15 +7,32 @@ The Molecular Latent Space Explorer currently implements a **Fingerprint Variati
 The workflow transforms molecular SMILES strings into fixed-length Morgan fingerprints, compresses them into a 16-dimensional latent representation, and reconstructs the fingerprint representation.
 
 ```mermaid
-flowchart LR
-    A[SMILES CSV] --> B[RDKit<br/>Validation &<br/>Canonicalization]
-    B --> C[Molecular Features<br/>Descriptors +<br/>Morgan Fingerprints]
-    C --> D[Encoder]
-    D --> E((Latent Vector<br/>z ∈ R¹⁶))
-    E --> F[Decoder]
-    F --> G[Reconstructed<br/>Fingerprint]
-    G --> H[Validation Metrics<br/>Total VAE Loss<br/>Reconstruction Loss<br/>KL Divergence]
-    E --> I[Latent Space<br/>Visualization]
+flowchart TD
+    A["SMILES and QM9 metadata"] --> B["RDKit validation<br/>Canonicalization"]
+    B --> C["Molecular descriptors<br/>Morgan fingerprints"]
+
+    C --> D["Fingerprint VAE encoder"]
+    D --> E["Latent distribution<br/>μ and log variance"]
+    E --> F["Sampled latent vector z"]
+    F --> G["Decoder"]
+    G --> H["Reconstruction logits"]
+    H --> I["VAE training objective<br/>BCE with logits + KL divergence"]
+
+    E --> J["Deterministic latent mean<br/>μ ∈ R¹⁶"]
+    J --> K["PCA projection"]
+    J --> L["UMAP projection"]
+
+    C --> M["Aligned molecular properties"]
+    K --> N["Property-colored PCA"]
+    L --> O["Property-colored UMAP"]
+    M --> N
+    M --> O
+
+    J --> P["16D nearest-neighbor retrieval"]
+    C --> Q["Morgan fingerprints"]
+    P --> R["Latent distance and<br/>Tanimoto comparison"]
+    Q --> R
+    R --> S["Random-baseline comparison"]
 ```
 
 ---
@@ -104,17 +121,16 @@ The current VAE architecture is:
 
 ```mermaid
 flowchart LR
+    A["Morgan fingerprint<br/>x ∈ {0,1}²⁰⁴⁸"] --> B["Encoder"]
 
-    A["Morgan Fingerprint<br/>x ∈ R²⁰⁴⁸"] --> B["Encoder"]
-
-    subgraph ENC["Encoder Network"]
+    subgraph ENC["Encoder network"]
         B --> C["Linear 2048→512<br/>ReLU"]
         C --> D["Linear 512→128<br/>ReLU"]
     end
 
-    D --> E["Latent Distribution"]
+    D --> E["Latent distribution"]
 
-    subgraph LAT["Latent Space"]
+    subgraph LAT["Latent space"]
         E --> F["μ ∈ R¹⁶"]
         E --> G["log σ² ∈ R¹⁶"]
         F --> H["Sampling<br/>z = μ + σϵ"]
@@ -122,14 +138,18 @@ flowchart LR
     end
 
     H --> I["Decoder"]
+    F -->|"Deterministic evaluation"| I
+    F --> N["Deterministic latent export<br/>μ ∈ R¹⁶"]
 
-    subgraph DEC["Decoder Network"]
+    subgraph DEC["Decoder network"]
         I --> J["Linear 16→128<br/>ReLU"]
         J --> K["Linear 128→512<br/>ReLU"]
         K --> L["Linear 512→2048"]
     end
 
-    L --> M["Reconstructed Fingerprint<br/>x̂ ∈ R²⁰⁴⁸"]
+    L --> M["Reconstruction logits<br/>ℓ ∈ R²⁰⁴⁸"]
+    A --> O["Binary cross-entropy<br/>with logits"]
+    M --> O
 
 ```
 
