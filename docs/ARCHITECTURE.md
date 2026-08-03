@@ -11,17 +11,35 @@ This document describes the implementation that exists in the repository today. 
 ## System overview
 
 ```mermaid
-flowchart LR
-    A["QM9 source archive"] --> B["QM9 preparation<br/>backend/prepare_qm9.py"]
-    B --> C["Deterministic QM9 subset<br/>10,000 molecules"]
-    C --> D["RDKit validation and canonical SMILES"]
-    D --> E["Morgan fingerprints"]
-    E --> F["Deterministic split generation<br/>8,000 / 1,000 / 1,000"]
+flowchart TD
+    A["QM9 source archive"] --> B["QM9 preparation"]
+    B --> C["Deterministic subset<br/>10,000 molecules"]
+    C --> D["RDKit preprocessing"]
+    D --> E["Morgan fingerprints<br/>Molecular metadata"]
+    E --> F["Deterministic splits<br/>8,000 / 1,000 / 1,000"]
+
     F --> G["Fingerprint VAE training"]
-    G --> H["Validation-based checkpoint selection"]
+    G --> H["Validation-based<br/>checkpoint selection"]
     H --> I["Held-out test evaluation"]
-    I --> J["Saved model, metrics, and training figure"]
-    J --> K["Next: latent-vector export and explorer data"]
+    I --> J["Loss metrics<br/>Training-history figure"]
+
+    H --> K["Deterministic latent export<br/>μ ∈ R¹⁶"]
+    K --> L["Training-fitted PCA"]
+    K --> M["Training-fitted UMAP"]
+
+    E --> N["Aligned molecular properties"]
+    L --> O["Property-colored<br/>PCA figures"]
+    M --> P["Property-colored<br/>UMAP figures"]
+    N --> O
+    N --> P
+
+    K --> Q["16D latent-neighbor retrieval<br/>Test queries → training references"]
+    E --> R["Morgan fingerprints<br/>2,048 bits"]
+    Q --> S["Tanimoto similarity"]
+    R --> S
+    S --> T["Comparison with<br/>random baseline"]
+
+    T --> U["Next: held-out fingerprint<br/>reconstruction evaluation"]
 ```
 
 ## Repository components
