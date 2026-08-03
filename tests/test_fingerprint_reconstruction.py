@@ -251,10 +251,17 @@ class FingerprintReconstructionTests(unittest.TestCase):
                 tanimoto_figure_path=tanimoto_figure_path,
                 evaluation_config={
                     "split": "test",
+                    "validation_split": "validation",
                     "batch_size": 2,
-                    "probability_threshold": 0.5,
+                    "reference_threshold": 0.5,
                     "device": "cpu",
                     "deterministic_latent": "encoder_mean_mu",
+                },
+                threshold_selection_config={
+                    "metric": "mean_tanimoto",
+                    "minimum": 0.05,
+                    "maximum": 0.50,
+                    "step": 0.025,
                 },
                 metrics_config={
                     "bit_accuracy": True,
@@ -296,6 +303,22 @@ class FingerprintReconstructionTests(unittest.TestCase):
             self.assertEqual(
                 summary["evaluation_molecules"],
                 2,
+            )
+            self.assertEqual(
+                summary["threshold_selection"]["selection_split"],
+                "validation",
+            )
+            self.assertEqual(
+                summary["threshold_selection"]["selection_metric"],
+                "mean_tanimoto",
+            )
+            self.assertEqual(
+                summary["probability_threshold"],
+                0.05,
+            )
+            self.assertEqual(
+                len(summary["threshold_selection"]["sweep"]),
+                19,
             )
             self.assertEqual(
                 saved_summary["analysis"],

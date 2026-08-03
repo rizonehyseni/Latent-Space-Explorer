@@ -25,6 +25,7 @@ REQUIRED_CONFIG_SECTIONS = {
     "data",
     "model",
     "evaluation",
+    "threshold_selection",
     "metrics",
     "baseline",
     "visualization",
@@ -313,6 +314,91 @@ def calculate_binary_cross_entropy(
         axis=1,
     )
 
+def create_threshold_candidates(
+    threshold_config: dict[str, Any],
+) -> np.ndarray:
+    """Create and validate deterministic threshold candidates."""
+    minimum = float(threshold_config["minimum"])
+    maximum = float(threshold_config["maximum"])
+    step = float(threshold_config["step"])
+
+    if not 0.0 < minimum <= maximum < 1.0:
+        raise ValueError(
+            "Threshold range must satisfy 0 < minimum <= maximum < 1."
+        )
+
+    if step <= 0.0:
+        raise ValueError("Threshold step must be positive.")
+
+    candidates = np.arange(
+        minimum,
+        maximum + step / 2.0,
+        step,
+        dtype=np.float64,
+    )
+    candidates = np.round(candidates, decimals=10)
+
+    if np.any(candidates >= 1.0):
+        raise ValueError("Threshold candidates must be below 1.")
+
+    return candidates
+
+
+def select_validation_threshold(
+    true_fingerprints: np.ndarray,
+    probabilities: np.ndarray,
+    threshold_config: dict[str, Any],
+) -> tuple[float, dict[str, Any], list[dict[str, float]]]:
+    """Select a threshold using validation fingerprints only."""
+    selection_metric = str(threshold_config["metric"])
+    supported_metrics = {"f1_score", "mean_tanimoto"}
+
+    if selection_metric not in supported_metrics:
+        raise ValueError(
+            "Threshold-selection metric must be one of: "
+            + ", ".join(sorted(supported_metrics))
+        )
+
+    sweep_results: list[dict[str, float]] = []
+
+    for threshold in create_threshold_candidates(threshold_config):
+        metrics, _ = calculate_prediction_metrics(
+            true_fingerprints=true_fingerprints,
+            predicted_fingerprints=probabilities >= threshold,
+        )
+
+        sweep_results.append(
+            {
+                "threshold": float(threshold),
+                "f1_score": float(metrics["f1_score"]),
+                "mean_tanimoto": float(
+                    metrics["mean_tanimoto"]
+                ),
+                "precision": float(metrics["precision"]),
+                "recall": float(metrics["recall"]),
+                "predicted_bit_density": float(
+                    metrics["predicted_bit_density"]
+                ),
+            }
+        )
+
+    selected_result = max(
+        sweep_results,
+        key=lambda result: (
+            result[selection_metric],
+            -result["threshold"],
+        ),
+    )
+    selected_threshold = float(selected_result["threshold"])
+
+    selected_metrics, _ = calculate_prediction_metrics(
+        true_fingerprints=true_fingerprints,
+        predicted_fingerprints=(
+            probabilities >= selected_threshold
+        ),
+    )
+
+    return selected_threshold, selected_metrics, sweep_results
 
 def save_metrics_figure(
     model_metrics: dict[str, Any],
@@ -450,6 +536,7 @@ def create_reconstruction_artifacts(
     metrics_figure_path: Path,
     tanimoto_figure_path: Path,
     evaluation_config: dict[str, Any],
+    threshold_selection_config: dict[str, Any],
     metrics_config: dict[str, Any],
     baseline_config: dict[str, Any],
     visualization_config: dict[str, Any],
@@ -474,39 +561,77 @@ def create_reconstruction_artifacts(
     )
 
     evaluation_split = str(evaluation_config["split"])
+    validation_split = str(
+        evaluation_config["validation_split"]
+    )
 
     if evaluation_split not in split_indices:
         raise ValueError(
             f"Unknown evaluation split: {evaluation_split}"
         )
 
-    evaluation_indices = split_indices[evaluation_split]
-    evaluation_fingerprints = fingerprints[evaluation_indices]
-
-    threshold = float(
-        evaluation_config["probability_threshold"]
-    )
-
-    if not 0.0 < threshold < 1.0:
+    if validation_split not in split_indices:
         raise ValueError(
-            "probability_threshold must be between 0 and 1."
+            f"Unknown validation split: {validation_split}"
         )
 
-    device = resolve_device(str(evaluation_config.get("device", "cpu")))
+    if evaluation_split == validation_split:
+        raise ValueError(
+            "Evaluation and validation splits must be different."
+        )
+
+    evaluation_indices = split_indices[evaluation_split]
+    validation_indices = split_indices[validation_split]
+
+    evaluation_fingerprints = fingerprints[evaluation_indices]
+    validation_fingerprints = fingerprints[validation_indices]
+
+    reference_threshold = float(
+        evaluation_config["reference_threshold"]
+    )
+
+    if not 0.0 < reference_threshold < 1.0:
+        raise ValueError(
+            "reference_threshold must be between 0 and 1."
+        )
+
+    device = resolve_device(
+        str(evaluation_config.get("device", "cpu"))
+    )
     model, checkpoint = load_reconstruction_model(
         checkpoint_path=checkpoint_path,
         fingerprint_width=fingerprints.shape[1],
         device=device,
     )
 
-    probabilities = reconstruct_probabilities(
+    batch_size = int(evaluation_config["batch_size"])
+
+    validation_probabilities = reconstruct_probabilities(
         model=model,
-        fingerprints=evaluation_fingerprints,
-        batch_size=int(evaluation_config["batch_size"]),
+        fingerprints=validation_fingerprints,
+        batch_size=batch_size,
         device=device,
     )
-    predicted_fingerprints = probabilities >= threshold
+    evaluation_probabilities = reconstruct_probabilities(
+        model=model,
+        fingerprints=evaluation_fingerprints,
+        batch_size=batch_size,
+        device=device,
+    )
 
+    (
+        selected_threshold,
+        selected_validation_metrics,
+        threshold_sweep,
+    ) = select_validation_threshold(
+        true_fingerprints=validation_fingerprints,
+        probabilities=validation_probabilities,
+        threshold_config=threshold_selection_config,
+    )
+
+    predicted_fingerprints = (
+        evaluation_probabilities >= selected_threshold
+    )
     model_metrics, per_molecule_metrics = (
         calculate_prediction_metrics(
             true_fingerprints=evaluation_fingerprints,
@@ -514,11 +639,21 @@ def create_reconstruction_artifacts(
         )
     )
 
+    reference_metrics, _ = calculate_prediction_metrics(
+        true_fingerprints=evaluation_fingerprints,
+        predicted_fingerprints=(
+            evaluation_probabilities >= reference_threshold
+        ),
+    )
+
     binary_cross_entropy = calculate_binary_cross_entropy(
         true_fingerprints=evaluation_fingerprints,
-        probabilities=probabilities,
+        probabilities=evaluation_probabilities,
     )
     model_metrics["mean_binary_cross_entropy"] = float(
+        binary_cross_entropy.mean()
+    )
+    reference_metrics["mean_binary_cross_entropy"] = float(
         binary_cross_entropy.mean()
     )
 
@@ -578,7 +713,22 @@ def create_reconstruction_artifacts(
         "analysis": "fingerprint_reconstruction_evaluation",
         "evaluation_split": evaluation_split,
         "evaluation_molecules": len(evaluation_indices),
-        "probability_threshold": threshold,
+        "probability_threshold": selected_threshold,
+        "threshold_selection": {
+            "selection_split": validation_split,
+            "selection_metric": threshold_selection_config[
+                "metric"
+            ],
+            "selected_threshold": selected_threshold,
+            "selected_validation_metrics": (
+                selected_validation_metrics
+            ),
+            "sweep": threshold_sweep,
+        },
+        "reference_threshold_evaluation": {
+            "threshold": reference_threshold,
+            "model_metrics": reference_metrics,
+        },
         "deterministic_latent": evaluation_config[
             "deterministic_latent"
         ],
@@ -694,6 +844,9 @@ def main() -> None:
             artifact_config["tanimoto_figure_path"],
         ),
         evaluation_config=evaluation_config,
+        threshold_selection_config=config[
+                "threshold_selection"
+        ],
         metrics_config=config["metrics"],
         baseline_config=config["baseline"],
         visualization_config=config["visualization"],
