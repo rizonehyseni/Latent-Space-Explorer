@@ -1,0 +1,40 @@
+experiment_name: qm9_fingerprint_vae_reconstruction_evaluation
+seed: 42
+
+data:
+  fingerprints_path: data/processed/qm9/morgan_fingerprints.npy
+  metadata_path: data/processed/qm9/molecules_metadata.csv
+  split_indices_path: data/processed/qm9/split_indices.npz
+
+model:
+  checkpoint_path: models/qm9_fingerprint_vae.pt
+  device: cpu
+  deterministic_latent: encoder_mean_mu
+
+evaluation:
+  split: test
+  batch_size: 128
+  probability_threshold: 0.5
+
+metrics:
+  bit_accuracy: true
+  precision: true
+  recall: true
+  f1_score: true
+  exact_match_rate: true
+  per_molecule_tanimoto: true
+  true_bit_density: true
+  predicted_bit_density: true
+
+baseline:
+  all_zero_fingerprint: true
+
+visualization:
+  figure_dpi: 160
+  histogram_bins: 40
+
+artifacts:
+  per_molecule_path: data/processed/qm9/fingerprint_reconstruction_per_molecule.csv
+  summary_path: data/processed/qm9/fingerprint_reconstruction_summary.json
+  metrics_figure_path: docs/FIGURES/qm9-fingerprint-reconstruction-metrics-v1.png
+  tanimoto_figure_path: docs/FIGURES/qm9-fingerprint-reconstruction-tanimoto-v1.png
