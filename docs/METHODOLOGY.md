@@ -315,8 +315,7 @@ The first baseline records:
 - training and validation curves;
 - final held-out test metrics.
 
-The current baseline does not yet measure fingerprint bit-level accuracy or Tanimoto similarity. These metrics are planned for future latent-space and reconstruction-quality evaluation.
-
+Fingerprint reconstruction is evaluated separately on the held-out test split using bit accuracy, precision, recall, F1 score, and per-molecule Tanimoto similarity. The binary probability threshold is selected exclusively on the validation split to prevent test-data leakage.
 
 ## Baseline interpretation
 

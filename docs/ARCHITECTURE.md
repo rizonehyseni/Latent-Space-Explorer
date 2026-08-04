@@ -4,9 +4,7 @@
 
 ## Scope and status
 
-Latent Space Explorer currently provides the first half of a molecular latent-space workflow: it converts SMILES data into fixed-length molecular fingerprints, trains a variational autoencoder (VAE), and saves a model checkpoint with training history. The browser application is scaffolded with React and Vite, but it is not yet connected to the machine-learning pipeline or a 3D renderer.
-
-This document describes the implementation that exists in the repository today. Planned capabilities, including a FastAPI service, Three.js rendering, exported latent coordinates, and molecular interpolation, are intentionally excluded from the current system diagram.
+Latent Space Explorer currently provides a reproducible molecular latent-space workflow: it prepares QM9 fingerprints, trains and evaluates a variational autoencoder, exports deterministic latent vectors, analyzes latent organization, retrieves molecular neighbors, and evaluates held-out fingerprint reconstruction. The React and Vite frontend is scaffolded but is not yet connected to the machine-learning pipeline.
 
 ## System overview
 
@@ -39,7 +37,11 @@ flowchart TD
     R --> S
     S --> T["Comparison with<br/>random baseline"]
 
-    T --> U["Next: held-out fingerprint<br/>reconstruction evaluation"]
+    H --> U["Deterministic fingerprint<br/>reconstruction"]
+    E --> U
+    U --> V["Validation-only<br/>threshold selection"]
+    V --> W["Held-out reconstruction<br/>F1 and Tanimoto metrics"]
+    W --> X["Next: multi-seed and<br/>latent-dimension robustness"]
 ```
 
 ## Repository components

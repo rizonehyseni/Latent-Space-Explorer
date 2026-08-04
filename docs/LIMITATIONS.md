@@ -21,15 +21,15 @@ A future Graph VAE, sequence-based VAE, or molecular diffusion model would be re
 
 The first QM9 baseline includes deterministic train, validation, and held-out test partitions.
 
-However, the current evaluation is limited to total VAE loss, reconstruction loss, and KL divergence.
+The current evaluation includes training losses, latent-neighbor similarity, and held-out fingerprint reconstruction metrics.
 
 The project does not yet measure:
 
-- fingerprint bit-level reconstruction accuracy;
-- Tanimoto similarity between original and reconstructed fingerprints;
-- molecular-property preservation;
-- latent-cluster quality;
-- variance across multiple random seeds.
+- molecular-property preservation after reconstruction;
+- statistically validated latent-cluster quality;
+- variance across multiple random seeds;
+- robustness across alternative latent dimensions;
+- reconstruction of valid molecular graphs or SMILES.
 
 The current result is therefore a training baseline, not yet evidence of chemically meaningful latent organization.
 
@@ -67,7 +67,7 @@ The project does not yet provide:
 - interpolation trajectories;
 - interactive 3D exploration.
 
-The next evaluation stage is held-out fingerprint reconstruction quality.
+The next evaluation stage is robustness analysis across multiple random seeds and latent dimensions.
 
 ## Frontend scope
 
