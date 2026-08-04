@@ -2,9 +2,10 @@
 
 ## Current phase
 
-The project has completed its first reproducible QM9 Fingerprint VAE baseline, deterministic latent-vector export, PCA and UMAP visualizations, molecular-property analysis, and quantitative latent-neighbor evaluation.
+The project has completed its first reproducible QM9 Fingerprint VAE baseline, latent-space analyses, latent-neighbor evaluation, and held-out fingerprint reconstruction evaluation.
 
-The current system can prepare and split QM9 data, train and evaluate a Fingerprint VAE, export deterministic latent vectors, visualize latent organization, retrieve held-out test neighbors, and compare latent proximity with Morgan-fingerprint Tanimoto similarity.
+The current system can prepare QM9 data, train and evaluate a Fingerprint VAE, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and quantitatively evaluate reconstructed fingerprints.
+
 
 ## Completed work
 
@@ -21,6 +22,7 @@ The current system can prepare and split QM9 data, train and evaluate a Fingerpr
 | UMAP visualization | Training-fitted two-dimensional UMAP projection generated and documented |
 | Property visualization | PCA and UMAP projections colored by five aligned molecular properties |
 | Neighbor evaluation | Test-to-training latent neighbors evaluated using Morgan-fingerprint Tanimoto similarity |
+| Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
 
 ## Current baseline result
 
@@ -52,6 +54,22 @@ Latent nearest neighbors are approximately three times more similar than random 
 
 The weak negative distance/similarity correlations show that the latent space enriches for fingerprint similarity, but Euclidean latent distance is not a strong or complete molecular-similarity measure.
 
+## Fingerprint reconstruction result
+
+The reconstruction threshold was selected exclusively on the validation split and then applied once to 1,000 held-out test molecules.
+
+| Metric | Result |
+|---|---:|
+| Selected probability threshold | 0.25 |
+| Bit accuracy | 0.9915 |
+| Precision | 0.6106 |
+| Recall | 0.4147 |
+| F1 score | 0.4940 |
+| Mean Tanimoto | 0.3307 |
+| All-zero baseline accuracy | 0.9900 |
+
+The high bit accuracy is strongly affected by fingerprint sparsity. F1 and Tanimoto similarity provide more meaningful evidence of reconstruction quality.
+
 ## Current evidence
 
 The repository currently includes:
@@ -75,9 +93,6 @@ The current model reconstructs fixed-length Morgan fingerprints rather than mole
 
 The project has not yet evaluated:
 
-- fingerprint bit-level reconstruction accuracy;
-- Tanimoto similarity between original and reconstructed fingerprints;
-- reconstruction precision, recall, and F1 score;
 - repeated training across multiple random seeds;
 - alternative latent dimensions;
 - alternative latent-distance metrics;
@@ -88,26 +103,14 @@ Tanimoto similarity measures fingerprint overlap and should not be interpreted a
 
 ## Current work
 
-The latent-neighbor Tanimoto analysis is complete.
+The held-out fingerprint reconstruction evaluation is complete.
 
-For each held-out test molecule, the workflow retrieves ten nearest training molecules in the original 16-dimensional latent space and compares their fingerprints against deterministic random training references.
+The workflow selects its probability threshold using validation mean Tanimoto similarity, evaluates the selected threshold on the test split, compares it with the standard `0.5` threshold and an all-zero baseline, and exports reproducible metrics and figures.
 
-The results provide quantitative evidence that the learned latent space retains useful local fingerprint information.
+See [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md) for the complete analysis.
 
 ## Next planned step
 
-The next branch should evaluate fingerprint reconstruction quality on the held-out test split.
+The next scientific phase should evaluate robustness across multiple random seeds and alternative latent dimensions.
 
-That branch should:
-
-1. load the selected best Fingerprint VAE checkpoint;
-2. encode held-out test fingerprints using deterministic latent means;
-3. reconstruct fingerprints through the decoder;
-4. apply an explicitly configured probability threshold;
-5. calculate bit-level accuracy, precision, recall, and F1 score;
-6. calculate per-molecule original-versus-reconstructed Tanimoto similarity;
-7. compare reconstruction performance with simple sparse-fingerprint baselines;
-8. export versioned metrics and figures;
-9. document the effect of fingerprint sparsity on metric interpretation.
-
-After reconstruction evaluation, the project should repeat training across multiple seeds and compare alternative latent dimensions.
+This will determine whether the current findings are stable and whether the 16-dimensional latent representation provides a good trade-off between compression and reconstruction quality.

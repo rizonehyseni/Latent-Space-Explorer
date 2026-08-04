@@ -161,7 +161,6 @@ Expected artifacts:
 
 The workflow validates molecule and property alignment between PCA and UMAP metadata before generating either figure.
 
-## 10. Run the complete test suite
 
 ## 10. Run the latent-neighbor Tanimoto analysis
 
@@ -187,6 +186,39 @@ Expected recorded results:
 | Absolute mean improvement | 0.1537 |
 | Nearest neighbor beats paired random | 94.94% |
 | Spearman distance/similarity correlation | -0.1252 |
+
+## 11. Run fingerprint reconstruction evaluation
+
+Run:
+
+`python -m backend.evaluate_fingerprint_reconstruction --config configs/qm9_fingerprint_reconstruction.yaml`
+
+The workflow selects the probability threshold using only the validation split and evaluates the selected threshold on the held-out test split.
+
+Expected generated artifacts:
+
+- `data/processed/qm9/fingerprint_reconstruction_per_molecule.csv`
+- `data/processed/qm9/fingerprint_reconstruction_summary.json`
+- `docs/FIGURES/qm9-fingerprint-reconstruction-metrics-v1.png`
+- `docs/FIGURES/qm9-fingerprint-reconstruction-tanimoto-v1.png`
+
+Expected recorded results:
+
+| Metric | Result |
+|---|---:|
+| Selected threshold | 0.25 |
+| Bit accuracy | 0.9915 |
+| Precision | 0.6106 |
+| Recall | 0.4147 |
+| F1 score | 0.4940 |
+| Mean Tanimoto | 0.3307 |
+| All-zero baseline accuracy | 0.9900 |
+
+## 12. Run the complete test suite
+
+Run:
+
+`python -m unittest discover -s tests -v`
 
 
 ## Reproducibility notes
