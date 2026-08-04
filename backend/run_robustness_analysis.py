@@ -120,6 +120,8 @@ def resolve_run_paths(
         "checkpoint": checkpoint_directory / f"{run_name}.pt",
         "results": results_directory / f"{run_name}.json",
     }
+
+
 def train_robustness_run(
     project_root: Path,
     config: dict[str, Any],
