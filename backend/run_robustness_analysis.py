@@ -390,6 +390,115 @@ def train_robustness_run(
 
     return results
 
+def summarize_values(
+    values: list[float],
+) -> dict[str, float]:
+    """Summarize repeated experimental measurements."""
+    array = np.asarray(values, dtype=np.float64)
+
+    if array.size == 0:
+        raise ValueError("Cannot summarize an empty metric list.")
+
+    return {
+        "mean": float(array.mean()),
+        "standard_deviation": float(
+            array.std(ddof=1) if array.size > 1 else 0.0
+        ),
+        "minimum": float(array.min()),
+        "maximum": float(array.max()),
+    }
+
+
+def create_robustness_summary(
+    results: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    """Aggregate results by latent dimension."""
+    if not results:
+        raise ValueError("At least one completed run is required.")
+
+    latent_dimensions = sorted(
+        {int(result["latent_dim"]) for result in results}
+    )
+
+    aggregate_by_latent_dimension: dict[str, Any] = {}
+
+    for latent_dim in latent_dimensions:
+        dimension_results = [
+            result
+            for result in results
+            if int(result["latent_dim"]) == latent_dim
+        ]
+
+        aggregate_by_latent_dimension[str(latent_dim)] = {
+            "run_count": len(dimension_results),
+            "test_loss": summarize_values(
+                [
+                    float(result["test_metrics"]["loss"])
+                    for result in dimension_results
+                ]
+            ),
+            "selected_threshold": summarize_values(
+                [
+                    float(
+                        result["reconstruction_evaluation"][
+                            "selected_threshold"
+                        ]
+                    )
+                    for result in dimension_results
+                ]
+            ),
+            "f1_score": summarize_values(
+                [
+                    float(
+                        result["reconstruction_evaluation"][
+                            "test_metrics"
+                        ]["f1_score"]
+                    )
+                    for result in dimension_results
+                ]
+            ),
+            "mean_tanimoto": summarize_values(
+                [
+                    float(
+                        result["reconstruction_evaluation"][
+                            "test_metrics"
+                        ]["mean_tanimoto"]
+                    )
+                    for result in dimension_results
+                ]
+            ),
+        }
+
+    return {
+        "analysis": "qm9_fingerprint_vae_robustness",
+        "experiment_name": config["experiment_name"],
+        "run_count": len(results),
+        "seeds": sorted(
+            {int(result["seed"]) for result in results}
+        ),
+        "latent_dimensions": latent_dimensions,
+        "aggregate_by_latent_dimension": (
+            aggregate_by_latent_dimension
+        ),
+        "runs": [
+            {
+                "run_name": result["run_name"],
+                "seed": result["seed"],
+                "latent_dim": result["latent_dim"],
+                "best_epoch": result["best_epoch"],
+                "best_validation_loss": result[
+                    "best_validation_loss"
+                ],
+                "test_metrics": result["test_metrics"],
+                "reconstruction_evaluation": result[
+                    "reconstruction_evaluation"
+                ],
+            }
+            for result in results
+        ],
+    }
+
 def main() -> None:
     """Validate the grid and optionally execute all experiments."""
     arguments = parse_arguments()
@@ -416,13 +525,31 @@ def main() -> None:
         print("Preview complete. Add --execute to start training.")
         return
 
-    for run in experiment_grid:
+    run_results = [
         train_robustness_run(
             project_root=project_root,
             config=config,
             run=run,
             force=arguments.force,
         )
+        for run in experiment_grid
+    ]
+
+    summary = create_robustness_summary(
+        results=run_results,
+        config=config,
+    )
+    summary_path = (
+        project_root / config["artifacts"]["summary_path"]
+    )
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(summary, indent=2),
+        encoding="utf-8",
+    )
+
+    print()
+    print(f"Robustness summary saved to: {summary_path}")
 
 if __name__ == "__main__":
     main()
