@@ -1,7 +1,12 @@
 import unittest
+import json
+import tempfile
+from pathlib import Path
 
-from backend.run_robustness_analysis import create_experiment_grid
-
+from backend.run_robustness_analysis import (
+    create_experiment_grid,
+    train_robustness_run,
+)
 
 class RobustnessAnalysisTests(unittest.TestCase):
     def test_experiment_grid_contains_all_combinations(self) -> None:
@@ -57,6 +62,53 @@ class RobustnessAnalysisTests(unittest.TestCase):
             create_run_name(seed=42, latent_dim=16),
             "latent_16_seed_42",
         )
+    def test_completed_run_is_loaded_without_retraining(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            project_root = Path(temporary_directory)
+            checkpoint_directory = project_root / "checkpoints"
+            results_directory = project_root / "results"
+
+            checkpoint_directory.mkdir()
+            results_directory.mkdir()
+
+            checkpoint_path = (
+                checkpoint_directory / "latent_16_seed_42.pt"
+            )
+            results_path = (
+                results_directory / "latent_16_seed_42.json"
+            )
+
+            checkpoint_path.write_bytes(b"completed")
+            results_path.write_text(
+                json.dumps(
+                    {
+                        "run_name": "latent_16_seed_42",
+                        "seed": 42,
+                        "latent_dim": 16,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = train_robustness_run(
+                project_root=project_root,
+                config={
+                    "artifacts": {
+                        "checkpoint_directory": "checkpoints",
+                        "run_results_directory": "results",
+                    }
+                },
+                run={
+                    "seed": 42,
+                    "latent_dim": 16,
+                },
+            )
+
+            self.assertEqual(
+                result["run_name"],
+                "latent_16_seed_42",
+            )
+        
 
 if __name__ == "__main__":
     unittest.main()
