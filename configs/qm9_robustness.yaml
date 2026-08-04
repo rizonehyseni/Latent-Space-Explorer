@@ -1,0 +1,40 @@
+experiment_name: qm9_fingerprint_vae_robustness
+seeds:
+  - 7
+  - 42
+  - 123
+
+data:
+  fingerprint_path: data/processed/qm9/morgan_fingerprints.npy
+  split_indices_path: data/processed/qm9/split_indices.npz
+
+model:
+  input_dim: 2048
+  hidden_dim: 512
+  latent_dimensions:
+    - 8
+    - 16
+    - 32
+
+training:
+  batch_size: 128
+  learning_rate: 0.001
+  epochs: 50
+
+evaluation:
+  validation_split: validation
+  test_split: test
+  batch_size: 128
+  reference_threshold: 0.5
+
+threshold_selection:
+  metric: mean_tanimoto
+  minimum: 0.05
+  maximum: 0.50
+  step: 0.025
+
+artifacts:
+  checkpoint_directory: models/qm9_robustness
+  run_results_directory: data/processed/qm9/robustness_runs
+  summary_path: data/processed/qm9/robustness_summary.json
+  figure_path: docs/FIGURES/qm9-robustness-comparison-v1.png
