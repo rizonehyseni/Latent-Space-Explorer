@@ -3,6 +3,7 @@
 import argparse
 from pathlib import Path
 from typing import Any
+import numpy as np
 import json
 import torch
 from torch.utils.data import DataLoader, Subset
@@ -12,7 +13,12 @@ from backend.run_training import load_split_indices
 from backend.training import evaluate_vae, train_vae
 
 from backend.config import load_experiment_config
-
+from backend.evaluate_fingerprint_reconstruction import (
+    calculate_binary_cross_entropy,
+    calculate_prediction_metrics,
+    reconstruct_probabilities,
+    select_validation_threshold,
+)
 
 REQUIRED_CONFIG_SECTIONS = {
     "seeds",
@@ -242,6 +248,91 @@ def train_robustness_run(
         device=device,
     )
 
+    fingerprints = np.load(fingerprint_path).astype(
+        np.float32,
+        copy=False,
+    )
+
+    evaluation_config = config["evaluation"]
+    validation_split = str(
+        evaluation_config["validation_split"]
+    )
+    test_split = str(evaluation_config["test_split"])
+
+    validation_fingerprints = fingerprints[
+        split_indices[validation_split]
+    ]
+    test_fingerprints = fingerprints[
+        split_indices[test_split]
+    ]
+
+    evaluation_batch_size = int(
+        evaluation_config["batch_size"]
+    )
+
+    validation_probabilities = reconstruct_probabilities(
+        model=model,
+        fingerprints=validation_fingerprints,
+        batch_size=evaluation_batch_size,
+        device=device,
+    )
+    test_probabilities = reconstruct_probabilities(
+        model=model,
+        fingerprints=test_fingerprints,
+        batch_size=evaluation_batch_size,
+        device=device,
+    )
+
+    (
+        selected_threshold,
+        selected_validation_metrics,
+        threshold_sweep,
+    ) = select_validation_threshold(
+        true_fingerprints=validation_fingerprints,
+        probabilities=validation_probabilities,
+        threshold_config=config["threshold_selection"],
+    )
+
+    reconstruction_metrics, _ = calculate_prediction_metrics(
+        true_fingerprints=test_fingerprints,
+        predicted_fingerprints=(
+            test_probabilities >= selected_threshold
+        ),
+    )
+    reconstruction_metrics["mean_binary_cross_entropy"] = float(
+        calculate_binary_cross_entropy(
+            true_fingerprints=test_fingerprints,
+            probabilities=test_probabilities,
+        ).mean()
+    )
+
+    reference_threshold = float(
+        evaluation_config["reference_threshold"]
+    )
+    reference_metrics, _ = calculate_prediction_metrics(
+        true_fingerprints=test_fingerprints,
+        predicted_fingerprints=(
+            test_probabilities >= reference_threshold
+        ),
+    )
+
+    reconstruction_evaluation = {
+        "selected_threshold": selected_threshold,
+        "selection_split": validation_split,
+        "selection_metric": config[
+            "threshold_selection"
+        ]["metric"],
+        "selected_validation_metrics": (
+            selected_validation_metrics
+        ),
+        "threshold_sweep": threshold_sweep,
+        "test_metrics": reconstruction_metrics,
+        "reference_threshold": reference_threshold,
+        "reference_test_metrics": reference_metrics,
+    }
+
+
+
     checkpoint = {
         "model_state_dict": model.state_dict(),
         "experiment_name": config["experiment_name"],
@@ -254,6 +345,7 @@ def train_robustness_run(
         ),
         "test_metrics": test_metrics,
         "training_history": training_result["history"],
+        "reconstruction_evaluation": reconstruction_evaluation
     }
 
     results = {
@@ -266,6 +358,7 @@ def train_robustness_run(
         ),
         "test_metrics": test_metrics,
         "training_history": training_result["history"],
+        "reconstruction_evaluation": reconstruction_evaluation
     }
 
     paths["checkpoint"].parent.mkdir(
@@ -286,6 +379,13 @@ def train_robustness_run(
     print(f"Completed run: {run_name}")
     print(
         f"Test loss: {test_metrics['loss']:.4f}"
+    )
+    print(
+        "Reconstruction | "
+        f"threshold={selected_threshold:.3f} | "
+        f"F1={reconstruction_metrics['f1_score']:.4f} | "
+        "Mean Tanimoto="
+        f"{reconstruction_metrics['mean_tanimoto']:.4f}"
     )
 
     return results
