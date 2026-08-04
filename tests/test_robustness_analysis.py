@@ -5,6 +5,9 @@ from pathlib import Path
 
 from backend.run_robustness_analysis import (
     create_experiment_grid,
+    create_robustness_figure,
+    create_robustness_summary,
+    summarize_values,
     train_robustness_run,
 )
 
@@ -108,6 +111,122 @@ class RobustnessAnalysisTests(unittest.TestCase):
                 result["run_name"],
                 "latent_16_seed_42",
             )
+
+    def test_metric_summary_uses_sample_standard_deviation(
+        self,
+    ) -> None:
+        summary = summarize_values([2.0, 4.0])
+
+        self.assertEqual(summary["mean"], 3.0)
+        self.assertAlmostEqual(
+            summary["standard_deviation"],
+            2.0 ** 0.5,
+        )
+        self.assertEqual(summary["minimum"], 2.0)
+        self.assertEqual(summary["maximum"], 4.0)
+
+    def test_results_are_aggregated_by_latent_dimension(
+        self,
+    ) -> None:
+        results = []
+
+        for seed, loss, f1, tanimoto, threshold in [
+            (7, 80.0, 0.4, 0.3, 0.2),
+            (42, 70.0, 0.6, 0.5, 0.3),
+        ]:
+            results.append(
+                {
+                    "run_name": f"latent_16_seed_{seed}",
+                    "seed": seed,
+                    "latent_dim": 16,
+                    "best_epoch": 50,
+                    "best_validation_loss": loss,
+                    "test_metrics": {
+                        "loss": loss,
+                    },
+                    "reconstruction_evaluation": {
+                        "selected_threshold": threshold,
+                        "test_metrics": {
+                            "f1_score": f1,
+                            "mean_tanimoto": tanimoto,
+                        },
+                    },
+                }
+            )
+
+        summary = create_robustness_summary(
+            results=results,
+            config={
+                "experiment_name": "test_robustness",
+            },
+        )
+
+        aggregate = summary[
+            "aggregate_by_latent_dimension"
+        ]["16"]
+
+        self.assertEqual(summary["run_count"], 2)
+        self.assertEqual(aggregate["run_count"], 2)
+        self.assertEqual(
+            aggregate["test_loss"]["mean"],
+            75.0,
+        )
+        self.assertAlmostEqual(
+            aggregate["f1_score"]["mean"],
+            0.5,
+        )
+        self.assertAlmostEqual(
+            aggregate["mean_tanimoto"]["mean"],
+            0.4,
+        )
+        self.assertAlmostEqual(
+            aggregate["selected_threshold"]["mean"],
+            0.25,
+        )     
+
+
+    def test_robustness_figure_is_created(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            figure_path = (
+                Path(temporary_directory) / "robustness.png"
+            )
+
+            aggregate = {}
+            for latent_dim, loss, f1, tanimoto in [
+                (8, 80.0, 0.45, 0.30),
+                (16, 75.0, 0.50, 0.34),
+                (32, 77.0, 0.48, 0.32),
+            ]:
+                aggregate[str(latent_dim)] = {
+                    "test_loss": {
+                        "mean": loss,
+                        "standard_deviation": 1.0,
+                    },
+                    "f1_score": {
+                        "mean": f1,
+                        "standard_deviation": 0.02,
+                    },
+                    "mean_tanimoto": {
+                        "mean": tanimoto,
+                        "standard_deviation": 0.01,
+                    },
+                }
+
+            create_robustness_figure(
+                summary={
+                    "latent_dimensions": [8, 16, 32],
+                    "aggregate_by_latent_dimension": aggregate,
+                },
+                figure_path=figure_path,
+            )
+
+            self.assertTrue(figure_path.is_file())
+            self.assertGreater(
+                figure_path.stat().st_size,
+                0,
+            )
+
+               
         
 
 if __name__ == "__main__":
