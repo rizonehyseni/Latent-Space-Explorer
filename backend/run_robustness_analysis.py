@@ -3,6 +3,13 @@
 import argparse
 from pathlib import Path
 from typing import Any
+import json
+import torch
+from torch.utils.data import DataLoader, Subset
+from backend.dataset import FingerprintDataset
+from backend.model import MolecularVAE
+from backend.run_training import load_split_indices
+from backend.training import evaluate_vae, train_vae
 
 from backend.config import load_experiment_config
 
@@ -27,6 +34,16 @@ def parse_arguments() -> argparse.Namespace:
         "--config",
         default="configs/qm9_robustness.yaml",
         help="Path to the robustness YAML configuration.",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Execute training instead of only displaying the grid.",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Repeat runs even when their artifacts already exist.",
     )
     return parser.parse_args()
 
@@ -103,9 +120,176 @@ def resolve_run_paths(
         "checkpoint": checkpoint_directory / f"{run_name}.pt",
         "results": results_directory / f"{run_name}.json",
     }
+def train_robustness_run(
+    project_root: Path,
+    config: dict[str, Any],
+    run: dict[str, int],
+    force: bool = False,
+) -> dict[str, Any]:
+    """Train and evaluate one seed and latent-dimension combination."""
+    seed = run["seed"]
+    latent_dim = run["latent_dim"]
+    run_name = create_run_name(seed=seed, latent_dim=latent_dim)
+    paths = resolve_run_paths(
+        project_root=project_root,
+        artifact_config=config["artifacts"],
+        run=run,
+    )
+
+    if (
+        not force
+        and paths["checkpoint"].is_file()
+        and paths["results"].is_file()
+    ):
+        print(f"Skipping completed run: {run_name}")
+        return json.loads(
+            paths["results"].read_text(encoding="utf-8")
+        )
+
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+    data_config = config["data"]
+    model_config = config["model"]
+    training_config = config["training"]
+
+    fingerprint_path = (
+        project_root / data_config["fingerprint_path"]
+    )
+    split_indices_path = (
+        project_root / data_config["split_indices_path"]
+    )
+
+    dataset = FingerprintDataset(fingerprint_path)
+    split_indices = load_split_indices(
+        split_path=split_indices_path,
+        dataset_size=len(dataset),
+    )
+
+    train_dataset = Subset(
+        dataset,
+        split_indices["train"].tolist(),
+    )
+    validation_dataset = Subset(
+        dataset,
+        split_indices["validation"].tolist(),
+    )
+    test_dataset = Subset(
+        dataset,
+        split_indices["test"].tolist(),
+    )
+
+    batch_size = int(training_config["batch_size"])
+    training_generator = torch.Generator().manual_seed(seed)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        generator=training_generator,
+    )
+    validation_loader = DataLoader(
+        validation_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+
+    device = torch.device(
+        "cuda" if torch.cuda.is_available() else "cpu"
+    )
+
+    run_model_config = {
+        "input_dim": int(model_config["input_dim"]),
+        "hidden_dim": int(model_config["hidden_dim"]),
+        "latent_dim": latent_dim,
+    }
+
+    model = MolecularVAE(**run_model_config)
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=float(training_config["learning_rate"]),
+    )
+
+    print()
+    print(f"Starting run: {run_name}")
+    print(f"Device: {device}")
+
+    training_result = train_vae(
+        model=model,
+        data_loader=train_loader,
+        optimizer=optimizer,
+        device=device,
+        epochs=int(training_config["epochs"]),
+        validation_data_loader=validation_loader,
+    )
+
+    model.load_state_dict(
+        training_result["best_model_state_dict"]
+    )
+    model.to(device)
+
+    test_metrics = evaluate_vae(
+        model=model,
+        data_loader=test_loader,
+        device=device,
+    )
+
+    checkpoint = {
+        "model_state_dict": model.state_dict(),
+        "experiment_name": config["experiment_name"],
+        "model_config": run_model_config,
+        "training_config": training_config,
+        "seed": seed,
+        "best_epoch": training_result["best_epoch"],
+        "best_validation_loss": (
+            training_result["best_validation_loss"]
+        ),
+        "test_metrics": test_metrics,
+        "training_history": training_result["history"],
+    }
+
+    results = {
+        "run_name": run_name,
+        "seed": seed,
+        "latent_dim": latent_dim,
+        "best_epoch": training_result["best_epoch"],
+        "best_validation_loss": (
+            training_result["best_validation_loss"]
+        ),
+        "test_metrics": test_metrics,
+        "training_history": training_result["history"],
+    }
+
+    paths["checkpoint"].parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    paths["results"].parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    torch.save(checkpoint, paths["checkpoint"])
+    paths["results"].write_text(
+        json.dumps(results, indent=2),
+        encoding="utf-8",
+    )
+
+    print(f"Completed run: {run_name}")
+    print(
+        f"Test loss: {test_metrics['loss']:.4f}"
+    )
+
+    return results
 
 def main() -> None:
-    """Validate and display the planned experiment grid."""
+    """Validate the grid and optionally execute all experiments."""
     arguments = parse_arguments()
     project_root = Path(__file__).resolve().parent.parent
 
@@ -126,6 +310,19 @@ def main() -> None:
             f"seed={run['seed']}"
         )
 
+    if not arguments.execute:
+        print("Preview complete. Add --execute to start training.")
+        return
+
+    for run in experiment_grid:
+        train_robustness_run(
+            project_root=project_root,
+            config=config,
+            run=run,
+            force=arguments.force,
+        )
 
 if __name__ == "__main__":
     main()
+
+    
