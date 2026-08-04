@@ -3,6 +3,7 @@
 import argparse
 from pathlib import Path
 from typing import Any
+import matplotlib.pyplot as plt
 import numpy as np
 import json
 import torch
@@ -498,6 +499,89 @@ def create_robustness_summary(
             for result in results
         ],
     }
+
+def create_robustness_figure(
+    summary: dict[str, Any],
+    figure_path: Path,
+) -> None:
+    """Plot mean performance with variation across seeds."""
+    latent_dimensions = summary["latent_dimensions"]
+    aggregate = summary["aggregate_by_latent_dimension"]
+
+    figure, axes = plt.subplots(
+        1,
+        3,
+        figsize=(15, 4.5),
+    )
+
+    panels = [
+        (
+            "test_loss",
+            "Held-out VAE loss",
+            "Loss",
+            "#4C78A8",
+        ),
+        (
+            "f1_score",
+            "Fingerprint reconstruction F1",
+            "F1 score",
+            "#F58518",
+        ),
+        (
+            "mean_tanimoto",
+            "Mean fingerprint Tanimoto",
+            "Mean Tanimoto",
+            "#54A24B",
+        ),
+    ]
+
+    for axis, (
+        metric,
+        title,
+        ylabel,
+        color,
+    ) in zip(axes, panels):
+        means = [
+            aggregate[str(dimension)][metric]["mean"]
+            for dimension in latent_dimensions
+        ]
+        deviations = [
+            aggregate[str(dimension)][metric][
+                "standard_deviation"
+            ]
+            for dimension in latent_dimensions
+        ]
+
+        axis.errorbar(
+            latent_dimensions,
+            means,
+            yerr=deviations,
+            marker="o",
+            linewidth=2,
+            capsize=5,
+            color=color,
+        )
+        axis.set_title(title)
+        axis.set_xlabel("Latent dimensions")
+        axis.set_ylabel(ylabel)
+        axis.set_xticks(latent_dimensions)
+        axis.grid(alpha=0.25)
+
+        if metric in {"f1_score", "mean_tanimoto"}:
+            axis.set_ylim(0.0, 1.0)
+
+    figure.suptitle(
+        "QM9 Fingerprint VAE Robustness Across Three Seeds"
+    )
+    figure.tight_layout()
+
+    figure_path.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(
+        figure_path,
+        dpi=160,
+        bbox_inches="tight",
+    )
+    plt.close(figure)
 
 def main() -> None:
     """Validate the grid and optionally execute all experiments."""
