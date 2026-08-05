@@ -24,3 +24,5 @@ __pycache__/
 
 models/*.pt
 models/*.json
+models/**/*.pt
+models/**/*.json
