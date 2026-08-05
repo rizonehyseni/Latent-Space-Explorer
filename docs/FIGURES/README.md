@@ -15,6 +15,8 @@ This directory contains versioned scientific figures generated from reproducible
 | `qm9-neighbor-tanimoto-vs-random-v1.png` | Tanimoto distributions for latent nearest neighbors and random training references. | [LATENT_NEIGHBOR_ANALYSIS.md](../LATENT_NEIGHBOR_ANALYSIS.md) |
 | `qm9-fingerprint-reconstruction-metrics-v1.png` | Held-out test reconstruction metrics using the validation-selected probability threshold. | [FINGERPRINT_RECONSTRUCTION.md](../FINGERPRINT_RECONSTRUCTION.md) |
 | `qm9-fingerprint-reconstruction-tanimoto-v1.png` | Per-molecule original-versus-reconstructed fingerprint Tanimoto distribution. | [FINGERPRINT_RECONSTRUCTION.md](../FINGERPRINT_RECONSTRUCTION.md) |
+| `qm9-robustness-comparison-v1.png` | Mean VAE loss, reconstruction F1, and Tanimoto similarity across latent dimensions and random seeds. | [ROBUSTNESS_ANALYSIS.md](../ROBUSTNESS_ANALYSIS.md) |
+
 Every figure added to this directory should:
 
 1. use a descriptive, versioned filename;

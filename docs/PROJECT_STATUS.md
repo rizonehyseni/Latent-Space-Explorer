@@ -23,6 +23,7 @@ The current system can prepare QM9 data, train and evaluate a Fingerprint VAE, e
 | Property visualization | PCA and UMAP projections colored by five aligned molecular properties |
 | Neighbor evaluation | Test-to-training latent neighbors evaluated using Morgan-fingerprint Tanimoto similarity |
 | Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
+| Robustness evaluation | Nine runs across three seeds and three latent dimensions |
 
 ## Current baseline result
 
@@ -70,6 +71,18 @@ The reconstruction threshold was selected exclusively on the validation split an
 
 The high bit accuracy is strongly affected by fingerprint sparsity. F1 and Tanimoto similarity provide more meaningful evidence of reconstruction quality.
 
+## Robustness result
+
+Nine models compared latent dimensions `8`, `16`, and `32` across seeds `7`, `42`, and `123`.
+
+| Latent dimensions | Test loss | Reconstruction F1 | Mean Tanimoto |
+|---:|---:|---:|---:|
+| 8 | 74.9092 ± 0.6494 | 0.4949 ± 0.0118 | 0.3322 ± 0.0110 |
+| 16 | 74.7608 ± 0.1595 | 0.4953 ± 0.0034 | 0.3320 ± 0.0034 |
+| 32 | 74.6645 ± 0.6494 | 0.4949 ± 0.0098 | 0.3317 ± 0.0090 |
+
+Reconstruction performance remained stable across the tested dimensions. The 16-dimensional configuration showed the lowest variation across seeds.
+
 ## Current evidence
 
 The repository currently includes:
@@ -84,6 +97,9 @@ The repository currently includes:
 - a deterministic random-similarity baseline;
 - quantitative latent-distance and Tanimoto analysis;
 - automated tests for artifact and row alignment.
+- validation-selected fingerprint reconstruction evaluation;
+- nine-run seed and latent-dimension robustness comparison;
+- mean and sample-standard-deviation robustness metrics.
 
 See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md), and [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
 
@@ -103,14 +119,14 @@ Tanimoto similarity measures fingerprint overlap and should not be interpreted a
 
 ## Current work
 
-The held-out fingerprint reconstruction evaluation is complete.
+The multi-seed and latent-dimension robustness analysis is complete.
 
-The workflow selects its probability threshold using validation mean Tanimoto similarity, evaluates the selected threshold on the test split, compares it with the standard `0.5` threshold and an all-zero baseline, and exports reproducible metrics and figures.
+The results show that reconstruction quality is stable across dimensions `8`, `16`, and `32`, with the 16-dimensional configuration producing the lowest variation across seeds.
 
-See [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md) for the complete analysis.
+See [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md) for the complete analysis.
 
 ## Next planned step
 
-The next scientific phase should evaluate robustness across multiple random seeds and alternative latent dimensions.
+The next implementation phase is connecting the scientific artifacts to a backend API and interactive web interface.
 
-This will determine whether the current findings are stable and whether the 16-dimensional latent representation provides a good trade-off between compression and reconstruction quality.
+The web application should load molecule metadata and latent coordinates, display the latent-space projection, support molecule selection, and expose quantitative experiment context without overstating chemical conclusions.
