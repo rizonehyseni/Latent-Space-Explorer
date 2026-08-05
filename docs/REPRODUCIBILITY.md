@@ -214,7 +214,30 @@ Expected recorded results:
 | Mean Tanimoto | 0.3307 |
 | All-zero baseline accuracy | 0.9900 |
 
-## 12. Run the complete test suite
+## 12. Run the robustness analysis
+
+Run:
+
+`python -m backend.run_robustness_analysis --config configs/qm9_robustness.yaml --execute`
+
+The experiment trains nine models using three random seeds and latent dimensions `8`, `16`, and `32`. Completed runs are reused automatically if execution is interrupted.
+
+Expected generated artifacts:
+
+- individual checkpoints under `models/qm9_robustness/`;
+- individual run results under `data/processed/qm9/robustness_runs/`;
+- `data/processed/qm9/robustness_summary.json`;
+- `docs/FIGURES/qm9-robustness-comparison-v1.png`.
+
+Expected aggregate results:
+
+| Latent dimensions | Reconstruction F1 | Mean Tanimoto |
+|---:|---:|---:|
+| 8 | 0.4949 ± 0.0118 | 0.3322 ± 0.0110 |
+| 16 | 0.4953 ± 0.0034 | 0.3320 ± 0.0034 |
+| 32 | 0.4949 ± 0.0098 | 0.3317 ± 0.0090 |
+
+## 13. Run the complete test suite
 
 Run:
 

@@ -41,7 +41,8 @@ flowchart TD
     E --> U
     U --> V["Validation-only<br/>threshold selection"]
     V --> W["Held-out reconstruction<br/>F1 and Tanimoto metrics"]
-    W --> X["Next: multi-seed and<br/>latent-dimension robustness"]
+    W --> X["Multi-seed and<br/>latent-dimension robustness"]
+    X --> Y["Next: API and<br/>interactive web integration"]    
 ```
 
 ## Repository components

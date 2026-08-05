@@ -27,8 +27,6 @@ The project does not yet measure:
 
 - molecular-property preservation after reconstruction;
 - statistically validated latent-cluster quality;
-- variance across multiple random seeds;
-- robustness across alternative latent dimensions;
 - reconstruction of valid molecular graphs or SMILES.
 
 The current result is therefore a training baseline, not yet evidence of chemically meaningful latent organization.
@@ -67,7 +65,7 @@ The project does not yet provide:
 - interpolation trajectories;
 - interactive 3D exploration.
 
-The next evaluation stage is robustness analysis across multiple random seeds and latent dimensions.
+The next implementation stage is API and interactive web integration. Future paper-focused experiments should add model baselines, ablations, and stronger statistical comparisons.
 
 ## Frontend scope
 
