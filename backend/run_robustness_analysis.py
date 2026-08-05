@@ -631,9 +631,18 @@ def main() -> None:
         json.dumps(summary, indent=2),
         encoding="utf-8",
     )
+    figure_path = (
+        project_root / config["artifacts"]["figure_path"]
+    )
+    create_robustness_figure(
+        summary=summary,
+        figure_path=figure_path,
+    )    
+
 
     print()
     print(f"Robustness summary saved to: {summary_path}")
+    print(f"Robustness figure saved to: {figure_path}")
 
 if __name__ == "__main__":
     main()
