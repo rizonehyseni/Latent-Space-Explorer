@@ -4,8 +4,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from backend.export_web_data import create_aligned_molecule_table
-
+from backend.export_web_data import (
+    create_aligned_molecule_table,
+    create_molecule_payload,
+)
 
 class WebDataExportTests(unittest.TestCase):
     def create_metadata(
@@ -142,6 +144,63 @@ class WebDataExportTests(unittest.TestCase):
                         "gap",
                     ],
                 )
+
+    def test_molecule_payload_matches_browser_contract(
+        self,
+    ) -> None:
+        pca_metadata, umap_metadata = self.create_metadata()
+
+        molecule_table = pca_metadata.copy()
+        molecule_table["umap_1"] = umap_metadata["umap_1"]
+        molecule_table["umap_2"] = umap_metadata["umap_2"]
+
+        payload = create_molecule_payload(
+            molecule_table=molecule_table,
+            experiment_name="test_web_export",
+            dataset_name="QM9",
+            schema_version=1,
+            coordinate_precision=3,
+            property_precision=2,
+            property_columns=[
+                "molecular_weight",
+                "logp",
+                "tpsa",
+                "ring_count",
+                "num_heavy_atoms",
+                "gap",
+            ],
+        )
+
+        self.assertEqual(payload["schemaVersion"], 1)
+        self.assertEqual(payload["dataset"]["moleculeCount"], 2)
+        self.assertEqual(
+            payload["dataset"]["splitCounts"],
+            {
+                "train": 1,
+                "validation": 0,
+                "test": 1,
+            },
+        )
+
+        first_molecule = payload["molecules"][0]
+
+        self.assertEqual(first_molecule["id"], "molecule-10")
+        self.assertEqual(
+            first_molecule["coordinates"]["pca"],
+            [0.1, 0.3],
+        )
+        self.assertEqual(
+            first_molecule["coordinates"]["umap"],
+            [1.1, 1.3],
+        )
+        self.assertEqual(
+            first_molecule["properties"]["molecular_weight"],
+            16.04,
+        )
+        self.assertEqual(
+            first_molecule["properties"]["ring_count"],
+            0,
+        )                
 
 
 if __name__ == "__main__":
