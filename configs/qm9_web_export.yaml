@@ -9,6 +9,7 @@ data:
   robustness_summary_path: data/processed/qm9/robustness_summary.json
 
 export:
+  dataset_name: QM9
   schema_version: 1
   coordinate_precision: 6
   property_precision: 4
