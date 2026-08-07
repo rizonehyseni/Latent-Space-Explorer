@@ -2,6 +2,7 @@
 
 import json
 import math
+import hashlib
 from numbers import Integral, Real
 import argparse
 from pathlib import Path
@@ -753,6 +754,95 @@ def create_metrics_payload(
         },
     }
 
+def calculate_sha256(
+    artifact_path: Path,
+) -> str:
+    """Calculate the SHA-256 checksum of one artifact."""
+    digest = hashlib.sha256()
+
+    with artifact_path.open("rb") as artifact_file:
+        for chunk in iter(
+            lambda: artifact_file.read(1024 * 1024),
+            b"",
+        ):
+            digest.update(chunk)
+
+    return digest.hexdigest()
+
+
+def create_manifest_payload(
+    experiment_name: str,
+    dataset_name: str,
+    schema_version: int,
+    molecule_payload: dict[str, Any],
+    neighbor_payload: dict[str, Any],
+    molecules_path: Path,
+    neighbors_path: Path,
+    metrics_path: Path,
+) -> dict[str, Any]:
+    """Describe browser artifacts and their data contract."""
+    artifact_paths = {
+        "molecules": molecules_path,
+        "neighbors": neighbors_path,
+        "metrics": metrics_path,
+    }
+
+    files = {
+        artifact_name: {
+            "fileName": artifact_path.name,
+            "sizeBytes": artifact_path.stat().st_size,
+            "sha256": calculate_sha256(artifact_path),
+        }
+        for artifact_name, artifact_path in artifact_paths.items()
+    }
+
+    return {
+        "schemaVersion": schema_version,
+        "experimentName": experiment_name,
+        "dataset": {
+            "name": dataset_name,
+            "moleculeCount": molecule_payload[
+                "dataset"
+            ]["moleculeCount"],
+            "splitCounts": molecule_payload[
+                "dataset"
+            ]["splitCounts"],
+            "coordinateSystems": molecule_payload[
+                "dataset"
+            ]["coordinateSystems"],
+            "properties": molecule_payload[
+                "dataset"
+            ]["properties"],
+            "neighborQueryCount": neighbor_payload[
+                "queryCount"
+            ],
+            "neighborsPerQuery": neighbor_payload[
+                "neighborsPerQuery"
+            ],
+        },
+        "files": files,
+        "scientificWarnings": [
+            (
+                "PCA and UMAP coordinates are two-dimensional "
+                "projections and do not preserve every latent-space "
+                "relationship."
+            ),
+            (
+                "UMAP region size and global separation must not be "
+                "interpreted as proportional molecular distance."
+            ),
+            (
+                "Tanimoto similarity measures Morgan-fingerprint "
+                "overlap rather than complete chemical or biological "
+                "similarity."
+            ),
+            (
+                "The decoder reconstructs fingerprints and does not "
+                "generate guaranteed valid molecular structures."
+            ),
+        ],
+    }
+
 def load_web_export_config(
     config_path: Path,
 ) -> dict[str, Any]:
@@ -856,6 +946,26 @@ def main() -> None:
         ),
     )
 
+    manifest_payload = create_manifest_payload(
+        experiment_name=str(config["experiment_name"]),
+        dataset_name=str(export_config["dataset_name"]),
+        schema_version=int(export_config["schema_version"]),
+        molecule_payload=molecule_payload,
+        neighbor_payload=neighbor_payload,
+        molecules_path=molecules_path,
+        neighbors_path=neighbors_path,
+        metrics_path=metrics_path,
+    )
+
+    manifest_path = resolve_project_path(
+        project_root,
+        config["artifacts"]["manifest_path"],
+    )
+    write_json_artifact(
+        payload=manifest_payload,
+        artifact_path=manifest_path,
+    )    
+
     metrics_path = resolve_project_path(
         project_root,
         config["artifacts"]["metrics_path"],
@@ -892,6 +1002,7 @@ def main() -> None:
     print(f"Neighbor JSON saved to: {neighbors_path}")
 
     print(f"Metrics JSON saved to: {metrics_path}")
+    print(f"Export manifest saved to: {manifest_path}")
 
 
 if __name__ == "__main__":
