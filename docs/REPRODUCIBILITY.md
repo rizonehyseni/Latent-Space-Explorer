@@ -237,7 +237,39 @@ Expected aggregate results:
 | 16 | 0.4953 ± 0.0034 | 0.3320 ± 0.0034 |
 | 32 | 0.4949 ± 0.0098 | 0.3317 ± 0.0090 |
 
-## 13. Run the complete test suite
+## 13. Export browser-ready QM9 data
+
+Run:
+
+`python -m backend.export_web_data --config configs/qm9_web_export.yaml`
+
+Expected generated artifacts:
+
+- `web/public/data/qm9_molecules.json`
+- `web/public/data/qm9_neighbors.json`
+- `web/public/data/qm9_metrics.json`
+- `web/public/data/qm9_web_export_manifest.json`
+
+The exporter validates PCA and UMAP row alignment, molecule identities, dataset splits, molecular properties, neighbor queries, and training references before writing frontend JSON.
+
+The manifest records file sizes and SHA-256 checksums for all exported browser artifacts.## 13. Export browser-ready QM9 data
+
+Run:
+
+`python -m backend.export_web_data --config configs/qm9_web_export.yaml`
+
+Expected generated artifacts:
+
+- `web/public/data/qm9_molecules.json`
+- `web/public/data/qm9_neighbors.json`
+- `web/public/data/qm9_metrics.json`
+- `web/public/data/qm9_web_export_manifest.json`
+
+The exporter validates PCA and UMAP row alignment, molecule identities, dataset splits, molecular properties, neighbor queries, and training references before writing frontend JSON.
+
+The manifest records file sizes and SHA-256 checksums for all exported browser artifacts.
+
+## 14. Run the complete test suite
 
 Run:
 
