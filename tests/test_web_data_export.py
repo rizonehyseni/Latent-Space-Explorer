@@ -7,6 +7,7 @@ import pandas as pd
 from backend.export_web_data import (
     create_aligned_molecule_table,
     create_molecule_payload,
+    create_neighbor_payload,
 )
 
 class WebDataExportTests(unittest.TestCase):
@@ -200,7 +201,63 @@ class WebDataExportTests(unittest.TestCase):
         self.assertEqual(
             first_molecule["properties"]["ring_count"],
             0,
-        )                
+        )      
+
+    def test_neighbor_payload_matches_browser_contract(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            neighbor_path = root / "neighbors.csv"
+
+            pca_metadata, umap_metadata = self.create_metadata()
+            molecule_table = pca_metadata.copy()
+            molecule_table["umap_1"] = umap_metadata["umap_1"]
+            molecule_table["umap_2"] = umap_metadata["umap_2"]
+
+            neighbor_results = pd.DataFrame(
+                {
+                    "query_latent_row": [1],
+                    "query_id": ["molecule-11"],
+                    "query_split": ["test"],
+                    "neighbor_rank": [1],
+                    "neighbor_latent_row": [0],
+                    "neighbor_id": ["molecule-10"],
+                    "reference_split": ["train"],
+                    "latent_distance": [0.1234567],
+                    "tanimoto_similarity": [0.5],
+                }
+            )
+            neighbor_results.to_csv(
+                neighbor_path,
+                index=False,
+            )
+
+            payload = create_neighbor_payload(
+                neighbor_results_path=neighbor_path,
+                molecule_table=molecule_table,
+                schema_version=1,
+                neighbors_per_query=1,
+                numeric_precision=4,
+            )
+
+            self.assertEqual(payload["queryCount"], 1)
+            self.assertEqual(payload["neighborsPerQuery"], 1)
+
+            query = payload["queries"]["molecule-11"]
+            self.assertEqual(query["queryRow"], 1)
+            self.assertEqual(
+                query["neighbors"],
+                [
+                    {
+                        "rank": 1,
+                        "row": 0,
+                        "id": "molecule-10",
+                        "latentDistance": 0.1235,
+                        "tanimoto": 0.5,
+                    }
+                ],
+            )                  
 
 
 if __name__ == "__main__":
