@@ -459,6 +459,300 @@ def create_neighbor_payload(
         "queries": queries,
     }
 
+def load_json_object(
+    artifact_path: Path,
+    artifact_name: str,
+) -> dict[str, Any]:
+    """Load one JSON summary artifact."""
+    if not artifact_path.is_file():
+        raise FileNotFoundError(
+            f"{artifact_name} was not found: {artifact_path}"
+        )
+
+    payload = json.loads(
+        artifact_path.read_text(encoding="utf-8")
+    )
+
+    if not isinstance(payload, dict):
+        raise ValueError(
+            f"{artifact_name} must contain a JSON object."
+        )
+
+    return payload
+
+
+def create_statistic_payload(
+    statistics: dict[str, Any],
+    precision: int,
+) -> dict[str, int | float | None]:
+    """Convert aggregate statistics to browser-safe values."""
+    return {
+        "mean": normalize_numeric_value(
+            statistics["mean"],
+            precision,
+        ),
+        "standardDeviation": normalize_numeric_value(
+            statistics["standard_deviation"],
+            precision,
+        ),
+        "minimum": normalize_numeric_value(
+            statistics["minimum"],
+            precision,
+        ),
+        "maximum": normalize_numeric_value(
+            statistics["maximum"],
+            precision,
+        ),
+    }
+
+
+def create_metrics_payload(
+    neighbor_summary_path: Path,
+    reconstruction_summary_path: Path,
+    robustness_summary_path: Path,
+    schema_version: int,
+    numeric_precision: int,
+) -> dict[str, Any]:
+    """Create a compact scientific summary for the frontend."""
+    neighbor = load_json_object(
+        neighbor_summary_path,
+        "Neighbor summary",
+    )
+    reconstruction = load_json_object(
+        reconstruction_summary_path,
+        "Reconstruction summary",
+    )
+    robustness = load_json_object(
+        robustness_summary_path,
+        "Robustness summary",
+    )
+
+    neighbor_by_rank = [
+        {
+            "rank": int(rank),
+            "meanTanimoto": normalize_numeric_value(
+                value,
+                numeric_precision,
+            ),
+        }
+        for rank, value in sorted(
+            neighbor["mean_tanimoto_by_rank"].items(),
+            key=lambda item: int(item[0]),
+        )
+    ]
+
+    reconstruction_metrics = reconstruction["model_metrics"]
+    reference_evaluation = reconstruction[
+        "reference_threshold_evaluation"
+    ]
+    reference_metrics = reference_evaluation["model_metrics"]
+    all_zero_metrics = reconstruction["all_zero_baseline"]
+
+    threshold_sweep = [
+        {
+            "threshold": normalize_numeric_value(
+                result["threshold"],
+                numeric_precision,
+            ),
+            "precision": normalize_numeric_value(
+                result["precision"],
+                numeric_precision,
+            ),
+            "recall": normalize_numeric_value(
+                result["recall"],
+                numeric_precision,
+            ),
+            "f1Score": normalize_numeric_value(
+                result["f1_score"],
+                numeric_precision,
+            ),
+            "meanTanimoto": normalize_numeric_value(
+                result["mean_tanimoto"],
+                numeric_precision,
+            ),
+        }
+        for result in reconstruction[
+            "threshold_selection"
+        ]["sweep"]
+    ]
+
+    robustness_by_dimension = []
+
+    for latent_dimension in robustness["latent_dimensions"]:
+        aggregate = robustness[
+            "aggregate_by_latent_dimension"
+        ][str(latent_dimension)]
+
+        robustness_by_dimension.append(
+            {
+                "latentDimensions": int(latent_dimension),
+                "runCount": int(aggregate["run_count"]),
+                "testLoss": create_statistic_payload(
+                    aggregate["test_loss"],
+                    numeric_precision,
+                ),
+                "f1Score": create_statistic_payload(
+                    aggregate["f1_score"],
+                    numeric_precision,
+                ),
+                "meanTanimoto": create_statistic_payload(
+                    aggregate["mean_tanimoto"],
+                    numeric_precision,
+                ),
+                "selectedThreshold": (
+                    create_statistic_payload(
+                        aggregate["selected_threshold"],
+                        numeric_precision,
+                    )
+                ),
+            }
+        )
+
+    return {
+        "schemaVersion": schema_version,
+        "neighborAnalysis": {
+            "queryCount": int(neighbor["query_count"]),
+            "referenceCount": int(
+                neighbor["reference_count"]
+            ),
+            "neighborsPerQuery": int(
+                neighbor["neighbors_per_query"]
+            ),
+            "distanceMetric": str(
+                neighbor["latent_distance_metric"]
+            ),
+            "meanNeighborTanimoto": normalize_numeric_value(
+                neighbor["nearest_neighbor_tanimoto"]["mean"],
+                numeric_precision,
+            ),
+            "medianNeighborTanimoto": normalize_numeric_value(
+                neighbor["nearest_neighbor_tanimoto"]["median"],
+                numeric_precision,
+            ),
+            "meanRandomTanimoto": normalize_numeric_value(
+                neighbor["random_baseline_tanimoto"]["mean"],
+                numeric_precision,
+            ),
+            "meanImprovement": normalize_numeric_value(
+                neighbor["mean_tanimoto_improvement"],
+                numeric_precision,
+            ),
+            "neighborBeatsRandomFraction": (
+                normalize_numeric_value(
+                    neighbor[
+                        "nearest_beats_paired_random_fraction"
+                    ],
+                    numeric_precision,
+                )
+            ),
+            "pearsonCorrelation": normalize_numeric_value(
+                neighbor[
+                    "latent_distance_tanimoto_pearson"
+                ],
+                numeric_precision,
+            ),
+            "spearmanCorrelation": normalize_numeric_value(
+                neighbor[
+                    "latent_distance_tanimoto_spearman"
+                ],
+                numeric_precision,
+            ),
+            "meanTanimotoByRank": neighbor_by_rank,
+        },
+        "reconstructionAnalysis": {
+            "evaluationMolecules": int(
+                reconstruction["evaluation_molecules"]
+            ),
+            "selectionSplit": str(
+                reconstruction["threshold_selection"][
+                    "selection_split"
+                ]
+            ),
+            "selectionMetric": str(
+                reconstruction["threshold_selection"][
+                    "selection_metric"
+                ]
+            ),
+            "selectedThreshold": normalize_numeric_value(
+                reconstruction["probability_threshold"],
+                numeric_precision,
+            ),
+            "metrics": {
+                "bitAccuracy": normalize_numeric_value(
+                    reconstruction_metrics["bit_accuracy"],
+                    numeric_precision,
+                ),
+                "precision": normalize_numeric_value(
+                    reconstruction_metrics["precision"],
+                    numeric_precision,
+                ),
+                "recall": normalize_numeric_value(
+                    reconstruction_metrics["recall"],
+                    numeric_precision,
+                ),
+                "f1Score": normalize_numeric_value(
+                    reconstruction_metrics["f1_score"],
+                    numeric_precision,
+                ),
+                "meanTanimoto": normalize_numeric_value(
+                    reconstruction_metrics["mean_tanimoto"],
+                    numeric_precision,
+                ),
+                "medianTanimoto": normalize_numeric_value(
+                    reconstruction_metrics["median_tanimoto"],
+                    numeric_precision,
+                ),
+                "exactMatchRate": normalize_numeric_value(
+                    reconstruction_metrics["exact_match_rate"],
+                    numeric_precision,
+                ),
+            },
+            "referenceThreshold": {
+                "threshold": normalize_numeric_value(
+                    reference_evaluation["threshold"],
+                    numeric_precision,
+                ),
+                "f1Score": normalize_numeric_value(
+                    reference_metrics["f1_score"],
+                    numeric_precision,
+                ),
+                "meanTanimoto": normalize_numeric_value(
+                    reference_metrics["mean_tanimoto"],
+                    numeric_precision,
+                ),
+            },
+            "allZeroBaseline": {
+                "bitAccuracy": normalize_numeric_value(
+                    all_zero_metrics["bit_accuracy"],
+                    numeric_precision,
+                ),
+                "f1Score": normalize_numeric_value(
+                    all_zero_metrics["f1_score"],
+                    numeric_precision,
+                ),
+                "meanTanimoto": normalize_numeric_value(
+                    all_zero_metrics["mean_tanimoto"],
+                    numeric_precision,
+                ),
+            },
+            "thresholdSweep": threshold_sweep,
+        },
+        "robustnessAnalysis": {
+            "runCount": int(robustness["run_count"]),
+            "seeds": [
+                int(seed)
+                for seed in robustness["seeds"]
+            ],
+            "latentDimensions": [
+                int(dimension)
+                for dimension in robustness[
+                    "latent_dimensions"
+                ]
+            ],
+            "byLatentDimension": robustness_by_dimension,
+        },
+    }
+
 def load_web_export_config(
     config_path: Path,
 ) -> dict[str, Any]:
@@ -542,6 +836,35 @@ def main() -> None:
         ),
     )
 
+
+    metrics_payload = create_metrics_payload(
+        neighbor_summary_path=resolve_project_path(
+            project_root,
+            data_config["neighbor_summary_path"],
+        ),
+        reconstruction_summary_path=resolve_project_path(
+            project_root,
+            data_config["reconstruction_summary_path"],
+        ),
+        robustness_summary_path=resolve_project_path(
+            project_root,
+            data_config["robustness_summary_path"],
+        ),
+        schema_version=int(export_config["schema_version"]),
+        numeric_precision=int(
+            export_config["coordinate_precision"]
+        ),
+    )
+
+    metrics_path = resolve_project_path(
+        project_root,
+        config["artifacts"]["metrics_path"],
+    )
+    write_json_artifact(
+        payload=metrics_payload,
+        artifact_path=metrics_path,
+    )
+
     neighbors_path = resolve_project_path(
         project_root,
         config["artifacts"]["neighbors_path"],
@@ -567,6 +890,9 @@ def main() -> None:
         f"{neighbor_payload['queryCount']}"
     )
     print(f"Neighbor JSON saved to: {neighbors_path}")
+
+    print(f"Metrics JSON saved to: {metrics_path}")
+
 
 if __name__ == "__main__":
     main()
