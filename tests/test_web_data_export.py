@@ -6,7 +6,9 @@ import json
 import pandas as pd
 
 from backend.export_web_data import (
+    calculate_sha256,
     create_aligned_molecule_table,
+    create_manifest_payload,
     create_metrics_payload,
     create_molecule_payload,
     create_neighbor_payload,
@@ -399,6 +401,77 @@ class WebDataExportTests(unittest.TestCase):
             self.assertEqual(
                 payload["robustnessAnalysis"]["runCount"],
                 1,
+            )
+
+    def test_manifest_records_artifact_checksums(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            molecules_path = root / "molecules.json"
+            neighbors_path = root / "neighbors.json"
+            metrics_path = root / "metrics.json"
+
+            molecules_path.write_text(
+                '{"molecules":[]}',
+                encoding="utf-8",
+            )
+            neighbors_path.write_text(
+                '{"queries":{}}',
+                encoding="utf-8",
+            )
+            metrics_path.write_text(
+                '{"metrics":{}}',
+                encoding="utf-8",
+            )
+
+            molecule_payload = {
+                "dataset": {
+                    "moleculeCount": 2,
+                    "splitCounts": {
+                        "train": 1,
+                        "validation": 0,
+                        "test": 1,
+                    },
+                    "coordinateSystems": ["pca", "umap"],
+                    "properties": ["molecular_weight"],
+                }
+            }
+            neighbor_payload = {
+                "queryCount": 1,
+                "neighborsPerQuery": 1,
+            }
+
+            manifest = create_manifest_payload(
+                experiment_name="test_export",
+                dataset_name="QM9",
+                schema_version=1,
+                molecule_payload=molecule_payload,
+                neighbor_payload=neighbor_payload,
+                molecules_path=molecules_path,
+                neighbors_path=neighbors_path,
+                metrics_path=metrics_path,
+            )
+
+            self.assertEqual(
+                manifest["dataset"]["moleculeCount"],
+                2,
+            )
+            self.assertEqual(
+                manifest["files"]["molecules"]["fileName"],
+                "molecules.json",
+            )
+            self.assertEqual(
+                manifest["files"]["molecules"]["sha256"],
+                calculate_sha256(molecules_path),
+            )
+            self.assertEqual(
+                len(manifest["files"]["molecules"]["sha256"]),
+                64,
+            )
+            self.assertGreater(
+                len(manifest["scientificWarnings"]),
+                0,
             )
 
 if __name__ == "__main__":
