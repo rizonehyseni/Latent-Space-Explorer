@@ -1,11 +1,13 @@
 import tempfile
 import unittest
 from pathlib import Path
+import json
 
 import pandas as pd
 
 from backend.export_web_data import (
     create_aligned_molecule_table,
+    create_metrics_payload,
     create_molecule_payload,
     create_neighbor_payload,
 )
@@ -259,6 +261,145 @@ class WebDataExportTests(unittest.TestCase):
                 ],
             )                  
 
+    def test_metrics_payload_contains_scientific_summaries(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            neighbor_path = root / "neighbor.json"
+            reconstruction_path = root / "reconstruction.json"
+            robustness_path = root / "robustness.json"
+
+            neighbor_path.write_text(
+                json.dumps(
+                    {
+                        "query_count": 2,
+                        "reference_count": 4,
+                        "neighbors_per_query": 1,
+                        "latent_distance_metric": "euclidean",
+                        "nearest_neighbor_tanimoto": {
+                            "mean": 0.3,
+                            "median": 0.25,
+                        },
+                        "random_baseline_tanimoto": {
+                            "mean": 0.1,
+                        },
+                        "mean_tanimoto_improvement": 0.2,
+                        "nearest_beats_paired_random_fraction": 0.9,
+                        "latent_distance_tanimoto_pearson": -0.1,
+                        "latent_distance_tanimoto_spearman": -0.2,
+                        "mean_tanimoto_by_rank": {
+                            "1": 0.3,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            reconstruction_path.write_text(
+                json.dumps(
+                    {
+                        "evaluation_molecules": 2,
+                        "probability_threshold": 0.25,
+                        "threshold_selection": {
+                            "selection_split": "validation",
+                            "selection_metric": "mean_tanimoto",
+                            "sweep": [
+                                {
+                                    "threshold": 0.25,
+                                    "precision": 0.6,
+                                    "recall": 0.4,
+                                    "f1_score": 0.48,
+                                    "mean_tanimoto": 0.33,
+                                }
+                            ],
+                        },
+                        "model_metrics": {
+                            "bit_accuracy": 0.99,
+                            "precision": 0.6,
+                            "recall": 0.4,
+                            "f1_score": 0.48,
+                            "mean_tanimoto": 0.33,
+                            "median_tanimoto": 0.32,
+                            "exact_match_rate": 0.0,
+                        },
+                        "reference_threshold_evaluation": {
+                            "threshold": 0.5,
+                            "model_metrics": {
+                                "f1_score": 0.44,
+                                "mean_tanimoto": 0.29,
+                            },
+                        },
+                        "all_zero_baseline": {
+                            "bit_accuracy": 0.98,
+                            "f1_score": 0.0,
+                            "mean_tanimoto": 0.0,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            statistic = {
+                "mean": 1.0,
+                "standard_deviation": 0.1,
+                "minimum": 0.9,
+                "maximum": 1.1,
+            }
+
+            robustness_path.write_text(
+                json.dumps(
+                    {
+                        "run_count": 1,
+                        "seeds": [42],
+                        "latent_dimensions": [16],
+                        "aggregate_by_latent_dimension": {
+                            "16": {
+                                "run_count": 1,
+                                "test_loss": statistic,
+                                "f1_score": statistic,
+                                "mean_tanimoto": statistic,
+                                "selected_threshold": statistic,
+                            }
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            payload = create_metrics_payload(
+                neighbor_summary_path=neighbor_path,
+                reconstruction_summary_path=reconstruction_path,
+                robustness_summary_path=robustness_path,
+                schema_version=1,
+                numeric_precision=4,
+            )
+
+            self.assertEqual(payload["schemaVersion"], 1)
+            self.assertEqual(
+                payload["neighborAnalysis"][
+                    "meanNeighborTanimoto"
+                ],
+                0.3,
+            )
+            self.assertEqual(
+                payload["reconstructionAnalysis"][
+                    "selectedThreshold"
+                ],
+                0.25,
+            )
+            self.assertEqual(
+                len(
+                    payload["reconstructionAnalysis"][
+                        "thresholdSweep"
+                    ]
+                ),
+                1,
+            )
+            self.assertEqual(
+                payload["robustnessAnalysis"]["runCount"],
+                1,
+            )
 
 if __name__ == "__main__":
     unittest.main()
