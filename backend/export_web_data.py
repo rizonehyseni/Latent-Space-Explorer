@@ -926,6 +926,14 @@ def main() -> None:
         ),
     )
 
+    neighbors_path = resolve_project_path(
+        project_root,
+        config["artifacts"]["neighbors_path"],
+    )
+    write_json_artifact(
+        payload=neighbor_payload,
+        artifact_path=neighbors_path,
+    )
 
     metrics_payload = create_metrics_payload(
         neighbor_summary_path=resolve_project_path(
@@ -946,6 +954,15 @@ def main() -> None:
         ),
     )
 
+    metrics_path = resolve_project_path(
+        project_root,
+        config["artifacts"]["metrics_path"],
+    )
+    write_json_artifact(
+        payload=metrics_payload,
+        artifact_path=metrics_path,
+    )
+
     manifest_payload = create_manifest_payload(
         experiment_name=str(config["experiment_name"]),
         dataset_name=str(export_config["dataset_name"]),
@@ -964,25 +981,7 @@ def main() -> None:
     write_json_artifact(
         payload=manifest_payload,
         artifact_path=manifest_path,
-    )    
-
-    metrics_path = resolve_project_path(
-        project_root,
-        config["artifacts"]["metrics_path"],
-    )
-    write_json_artifact(
-        payload=metrics_payload,
-        artifact_path=metrics_path,
-    )
-
-    neighbors_path = resolve_project_path(
-        project_root,
-        config["artifacts"]["neighbors_path"],
-    )
-    write_json_artifact(
-        payload=neighbor_payload,
-        artifact_path=neighbors_path,
-    )
+    ) 
 
     
 
