@@ -24,6 +24,7 @@ The current system can prepare QM9 data, train and evaluate a Fingerprint VAE, e
 | Neighbor evaluation | Test-to-training latent neighbors evaluated using Morgan-fingerprint Tanimoto similarity |
 | Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
 | Robustness evaluation | Nine runs across three seeds and three latent dimensions |
+| Browser data export | Aligned molecule, neighbor, metrics, and manifest JSON generated for the frontend |
 
 ## Current baseline result
 
@@ -100,6 +101,10 @@ The repository currently includes:
 - validation-selected fingerprint reconstruction evaluation;
 - nine-run seed and latent-dimension robustness comparison;
 - mean and sample-standard-deviation robustness metrics.
+- browser-ready data for all 10,000 aligned molecules;
+- ten training neighbors for each held-out test query;
+- compact scientific metrics and threshold-sweep data;
+- SHA-256 integrity checks for browser artifacts.
 
 See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md), and [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
 
@@ -119,14 +124,16 @@ Tanimoto similarity measures fingerprint overlap and should not be interpreted a
 
 ## Current work
 
-The multi-seed and latent-dimension robustness analysis is complete.
 
-The results show that reconstruction quality is stable across dimensions `8`, `16`, and `32`, with the 16-dimensional configuration producing the lowest variation across seeds.
+The browser-ready QM9 data export is complete.
 
-See [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md) for the complete analysis.
+The frontend can now load aligned molecule identities, canonical SMILES, dataset splits, PCA and UMAP coordinates, molecular properties, nearest neighbors, scientific metrics, and interpretation warnings from versioned JSON artifacts.
+
+See [WEB_DATA_EXPORT.md](WEB_DATA_EXPORT.md) for the complete schema and reproducibility record.
 
 ## Next planned step
 
-The next implementation phase is connecting the scientific artifacts to a backend API and interactive web interface.
+The next branch should connect the exported artifacts to the application interface.
 
-The web application should load molecule metadata and latent coordinates, display the latent-space projection, support molecule selection, and expose quantitative experiment context without overstating chemical conclusions.
+The first web milestone should load the export manifest and molecule data, validate their schema versions, and display clear loading and error states before introducing the interactive latent-space plot.
+

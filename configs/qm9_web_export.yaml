@@ -1,0 +1,30 @@
+experiment_name: qm9_web_data_export
+
+data:
+  pca_metadata_path: data/processed/qm9/pca_metadata.csv
+  umap_metadata_path: data/processed/qm9/umap_metadata.csv
+  neighbor_results_path: data/processed/qm9/latent_neighbor_tanimoto.csv
+  neighbor_summary_path: data/processed/qm9/latent_neighbor_tanimoto_summary.json
+  reconstruction_summary_path: data/processed/qm9/fingerprint_reconstruction_summary.json
+  robustness_summary_path: data/processed/qm9/robustness_summary.json
+
+export:
+  dataset_name: QM9
+  schema_version: 1
+  coordinate_precision: 6
+  property_precision: 4
+  neighbors_per_query: 10
+
+  properties:
+    - molecular_weight
+    - logp
+    - tpsa
+    - ring_count
+    - num_heavy_atoms
+    - gap
+
+artifacts:
+  molecules_path: web/public/data/qm9_molecules.json
+  neighbors_path: web/public/data/qm9_neighbors.json
+  metrics_path: web/public/data/qm9_metrics.json
+  manifest_path: web/public/data/qm9_web_export_manifest.json
