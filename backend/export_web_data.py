@@ -297,6 +297,168 @@ def write_json_artifact(
         encoding="utf-8",
     )
 
+def load_neighbor_results(
+    neighbor_results_path: Path,
+) -> pd.DataFrame:
+    """Load and validate latent-neighbor results."""
+    if not neighbor_results_path.is_file():
+        raise FileNotFoundError(
+            "Neighbor results were not found: "
+            f"{neighbor_results_path}"
+        )
+
+    neighbor_results = pd.read_csv(neighbor_results_path)
+
+    required_columns = [
+        "query_latent_row",
+        "query_id",
+        "query_split",
+        "neighbor_rank",
+        "neighbor_latent_row",
+        "neighbor_id",
+        "reference_split",
+        "latent_distance",
+        "tanimoto_similarity",
+    ]
+
+    require_columns(
+        frame=neighbor_results,
+        required_columns=required_columns,
+        artifact_name="Neighbor results",
+    )
+
+    if neighbor_results.empty:
+        raise ValueError("Neighbor results cannot be empty.")
+
+    return neighbor_results
+
+
+def create_neighbor_payload(
+    neighbor_results_path: Path,
+    molecule_table: pd.DataFrame,
+    schema_version: int,
+    neighbors_per_query: int,
+    numeric_precision: int,
+) -> dict[str, Any]:
+    """Create aligned browser data for latent neighbors."""
+    if neighbors_per_query <= 0:
+        raise ValueError(
+            "Neighbors per query must be positive."
+        )
+
+    neighbor_results = load_neighbor_results(
+        neighbor_results_path
+    )
+    neighbor_results = neighbor_results[
+        neighbor_results["neighbor_rank"]
+        <= neighbors_per_query
+    ].copy()
+
+    molecule_lookup = molecule_table.set_index("latent_row")
+    queries: dict[str, Any] = {}
+
+    grouped_results = neighbor_results.groupby(
+        "query_latent_row",
+        sort=True,
+    )
+
+    for query_row_value, query_results in grouped_results:
+        query_row = int(query_row_value)
+        query_results = query_results.sort_values(
+            "neighbor_rank"
+        )
+
+        expected_ranks = list(
+            range(1, neighbors_per_query + 1)
+        )
+        actual_ranks = [
+            int(rank)
+            for rank in query_results["neighbor_rank"]
+        ]
+
+        if actual_ranks != expected_ranks:
+            raise ValueError(
+                "Neighbor ranks are incomplete for query row: "
+                f"{query_row}"
+            )
+
+        if query_row not in molecule_lookup.index:
+            raise ValueError(
+                f"Unknown query latent row: {query_row}"
+            )
+
+        query_molecule = molecule_lookup.loc[query_row]
+        query_id = str(query_molecule["id"])
+
+        recorded_query_ids = set(
+            query_results["query_id"].astype(str)
+        )
+        if recorded_query_ids != {query_id}:
+            raise ValueError(
+                "Neighbor query ID does not match molecule data "
+                f"for row: {query_row}"
+            )
+
+        if str(query_molecule["split"]) != "test":
+            raise ValueError(
+                "Neighbor query must belong to the test split."
+            )
+
+        neighbors: list[dict[str, Any]] = []
+
+        for result in query_results.itertuples(index=False):
+            neighbor_row = int(result.neighbor_latent_row)
+
+            if neighbor_row not in molecule_lookup.index:
+                raise ValueError(
+                    f"Unknown neighbor latent row: {neighbor_row}"
+                )
+
+            neighbor_molecule = molecule_lookup.loc[
+                neighbor_row
+            ]
+            neighbor_id = str(neighbor_molecule["id"])
+
+            if neighbor_id != str(result.neighbor_id):
+                raise ValueError(
+                    "Neighbor ID does not match molecule data "
+                    f"for row: {neighbor_row}"
+                )
+
+            if str(neighbor_molecule["split"]) != "train":
+                raise ValueError(
+                    "Neighbor reference must belong to "
+                    "the training split."
+                )
+
+            neighbors.append(
+                {
+                    "rank": int(result.neighbor_rank),
+                    "row": neighbor_row,
+                    "id": neighbor_id,
+                    "latentDistance": normalize_numeric_value(
+                        result.latent_distance,
+                        numeric_precision,
+                    ),
+                    "tanimoto": normalize_numeric_value(
+                        result.tanimoto_similarity,
+                        numeric_precision,
+                    ),
+                }
+            )
+
+        queries[query_id] = {
+            "queryRow": query_row,
+            "neighbors": neighbors,
+        }
+
+    return {
+        "schemaVersion": schema_version,
+        "queryCount": len(queries),
+        "neighborsPerQuery": neighbors_per_query,
+        "queries": queries,
+    }
+
 def load_web_export_config(
     config_path: Path,
 ) -> dict[str, Any]:
@@ -364,6 +526,31 @@ def main() -> None:
         payload=molecule_payload,
         artifact_path=molecules_path,
     )
+
+    neighbor_payload = create_neighbor_payload(
+        neighbor_results_path=resolve_project_path(
+            project_root,
+            data_config["neighbor_results_path"],
+        ),
+        molecule_table=molecule_table,
+        schema_version=int(export_config["schema_version"]),
+        neighbors_per_query=int(
+            export_config["neighbors_per_query"]
+        ),
+        numeric_precision=int(
+            export_config["coordinate_precision"]
+        ),
+    )
+
+    neighbors_path = resolve_project_path(
+        project_root,
+        config["artifacts"]["neighbors_path"],
+    )
+    write_json_artifact(
+        payload=neighbor_payload,
+        artifact_path=neighbors_path,
+    )
+
     
 
     print(f"Aligned molecules: {len(molecule_table)}")
@@ -375,7 +562,11 @@ def main() -> None:
     print(f"Test molecules: {split_counts.get('test', 0)}")
     print("Projection metadata alignment: valid")
     print(f"Molecule JSON saved to: {molecules_path}")
-
+    print(
+        f"Neighbor queries exported: "
+        f"{neighbor_payload['queryCount']}"
+    )
+    print(f"Neighbor JSON saved to: {neighbors_path}")
 
 if __name__ == "__main__":
     main()
