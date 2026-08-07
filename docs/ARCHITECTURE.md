@@ -42,7 +42,8 @@ flowchart TD
     U --> V["Validation-only<br/>threshold selection"]
     V --> W["Held-out reconstruction<br/>F1 and Tanimoto metrics"]
     W --> X["Multi-seed and<br/>latent-dimension robustness"]
-    X --> Y["Next: API and<br/>interactive web integration"]    
+    X --> Y["Aligned browser JSON<br/>molecules, neighbors, metrics"]
+    Y --> Z["Next: backend API and<br/>interactive web explorer"]  
 ```
 
 ## Repository components
@@ -66,6 +67,9 @@ flowchart TD
 | `configs/qm9_fingerprint_vae.yaml` | Defines the QM9 Fingerprint VAE baseline training settings. |
 | `configs/fingerprint_vae.yaml` | Default Fingerprint VAE experiment settings. |
 | `web/` | Independent React/Vite frontend scaffold; it has no model-data integration yet. |
+| `backend/export_web_data.py` | Validates aligned scientific artifacts and exports browser-ready JSON contracts. |
+| `configs/qm9_web_export.yaml` | Defines browser-export inputs, precision, properties, schema, and output paths. |
+| `web/public/data/` | Versioned molecule, neighbor, metrics, and manifest data served by the frontend. |
 
 ## Data preprocessing
 
