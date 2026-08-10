@@ -59,7 +59,11 @@ export function LatentScatterPlot({
           size: 5,
           opacity: 0.72,
           color: colors,
-          colorscale: 'Cividis',
+          colorscale: [
+  [0, '#8870ff'],
+  [0.5, '#eff0eb'],
+  [1, '#d31111'],
+],
           showscale: true,
           colorbar: {
             title: {
