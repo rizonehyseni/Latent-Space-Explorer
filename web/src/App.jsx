@@ -1,22 +1,32 @@
+import { useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
 
+const propertyLabels = {
+  molecular_weight: 'Molecular weight',
+  logp: 'LogP',
+  tpsa: 'TPSA',
+  ring_count: 'Ring count',
+  num_heavy_atoms: 'Heavy atoms',
+  gap: 'HOMO–LUMO gap',
+}
+
 function formatMetric(value) {
-  return Number(value).toFixed(4)
+  return Number(value).toFixed(3)
 }
 
 function LoadingState() {
   return (
     <main className="state-page">
-      <section className="state-card" aria-live="polite">
+      <section className="state-message" aria-live="polite">
         <div className="loading-indicator" aria-hidden="true" />
-        <p className="eyebrow">Preparing the explorer</p>
-        <h1>Loading aligned QM9 data</h1>
+        <p className="eyebrow">Preparing explorer</p>
+        <h1>Loading QM9 latent-space data</h1>
         <p>
-          Reading molecule coordinates, molecular properties,
-          neighbors, and scientific metrics.
+          Aligning molecular projections, properties, neighbors,
+          and scientific metrics.
         </p>
       </section>
     </main>
@@ -26,9 +36,9 @@ function LoadingState() {
 function ErrorState({ error, retry }) {
   return (
     <main className="state-page">
-      <section className="state-card error-card" role="alert">
+      <section className="state-message error-message" role="alert">
         <p className="eyebrow">Data loading failed</p>
-        <h1>Unable to open the latent-space dataset</h1>
+        <h1>Unable to open the dataset</h1>
         <p>{error.message}</p>
         <button type="button" onClick={retry}>
           Retry
@@ -38,147 +48,230 @@ function ErrorState({ error, retry }) {
   )
 }
 
-function MetricCard({ label, value, description }) {
-  return (
-    <article className="metric-card">
-      <p>{label}</p>
-      <strong>{value}</strong>
-      <span>{description}</span>
-    </article>
-  )
-}
+function ExplorerDashboard({ data }) {
+  const [projection, setProjection] = useState('umap')
+  const [colorProperty, setColorProperty] = useState('gap')
 
-function ExplorerOverview({ data }) {
   const { manifest, molecules, metrics } = data
   const { dataset } = manifest
-  const splitCounts = dataset.splitCounts
   const neighborMetrics = metrics.neighborAnalysis
-  const reconstructionMetrics =
-    metrics.reconstructionAnalysis
-  const robustnessMetrics = metrics.robustnessAnalysis
+  const reconstructionMetrics = metrics.reconstructionAnalysis
 
   return (
-    <div className="app-shell">
-      <header className="site-header">
-        <div>
-          <p className="eyebrow">Molecular representation analysis</p>
-          <h1>Latent Space Explorer</h1>
-          <p className="subtitle">
-            Explore QM9 molecular fingerprints, latent projections,
-            nearest neighbors, and model evidence.
-          </p>
+    <main className="app-shell">
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand-symbol" aria-hidden="true">
+            LS
+          </span>
+
+          <div>
+            <h1>Latent Space Explorer</h1>
+          </div>
         </div>
 
-        <div className="dataset-badge">
-          <span>Dataset</span>
-          <strong>{dataset.name}</strong>
-          <small>
-            {numberFormatter.format(dataset.moleculeCount)} molecules
-          </small>
-        </div>
+        <nav className="projection-navigation" aria-label="Projection">
+          {dataset.coordinateSystems.map((coordinateSystem) => (
+            <button
+              className={
+                projection === coordinateSystem ? 'active' : ''
+              }
+              key={coordinateSystem}
+              type="button"
+              onClick={() => setProjection(coordinateSystem)}
+            >
+              {coordinateSystem.toUpperCase()}
+            </button>
+          ))}
+        </nav>
+
       </header>
 
-      <main>
-        <section className="summary-section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Data connection verified</p>
-              <h2>Browser dataset overview</h2>
-            </div>
-            <span className="schema-badge">
-              Schema v{manifest.schemaVersion}
-            </span>
-          </div>
+      <div className="explorer-layout">
+        <aside className="context-panel">
+          <p className="eyebrow">Molecular map</p>
 
-          <div className="split-summary">
-            <MetricCard
-              label="Training"
-              value={numberFormatter.format(splitCounts.train)}
-              description="Model-fitting molecules"
-            />
-            <MetricCard
-              label="Validation"
-              value={numberFormatter.format(
-                splitCounts.validation,
-              )}
-              description="Checkpoint and threshold selection"
-            />
-            <MetricCard
-              label="Test"
-              value={numberFormatter.format(splitCounts.test)}
-              description="Held-out evaluation molecules"
-            />
-            <MetricCard
-              label="Loaded records"
-              value={numberFormatter.format(
-                molecules.molecules.length,
-              )}
-              description="PCA and UMAP rows aligned"
-            />
-          </div>
-        </section>
 
-        <section className="summary-section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Scientific evidence</p>
-              <h2>Current quantitative results</h2>
+          <p className="introduction">
+            Each point represents one molecule encoded by the
+            fingerprint variational autoencoder. Nearby points may
+            share structural characteristics.
+          </p>
+
+
+          <div className="map-controls">
+            <label htmlFor="color-property">
+              Color molecules by
+            </label>
+
+            <select
+              id="color-property"
+              value={colorProperty}
+              onChange={(event) =>
+                setColorProperty(event.target.value)
+              }
+            >
+              {dataset.properties.map((property) => (
+                <option key={property} value={property}>
+                  {propertyLabels[property] ?? property}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="molecule-search">
+              Find a molecule
+            </label>
+
+            <div className="search-control">
+              <input
+                id="molecule-search"
+                type="search"
+                placeholder="e.g. gdb_1001"
+              />
+              <button type="button">Find</button>
             </div>
           </div>
 
-          <div className="result-grid">
-            <MetricCard
-              label="Neighbor Tanimoto"
-              value={formatMetric(
-                neighborMetrics.meanNeighborTanimoto,
-              )}
-              description="Mean latent-neighbor similarity"
-            />
-            <MetricCard
-              label="Random baseline"
-              value={formatMetric(
-                neighborMetrics.meanRandomTanimoto,
-              )}
-              description="Mean random-reference similarity"
-            />
-            <MetricCard
-              label="Reconstruction F1"
-              value={formatMetric(
-                reconstructionMetrics.metrics.f1Score,
-              )}
-              description="Validation-selected threshold"
-            />
-            <MetricCard
-              label="Reconstruction Tanimoto"
-              value={formatMetric(
-                reconstructionMetrics.metrics.meanTanimoto,
-              )}
-              description="Mean held-out similarity"
-            />
-            <MetricCard
-              label="Robustness runs"
-              value={robustnessMetrics.runCount}
-              description="Three seeds × three dimensions"
-            />
-          </div>
-        </section>
+          <details className="interpretation-note">
+            <summary>Interpretation guidance</summary>
+            <ul>
+              {manifest.scientificWarnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          </details>
+        </aside>
 
-        <section className="summary-section warning-section">
-          <div className="section-heading">
+        <section className="map-workspace">
+          <div className="map-heading">
             <div>
-              <p className="eyebrow">Interpretation boundaries</p>
-              <h2>Read the map carefully</h2>
+              <p className="eyebrow">
+                Learned representation
+              </p>
+              <h2>{projection.toUpperCase()} projection</h2>
+            </div>
+
+            <div className="map-heading-meta">
+              <span>
+                Color: {propertyLabels[colorProperty]}
+              </span>
+              <span>
+                {numberFormatter.format(
+                  molecules.molecules.length,
+                )}{' '}
+                points
+              </span>
             </div>
           </div>
 
-          <ul>
-            {manifest.scientificWarnings.map((warning) => (
-              <li key={warning}>{warning}</li>
-            ))}
-          </ul>
+          <div className="plot-layout">
+            <div className="plot-placeholder">
+              <span className="axis-label axis-label-y">
+                {projection.toUpperCase()} 2
+              </span>
+
+              <div className="plot-message">
+                <strong>Interactive molecular map</strong>
+                <p>
+                  The scatter plot will be rendered here in the
+                  next implementation step.
+                </p>
+              </div>
+
+              <span className="axis-label axis-label-x">
+                {projection.toUpperCase()} 1
+              </span>
+            </div>
+
+            <aside className="property-legend">
+              <p>Property scale</p>
+              <span>{propertyLabels[colorProperty]}</span>
+
+              <div
+                className="legend-scale"
+                aria-label="Property color scale"
+              />
+
+              <div className="legend-range">
+                <small>Low</small>
+                <small>High</small>
+              </div>
+            </aside>
+          </div>
+
+          <div className="molecule-summary">
+            <div>
+              <p className="eyebrow">Selected molecule</p>
+              <strong>None selected</strong>
+              <span>
+                Select a point to inspect its molecular properties
+                and nearest neighbors.
+              </span>
+            </div>
+
+            <dl>
+              <div>
+                <dt>Latent X</dt>
+                <dd>—</dd>
+              </div>
+              <div>
+                <dt>Latent Y</dt>
+                <dd>—</dd>
+              </div>
+              <div>
+                <dt>SMILES</dt>
+                <dd>—</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="evidence-strip">
+            <div>
+              <span>Neighbor Tanimoto</span>
+              <strong>
+                {formatMetric(
+                  neighborMetrics.meanNeighborTanimoto,
+                )}
+              </strong>
+            </div>
+
+            <div>
+              <span>Random baseline</span>
+              <strong>
+                {formatMetric(
+                  neighborMetrics.meanRandomTanimoto,
+                )}
+              </strong>
+            </div>
+
+            <div>
+              <span>Reconstruction F1</span>
+              <strong>
+                {formatMetric(
+                  reconstructionMetrics.metrics.f1Score,
+                )}
+              </strong>
+            </div>
+
+            <div>
+              <span>Reconstruction Tanimoto</span>
+              <strong>
+                {formatMetric(
+                  reconstructionMetrics.metrics.meanTanimoto,
+                )}
+              </strong>
+            </div>
+          </div>
         </section>
-      </main>
-    </div>
+      </div>
+
+      <footer className="site-footer">
+        <span>Latent Space Explorer</span>
+        <span>
+          Schema v{manifest.schemaVersion} · scientific prototype
+        </span>
+      </footer>
+    </main>
   )
 }
 
@@ -193,7 +286,7 @@ function App() {
     return <ErrorState error={error} retry={retry} />
   }
 
-  return <ExplorerOverview data={data} />
+  return <ExplorerDashboard data={data} />
 }
 
 export default App
