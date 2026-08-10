@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
+import { LatentScatterPlot } from './components/LatentScatterPlot.jsx'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
 
@@ -51,6 +52,7 @@ function ErrorState({ error, retry }) {
 function ExplorerDashboard({ data }) {
   const [projection, setProjection] = useState('umap')
   const [colorProperty, setColorProperty] = useState('gap')
+  const [selectedMolecule, setSelectedMolecule] = useState(null)
 
   const { manifest, molecules, metrics } = data
   const { dataset } = manifest
@@ -164,66 +166,55 @@ function ExplorerDashboard({ data }) {
             </div>
           </div>
 
-          <div className="plot-layout">
-            <div className="plot-placeholder">
-              <span className="axis-label axis-label-y">
-                {projection.toUpperCase()} 2
-              </span>
+<div className="plot-layout">
+  <LatentScatterPlot
+    molecules={molecules.molecules}
+    projection={projection}
+    colorProperty={colorProperty}
+    selectedMolecule={selectedMolecule}
+    onSelectMolecule={setSelectedMolecule}
+  />
+</div>
 
-              <div className="plot-message">
-                <strong>Interactive molecular map</strong>
-                <p>
-                  The scatter plot will be rendered here in the
-                  next implementation step.
-                </p>
-              </div>
+         <div className="molecule-summary">
+  <div>
+    <strong>
+      {selectedMolecule?.id ?? 'No molecule selected'}
+    </strong>
 
-              <span className="axis-label axis-label-x">
-                {projection.toUpperCase()} 1
-              </span>
-            </div>
+    <span>
+      {selectedMolecule
+        ? `Dataset split: ${selectedMolecule.split}`
+        : 'Select a point to inspect its molecular properties and nearest neighbors.'}
+    </span>
+  </div>
 
-            <aside className="property-legend">
-              <p>Property scale</p>
-              <span>{propertyLabels[colorProperty]}</span>
+  <dl>
+    <div>
+      <dt>{projection.toUpperCase()} X</dt>
+      <dd>
+        {selectedMolecule
+          ? selectedMolecule.coordinates[projection][0].toFixed(3)
+          : '—'}
+      </dd>
+    </div>
 
-              <div
-                className="legend-scale"
-                aria-label="Property color scale"
-              />
+    <div>
+      <dt>{projection.toUpperCase()} Y</dt>
+      <dd>
+        {selectedMolecule
+          ? selectedMolecule.coordinates[projection][1].toFixed(3)
+          : '—'}
+      </dd>
+    </div>
 
-              <div className="legend-range">
-                <small>Low</small>
-                <small>High</small>
-              </div>
-            </aside>
-          </div>
-
-          <div className="molecule-summary">
-            <div>
-              <p className="eyebrow">Selected molecule</p>
-              <strong>None selected</strong>
-              <span>
-                Select a point to inspect its molecular properties
-                and nearest neighbors.
-              </span>
-            </div>
-
-            <dl>
-              <div>
-                <dt>Latent X</dt>
-                <dd>—</dd>
-              </div>
-              <div>
-                <dt>Latent Y</dt>
-                <dd>—</dd>
-              </div>
-              <div>
-                <dt>SMILES</dt>
-                <dd>—</dd>
-              </div>
-            </dl>
-          </div>
+    <div>
+      <dt>SMILES</dt>
+      <dd>{selectedMolecule?.smiles ?? '—'}</dd>
+    </div>
+  </dl>
+</div>
+         
 
           <div className="evidence-strip">
             <div>
