@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
 import { LatentScatterPlot } from './components/LatentScatterPlot.jsx'
 import { MoleculeInspector } from './components/MoleculeInspector.jsx'
-
+import { ExplorerFilters } from './components/ExplorerFilters.jsx'
+import {
+  filterMolecules,
+  getPropertyBounds,
+} from './data/filterMolecules.js'
 const numberFormatter = new Intl.NumberFormat('en-US')
+const allDatasetSplits = ['train', 'validation', 'test']
 
 const propertyLabels = {
   molecular_weight: 'Molecular weight',
@@ -51,16 +56,48 @@ function ErrorState({ error, retry }) {
 }
 
 function ExplorerDashboard({ data }) {
+  const { manifest, molecules, neighbors, metrics } = data
+  const { dataset } = manifest
+  const allMolecules = molecules.molecules
+
   const [projection, setProjection] = useState('umap')
   const [colorProperty, setColorProperty] = useState('gap')
   const [selectedMolecule, setSelectedMolecule] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchMessage, setSearchMessage] = useState('') 
-  const { manifest, molecules,neighbors, metrics } = data
-  const { dataset } = manifest
+  const [searchMessage, setSearchMessage] = useState('')
+  const [activeSplits, setActiveSplits] = useState(
+    allDatasetSplits,
+  )
+  const [propertyRange, setPropertyRange] = useState(null)
+
   const neighborMetrics = metrics.neighborAnalysis
   const reconstructionMetrics = metrics.reconstructionAnalysis
 
+  const propertyBounds = useMemo(
+    () => getPropertyBounds(allMolecules, colorProperty),
+    [allMolecules, colorProperty],
+  )
+
+  const effectivePropertyRange =
+    propertyRange ?? propertyBounds
+
+  const visibleMolecules = useMemo(
+    () =>
+      filterMolecules({
+        molecules: allMolecules,
+        activeSplits,
+        propertyName: colorProperty,
+        propertyMinimum: effectivePropertyRange.minimum,
+        propertyMaximum: effectivePropertyRange.maximum,
+      }),
+    [
+      allMolecules,
+      activeSplits,
+      colorProperty,
+      effectivePropertyRange.minimum,
+      effectivePropertyRange.maximum,
+    ],
+  )
   function handleMoleculeSearch(event) {
   event.preventDefault()
 
@@ -71,7 +108,7 @@ function ExplorerDashboard({ data }) {
     return
   }
 
-  const matchingMolecule = molecules.molecules.find(
+  const matchingMolecule = allMolecules.find(
     (molecule) =>
       molecule.id.toLowerCase() === normalizedQuery,
   )
@@ -83,11 +120,59 @@ function ExplorerDashboard({ data }) {
     return
   }
 
-  setSelectedMolecule(matchingMolecule)
+    setSelectedMolecule(matchingMolecule)
   setSearchQuery(matchingMolecule.id)
   setSearchMessage(`Selected ${matchingMolecule.id}.`)
+  setPropertyRange(null)
+
+  setActiveSplits((currentSplits) =>
+    currentSplits.includes(matchingMolecule.split)
+      ? currentSplits
+      : [...currentSplits, matchingMolecule.split],
+  )
 }
-  return (
+
+function handleToggleSplit(split) {
+  setActiveSplits((currentSplits) =>
+    currentSplits.includes(split)
+      ? currentSplits.filter(
+          (currentSplit) => currentSplit !== split,
+        )
+      : [...currentSplits, split],
+  )
+}
+
+function handleChangeMinimum(value) {
+  setPropertyRange({
+    minimum: Math.max(
+      propertyBounds.minimum,
+      Math.min(value, effectivePropertyRange.maximum),
+    ),
+    maximum: effectivePropertyRange.maximum,
+  })
+}
+
+function handleChangeMaximum(value) {
+  setPropertyRange({
+    minimum: effectivePropertyRange.minimum,
+    maximum: Math.min(
+      propertyBounds.maximum,
+      Math.max(value, effectivePropertyRange.minimum),
+    ),
+  })
+}
+
+function handleClearFilters() {
+  setActiveSplits(allDatasetSplits)
+  setPropertyRange(null)
+}
+
+function handleColorPropertyChange(event) {
+  setColorProperty(event.target.value)
+  setPropertyRange(null)
+}
+
+return (
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
@@ -137,9 +222,7 @@ function ExplorerDashboard({ data }) {
             <select
               id="color-property"
               value={colorProperty}
-              onChange={(event) =>
-                setColorProperty(event.target.value)
-              }
+              onChange={handleColorPropertyChange}
             >
               {dataset.properties.map((property) => (
                 <option key={property} value={property}>
@@ -180,6 +263,19 @@ function ExplorerDashboard({ data }) {
 </p>
           </div>
 
+          <ExplorerFilters
+            activeSplits={activeSplits}
+            propertyLabel={propertyLabels[colorProperty]}
+            propertyBounds={propertyBounds}
+            propertyRange={effectivePropertyRange}
+            visibleCount={visibleMolecules.length}
+            totalCount={allMolecules.length}
+            onToggleSplit={handleToggleSplit}
+            onChangeMinimum={handleChangeMinimum}
+            onChangeMaximum={handleChangeMaximum}
+            onClearFilters={handleClearFilters}
+          />
+
           <details className="interpretation-note">
             <summary>Interpretation guidance</summary>
             <ul>
@@ -204,17 +300,15 @@ function ExplorerDashboard({ data }) {
                 Color: {propertyLabels[colorProperty]}
               </span>
               <span>
-                {numberFormatter.format(
-                  molecules.molecules.length,
-                )}{' '}
-                points
+               {numberFormatter.format(visibleMolecules.length)} of{' '}
+{numberFormatter.format(allMolecules.length)} points
               </span>
             </div>
           </div>
 
 <div className="plot-layout">
   <LatentScatterPlot
-    molecules={molecules.molecules}
+    molecules={visibleMolecules}
     projection={projection}
     colorProperty={colorProperty}
     selectedMolecule={selectedMolecule}
@@ -225,7 +319,7 @@ function ExplorerDashboard({ data }) {
 <MoleculeInspector
   selectedMolecule={selectedMolecule}
   projection={projection}
-  molecules={molecules.molecules}
+  molecules={allMolecules}
   neighbors={neighbors}
   onSelectMolecule={setSelectedMolecule}
 />
