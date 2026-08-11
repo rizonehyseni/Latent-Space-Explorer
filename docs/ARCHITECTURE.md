@@ -4,46 +4,29 @@
 
 ## Scope and status
 
-Latent Space Explorer currently provides a reproducible molecular latent-space workflow: it prepares QM9 fingerprints, trains and evaluates a variational autoencoder, exports deterministic latent vectors, analyzes latent organization, retrieves molecular neighbors, and evaluates held-out fingerprint reconstruction. The React and Vite frontend is scaffolded but is not yet connected to the machine-learning pipeline.
+Latent Space Explorer provides an end-to-end molecular representation workflow. It prepares QM9 fingerprints, trains and evaluates a variational autoencoder, exports deterministic latent vectors, analyzes latent organization, evaluates molecular neighbors and fingerprint reconstruction, exports validated browser data, and provides an interactive React/Plotly explorer.
 
 ## System overview
 
 ```mermaid
 flowchart TD
-    A["QM9 source archive"] --> B["QM9 preparation"]
-    B --> C["Deterministic subset<br/>10,000 molecules"]
-    C --> D["RDKit preprocessing"]
-    D --> E["Morgan fingerprints<br/>Molecular metadata"]
-    E --> F["Deterministic splits<br/>8,000 / 1,000 / 1,000"]
+    A["QM9 source data"] --> B["Deterministic subset<br/>10,000 molecules"]
+    B --> C["Morgan fingerprints<br/>and molecular properties"]
+    C --> D["Train / validation / test<br/>8,000 / 1,000 / 1,000"]
 
-    F --> G["Fingerprint VAE training"]
-    G --> H["Validation-based<br/>checkpoint selection"]
-    H --> I["Held-out test evaluation"]
-    I --> J["Loss metrics<br/>Training-history figure"]
+    D --> E["Fingerprint VAE<br/>training"]
+    E --> F["Checkpoint and<br/>test evaluation"]
+    E --> G["16D latent vectors"]
 
-    H --> K["Deterministic latent export<br/>μ ∈ R¹⁶"]
-    K --> L["Training-fitted PCA"]
-    K --> M["Training-fitted UMAP"]
+    G --> H["PCA and UMAP<br/>projections"]
+    G --> I["Latent neighbors and<br/>Tanimoto analysis"]
+    F --> J["Reconstruction and<br/>robustness evaluation"]
 
-    E --> N["Aligned molecular properties"]
-    L --> O["Property-colored<br/>PCA figures"]
-    M --> P["Property-colored<br/>UMAP figures"]
-    N --> O
-    N --> P
+    H --> K["Validated browser<br/>data export"]
+    I --> K
+    J --> K
 
-    K --> Q["16D latent-neighbor retrieval<br/>Test queries → training references"]
-    E --> R["Morgan fingerprints<br/>2,048 bits"]
-    Q --> S["Tanimoto similarity"]
-    R --> S
-    S --> T["Comparison with<br/>random baseline"]
-
-    H --> U["Deterministic fingerprint<br/>reconstruction"]
-    E --> U
-    U --> V["Validation-only<br/>threshold selection"]
-    V --> W["Held-out reconstruction<br/>F1 and Tanimoto metrics"]
-    W --> X["Multi-seed and<br/>latent-dimension robustness"]
-    X --> Y["Aligned browser JSON<br/>molecules, neighbors, metrics"]
-    Y --> Z["Next: backend API and<br/>interactive web explorer"]  
+    K --> L["Interactive React and Plotly explorer"]
 ```
 
 ## Repository components
@@ -66,7 +49,7 @@ flowchart TD
 | `configs/qm9_processing.yaml` | Defines QM9 preprocessing and split settings. |
 | `configs/qm9_fingerprint_vae.yaml` | Defines the QM9 Fingerprint VAE baseline training settings. |
 | `configs/fingerprint_vae.yaml` | Default Fingerprint VAE experiment settings. |
-| `web/` | Independent React/Vite frontend scaffold; it has no model-data integration yet. |
+| `web/` | Interactive React/Vite and Plotly application for PCA/UMAP exploration, property coloring, molecule search, filtering, inspection, and neighbor comparison. |
 | `backend/export_web_data.py` | Validates aligned scientific artifacts and exports browser-ready JSON contracts. |
 | `configs/qm9_web_export.yaml` | Defines browser-export inputs, precision, properties, schema, and output paths. |
 | `web/public/data/` | Versioned molecule, neighbor, metrics, and manifest data served by the frontend. |
@@ -143,31 +126,13 @@ Both terms use sum reduction within a batch. The training loop reports per-sampl
 
 At the end of training, `models/molecular_vae.pt` contains the model state dictionary, experiment name, model configuration, training configuration, seed, and in-memory training history. Processed data and checkpoints are ignored by Git.
 
-## Frontend boundary
-
-The `web/` directory is a standard React/Vite application. Its current interface is the starter screen and its dependencies do not yet include Three.js or React Three Fiber. No API, static JSON export, or endpoint currently transports molecule metadata, latent vectors, reconstructions, or interpolation results to the browser.
-
 ## Current constraints
 
-- The tracked sample data contains only a few molecules and is suitable for checking the pipeline, not for scientific training or evaluation. Its one-molecule validation subset is not statistically meaningful.
-- A dense VAE over Morgan fingerprints can reconstruct fingerprint features, but does not decode directly to chemically valid SMILES or molecular graphs.
-- The repository does not yet export latent vectors for visualization.
-- No FastAPI application or inference endpoint is currently implemented, despite FastAPI appearing in the dependency list.
+- The model reconstructs Morgan fingerprints rather than valid molecular graphs or SMILES strings.
+- The main experiment uses a deterministic 10,000-molecule QM9 subset.
+- PCA and UMAP cannot preserve every relationship in the original latent space.
+- Exported neighbor results cover the 1,000 held-out test queries.
+- The dense fingerprint VAE is a baseline architecture.
+- The browser consumes static scientific artifacts and does not perform model inference.
 
-## Next architectural increment
-
-## Next increment
-
-The next implementation stage is latent-vector export.
-
-The export workflow should load the selected QM9 Fingerprint VAE checkpoint and create a documented latent-space dataset containing:
-
-- molecule identifiers;
-- canonical SMILES;
-- train, validation, and test labels;
-- selected molecular descriptors;
-- 16-dimensional latent coordinates;
-- model and configuration metadata.
-
-That artifact will support the first PCA or UMAP visualization, nearest-neighbor analysis, and the future frontend explorer.
 </div>
