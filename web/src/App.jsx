@@ -54,12 +54,39 @@ function ExplorerDashboard({ data }) {
   const [projection, setProjection] = useState('umap')
   const [colorProperty, setColorProperty] = useState('gap')
   const [selectedMolecule, setSelectedMolecule] = useState(null)
-
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchMessage, setSearchMessage] = useState('') 
   const { manifest, molecules,neighbors, metrics } = data
   const { dataset } = manifest
   const neighborMetrics = metrics.neighborAnalysis
   const reconstructionMetrics = metrics.reconstructionAnalysis
 
+  function handleMoleculeSearch(event) {
+  event.preventDefault()
+
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+
+  if (!normalizedQuery) {
+    setSearchMessage('Enter a molecule ID.')
+    return
+  }
+
+  const matchingMolecule = molecules.molecules.find(
+    (molecule) =>
+      molecule.id.toLowerCase() === normalizedQuery,
+  )
+
+  if (!matchingMolecule) {
+    setSearchMessage(
+      `No molecule found with ID "${searchQuery.trim()}".`,
+    )
+    return
+  }
+
+  setSelectedMolecule(matchingMolecule)
+  setSearchQuery(matchingMolecule.id)
+  setSearchMessage(`Selected ${matchingMolecule.id}.`)
+}
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -125,14 +152,32 @@ function ExplorerDashboard({ data }) {
               Find a molecule
             </label>
 
-            <div className="search-control">
-              <input
-                id="molecule-search"
-                type="search"
-                placeholder="e.g. gdb_1001"
-              />
-              <button type="button">Find</button>
-            </div>
+            <form
+  className="search-control"
+  onSubmit={handleMoleculeSearch}
+>
+  <input
+    id="molecule-search"
+    type="search"
+    value={searchQuery}
+    placeholder="e.g. gdb_1001"
+    aria-describedby="search-message"
+    onChange={(event) => {
+      setSearchQuery(event.target.value)
+      setSearchMessage('')
+    }}
+  />
+
+  <button type="submit">Find</button>
+</form>
+
+<p
+  className="search-message"
+  id="search-message"
+  aria-live="polite"
+>
+  {searchMessage}
+</p>
           </div>
 
           <details className="interpretation-note">
