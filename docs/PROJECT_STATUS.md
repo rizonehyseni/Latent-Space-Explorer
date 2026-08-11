@@ -1,10 +1,8 @@
 # Project Status
 
-## Current phase
+The project has completed its reproducible QM9 Fingerprint VAE pipeline, latent-space analyses, reconstruction and neighbor evaluations, robustness experiments, browser-data export, and interactive web explorer.
 
-The project has completed its first reproducible QM9 Fingerprint VAE baseline, latent-space analyses, latent-neighbor evaluation, and held-out fingerprint reconstruction evaluation.
-
-The current system can prepare QM9 data, train and evaluate a Fingerprint VAE, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and quantitatively evaluate reconstructed fingerprints.
+The system can prepare QM9 data, train and evaluate the model, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and interactively explore PCA and UMAP projections in the browser.
 
 
 ## Completed work
@@ -25,6 +23,7 @@ The current system can prepare QM9 data, train and evaluate a Fingerprint VAE, e
 | Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
 | Robustness evaluation | Nine runs across three seeds and three latent dimensions |
 | Browser data export | Aligned molecule, neighbor, metrics, and manifest JSON generated for the frontend |
+| Interactive web explorer | PCA/UMAP visualization, property coloring, molecule search, filtering, property inspection, and neighbor comparison |
 
 ## Current baseline result
 
@@ -110,30 +109,14 @@ See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), [P
 
 ## Known limitations
 
-The current model reconstructs fixed-length Morgan fingerprints rather than molecular graphs or SMILES strings. It therefore cannot directly generate chemically valid molecular structures.
+The model reconstructs fixed-length Morgan fingerprints rather than molecular graphs or SMILES strings. It therefore cannot directly generate guaranteed-valid molecular structures.
 
-The project has not yet evaluated:
+The present study uses a deterministic 10,000-molecule subset of QM9 rather than the complete dataset.
 
-- repeated training across multiple random seeds;
-- alternative latent dimensions;
-- alternative latent-distance metrics;
-- alternative model architectures;
-- statistical confidence intervals for neighbor evaluation.
+PCA and UMAP are two-dimensional projections and cannot preserve every relationship in the original latent space.
 
-Tanimoto similarity measures fingerprint overlap and should not be interpreted as complete chemical, biological, or functional similarity.
+Nearest-neighbor results are available for the 1,000 held-out test queries evaluated against the 8,000 training references.
 
-## Current work
+Tanimoto similarity measures Morgan-fingerprint overlap and should not be interpreted as complete chemical, biological, or functional similarity.
 
-
-The browser-ready QM9 data export is complete.
-
-The frontend can now load aligned molecule identities, canonical SMILES, dataset splits, PCA and UMAP coordinates, molecular properties, nearest neighbors, scientific metrics, and interpretation warnings from versioned JSON artifacts.
-
-See [WEB_DATA_EXPORT.md](WEB_DATA_EXPORT.md) for the complete schema and reproducibility record.
-
-## Next planned step
-
-The next branch should connect the exported artifacts to the application interface.
-
-The first web milestone should load the export manifest and molecule data, validate their schema versions, and display clear loading and error states before introducing the interactive latent-space plot.
-
+The dense fingerprint VAE is a controlled baseline rather than a state-of-the-art graph-generative architecture.
