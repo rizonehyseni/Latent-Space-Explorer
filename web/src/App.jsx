@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
 import { LatentScatterPlot } from './components/LatentScatterPlot.jsx'
+import { MoleculeInspector } from './components/MoleculeInspector.jsx'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
 
@@ -53,12 +54,39 @@ function ExplorerDashboard({ data }) {
   const [projection, setProjection] = useState('umap')
   const [colorProperty, setColorProperty] = useState('gap')
   const [selectedMolecule, setSelectedMolecule] = useState(null)
-
-  const { manifest, molecules, metrics } = data
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchMessage, setSearchMessage] = useState('') 
+  const { manifest, molecules,neighbors, metrics } = data
   const { dataset } = manifest
   const neighborMetrics = metrics.neighborAnalysis
   const reconstructionMetrics = metrics.reconstructionAnalysis
 
+  function handleMoleculeSearch(event) {
+  event.preventDefault()
+
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+
+  if (!normalizedQuery) {
+    setSearchMessage('Enter a molecule ID.')
+    return
+  }
+
+  const matchingMolecule = molecules.molecules.find(
+    (molecule) =>
+      molecule.id.toLowerCase() === normalizedQuery,
+  )
+
+  if (!matchingMolecule) {
+    setSearchMessage(
+      `No molecule found with ID "${searchQuery.trim()}".`,
+    )
+    return
+  }
+
+  setSelectedMolecule(matchingMolecule)
+  setSearchQuery(matchingMolecule.id)
+  setSearchMessage(`Selected ${matchingMolecule.id}.`)
+}
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -124,14 +152,32 @@ function ExplorerDashboard({ data }) {
               Find a molecule
             </label>
 
-            <div className="search-control">
-              <input
-                id="molecule-search"
-                type="search"
-                placeholder="e.g. gdb_1001"
-              />
-              <button type="button">Find</button>
-            </div>
+            <form
+  className="search-control"
+  onSubmit={handleMoleculeSearch}
+>
+  <input
+    id="molecule-search"
+    type="search"
+    value={searchQuery}
+    placeholder="e.g. gdb_1001"
+    aria-describedby="search-message"
+    onChange={(event) => {
+      setSearchQuery(event.target.value)
+      setSearchMessage('')
+    }}
+  />
+
+  <button type="submit">Find</button>
+</form>
+
+<p
+  className="search-message"
+  id="search-message"
+  aria-live="polite"
+>
+  {searchMessage}
+</p>
           </div>
 
           <details className="interpretation-note">
@@ -176,44 +222,13 @@ function ExplorerDashboard({ data }) {
   />
 </div>
 
-         <div className="molecule-summary">
-  <div>
-    <strong>
-      {selectedMolecule?.id ?? 'No molecule selected'}
-    </strong>
-
-    <span>
-      {selectedMolecule
-        ? `Dataset split: ${selectedMolecule.split}`
-        : 'Select a point to inspect its molecular properties and nearest neighbors.'}
-    </span>
-  </div>
-
-  <dl>
-    <div>
-      <dt>{projection.toUpperCase()} X</dt>
-      <dd>
-        {selectedMolecule
-          ? selectedMolecule.coordinates[projection][0].toFixed(3)
-          : '—'}
-      </dd>
-    </div>
-
-    <div>
-      <dt>{projection.toUpperCase()} Y</dt>
-      <dd>
-        {selectedMolecule
-          ? selectedMolecule.coordinates[projection][1].toFixed(3)
-          : '—'}
-      </dd>
-    </div>
-
-    <div>
-      <dt>SMILES</dt>
-      <dd>{selectedMolecule?.smiles ?? '—'}</dd>
-    </div>
-  </dl>
-</div>
+<MoleculeInspector
+  selectedMolecule={selectedMolecule}
+  projection={projection}
+  molecules={molecules.molecules}
+  neighbors={neighbors}
+  onSelectMolecule={setSelectedMolecule}
+/>
          
 
           <div className="evidence-strip">
