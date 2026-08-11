@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
 import { LatentScatterPlot } from './components/LatentScatterPlot.jsx'
+import { MoleculeInspector } from './components/MoleculeInspector.jsx'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
 
@@ -54,7 +55,7 @@ function ExplorerDashboard({ data }) {
   const [colorProperty, setColorProperty] = useState('gap')
   const [selectedMolecule, setSelectedMolecule] = useState(null)
 
-  const { manifest, molecules, metrics } = data
+  const { manifest, molecules,neighbors, metrics } = data
   const { dataset } = manifest
   const neighborMetrics = metrics.neighborAnalysis
   const reconstructionMetrics = metrics.reconstructionAnalysis
@@ -176,44 +177,13 @@ function ExplorerDashboard({ data }) {
   />
 </div>
 
-         <div className="molecule-summary">
-  <div>
-    <strong>
-      {selectedMolecule?.id ?? 'No molecule selected'}
-    </strong>
-
-    <span>
-      {selectedMolecule
-        ? `Dataset split: ${selectedMolecule.split}`
-        : 'Select a point to inspect its molecular properties and nearest neighbors.'}
-    </span>
-  </div>
-
-  <dl>
-    <div>
-      <dt>{projection.toUpperCase()} X</dt>
-      <dd>
-        {selectedMolecule
-          ? selectedMolecule.coordinates[projection][0].toFixed(3)
-          : '—'}
-      </dd>
-    </div>
-
-    <div>
-      <dt>{projection.toUpperCase()} Y</dt>
-      <dd>
-        {selectedMolecule
-          ? selectedMolecule.coordinates[projection][1].toFixed(3)
-          : '—'}
-      </dd>
-    </div>
-
-    <div>
-      <dt>SMILES</dt>
-      <dd>{selectedMolecule?.smiles ?? '—'}</dd>
-    </div>
-  </dl>
-</div>
+<MoleculeInspector
+  selectedMolecule={selectedMolecule}
+  projection={projection}
+  molecules={molecules.molecules}
+  neighbors={neighbors}
+  onSelectMolecule={setSelectedMolecule}
+/>
          
 
           <div className="evidence-strip">
