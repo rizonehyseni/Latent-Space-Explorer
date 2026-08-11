@@ -1,6 +1,8 @@
- <h1 align="center">Latent Space Explorer: Generative VAE framework for molecular topology</h1>
+<h1 align="center">Latent Space Explorer</h1>
 
-<div align="justify">
+<p align="center">
+An interactive and reproducible analysis of molecular representations learned by a fingerprint variational autoencoder.
+</p>
 
 ### System Understanding
 
