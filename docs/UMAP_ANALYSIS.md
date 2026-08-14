@@ -59,7 +59,7 @@ Fitting UMAP only on training vectors prevents validation and test molecules fro
 
 The UMAP projection contains several separated regions and locally connected structures. Training, validation, and test points remain intermingled throughout these regions rather than forming split-specific groups. This is consistent with the three deterministic dataset partitions having similar overall latent distributions.
 
-The visible regions cannot yet be interpreted as chemically meaningful clusters. The figure is colored only by dataset split, and no molecular property or fingerprint-similarity measurement has been associated with the projected neighborhoods.
+This split-colored figure alone cannot establish chemically meaningful clusters. The completed property-colored maps show systematic descriptor variation across several projected regions, and the latent-neighbor evaluation shows greater fingerprint similarity than the random baseline. These results support non-random molecular organization, while the weak distance-similarity correlation prevents interpreting UMAP proximity as complete chemical similarity.
 
 ## Comparison with PCA
 
@@ -67,14 +67,18 @@ PCA provides a linear global overview in which the first two components explain 
 
 The shapes, distances, orientation, and sizes of UMAP regions should not be compared directly with PCA geometry. UMAP does not provide an explained-variance measure, and large distances between projected regions do not necessarily represent proportional distances in the original latent space.
 
-Together, PCA and UMAP show that the dataset splits cover similar projected regions. Neither visualization alone demonstrates that nearby molecules are chemically similar.
+Together, PCA and UMAP show that the dataset splits cover similar projected regions. Their interpretation is strengthened by the separate property and neighbor analyses, but neither two-dimensional visualization should be treated as a complete molecular-similarity metric.
 
 ## Limitations
 
-- UMAP can distort global distances, region sizes, and relative positions.
+## Limitations
+
+- UMAP can distort global distances, region sizes, orientation, and relative positions.
 - The projection depends on its selected parameters and random seeds.
-- Visible regions have not been validated using molecular properties.
-- Latent-space neighbors have not been compared using Tanimoto similarity.
-- The visualization does not measure fingerprint reconstruction quality.
-- A two-dimensional projection cannot preserve every relationship in the original 16-dimensional latent space.
+- Two-dimensional proximity does not preserve every relationship from the 16-dimensional latent space.
+- The split-colored figure does not directly display molecular-property values.
+- Tanimoto enrichment is measured in the original latent-neighbor experiment, not from visual UMAP distance.
+- The visualization does not directly measure fingerprint reconstruction quality.
+
+Related evidence is documented in [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md), [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md), and [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md).
 
