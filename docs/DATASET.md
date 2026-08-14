@@ -182,6 +182,11 @@ The QM9 baseline dataset pipeline is complete for the first controlled experimen
 | Morgan fingerprint generation | Complete |
 | Deterministic train, validation, and test split creation | Complete |
 | Baseline Fingerprint VAE training and held-out test evaluation | Complete |
+| Deterministic latent-vector export | Complete |
+| PCA, UMAP, and molecular-property analysis | Complete |
+| Latent-neighbor and reconstruction evaluation | Complete |
+| Multi-seed and latent-dimension robustness analysis | Complete |
+| Validated browser-data export | Complete |
 
 The processed QM9 subset contains:
 
@@ -196,12 +201,12 @@ The first QM9 Fingerprint VAE baseline was trained using this dataset. The model
 
 ## Current limitations
 
-The dataset pipeline is reproducible, but the current baseline does not yet include:
 
-- fingerprint bit-level reconstruction accuracy;
-- Tanimoto similarity between original and reconstructed fingerprints;
-- latent-coordinate export;
-- molecular-property analysis across latent space;
-- repeated runs across multiple random seeds.
+- The experiment uses a deterministic 10,000-molecule subset rather than the complete QM9 collection.
+- Random train, validation, and test splits do not measure scaffold-level generalization.
+- QM9 primarily represents small organic molecules and does not cover the broader diversity of drug-like chemistry.
+- Morgan fingerprints discard explicit three-dimensional geometry and are not directly invertible into valid molecular structures.
+- The selected subset may not preserve the complete property distribution of full QM9.
+- Results should not be generalized automatically to larger molecules or other molecular datasets.
 
-These capabilities belong to the next research stages.
+These limitations define the scope of the current controlled baseline rather than incomplete implementation work.
