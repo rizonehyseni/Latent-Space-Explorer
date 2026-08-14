@@ -6,7 +6,7 @@ This artifact converts the selected QM9 Fingerprint VAE checkpoint into a reusab
 
 Each processed QM9 molecule receives one deterministic 16-dimensional latent vector. The exported vectors are aligned with molecule identifiers, canonical SMILES, descriptors, and train/validation/test labels.
 
-This artifact is the input for future PCA, UMAP, nearest-neighbor analysis, property-colored latent maps, and the interactive explorer.
+This artifact is the shared input for the completed PCA, UMAP, property-colored visualization, latent-neighbor analysis, browser-data export, and interactive explorer workflows.
 
 ## Reproducible command
 
@@ -24,13 +24,12 @@ The export configuration is stored in:
 
 The VAE encoder produces two outputs:
 
-- latent mean: μ
-- latent log variance: log σ²
+- latent mean: `mu`;
+- latent log variance: `log_var`.
 
-This export saves μ, the encoder mean vector.
+This export saves `mu`, the deterministic encoder mean vector.
 
-The project intentionally does not sample a random latent vector during export. Using μ ensures that the same trained checkpoint and the same input molecule always produce the same latent coordinates.
-
+The project intentionally does not sample a random latent vector during export.Using the latent mean ensures that the same trained checkpoint and input molecule always produce the same latent coordinates.
 ## Generated artifacts
 
 - `data/processed/qm9/latent_vectors.npy`
@@ -82,6 +81,16 @@ A provenance file recording:
 
 ## Current scientific scope
 
-The exported coordinates make latent-space analysis possible, but they do not alone prove that the representation is chemically meaningful.
+The exported coordinates enable reproducible latent-space analysis, but they do not alone prove that the representation is chemically meaningful.
 
-The next step is to project the 16-dimensional vectors with PCA and UMAP, then test whether nearby points share fingerprint similarity or molecular-property patterns.
+The completed downstream analyses include:
+
+- training-fitted PCA and UMAP projections;
+- molecular-property-colored latent maps;
+- test-to-training nearest-neighbor retrieval;
+- Morgan-fingerprint Tanimoto comparison;
+- fingerprint reconstruction evaluation;
+- browser-ready scientific data export;
+- interactive molecular exploration.
+
+The results show enrichment for fingerprint similarity relative to random references, while also showing that Euclidean latent distance is not a complete molecular-similarity measure.
