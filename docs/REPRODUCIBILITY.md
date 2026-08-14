@@ -252,33 +252,45 @@ Expected generated artifacts:
 
 The exporter validates PCA and UMAP row alignment, molecule identities, dataset splits, molecular properties, neighbor queries, and training references before writing frontend JSON.
 
-The manifest records file sizes and SHA-256 checksums for all exported browser artifacts.## 13. Export browser-ready QM9 data
-
-Run:
-
-`python -m backend.export_web_data --config configs/qm9_web_export.yaml`
-
-Expected generated artifacts:
-
-- `web/public/data/qm9_molecules.json`
-- `web/public/data/qm9_neighbors.json`
-- `web/public/data/qm9_metrics.json`
-- `web/public/data/qm9_web_export_manifest.json`
-
-The exporter validates PCA and UMAP row alignment, molecule identities, dataset splits, molecular properties, neighbor queries, and training references before writing frontend JSON.
-
 The manifest records file sizes and SHA-256 checksums for all exported browser artifacts.
 
-## 14. Run the complete test suite
+## 14. Run the backend test suite
 
-Run:
+Run from the repository root with the virtual environment active:
 
-`python -m unittest discover -s tests -v`
+```powershell
+python -m unittest discover -s tests -v
+```
 
+The current suite contains 36 passing tests covering dataset splits, latent export, PCA, UMAP, property alignment, neighbor analysis, fingerprint reconstruction, robustness, figure generation, and browser-data export.
+
+## 15. Run and validate the web explorer
+
+Install the frontend dependencies:
+
+```powershell
+cd web
+npm install
+```
+
+Start the development application:
+
+```powershell
+npm run dev
+```
+
+Validate the production application:
+
+```powershell
+npm run lint
+npm run build
+```
+
+The explorer should load all 10,000 molecules and support PCA/UMAP switching, property coloring, molecule search, dataset filtering, property filtering, molecule inspection, and held-out neighbor comparison.
 
 ## Reproducibility notes
 
-The generated datasets, model checkpoints, and result JSON files are excluded from Git because they are generated artifacts.
+Large processed datasets, model checkpoints, and intermediate experiment results are excluded from Git because they are reproducible generated artifacts. The validated browser JSON artifacts under `web/public/data/` are tracked so the interactive explorer can run directly after installing its dependencies.
 
 The repository stores:
 

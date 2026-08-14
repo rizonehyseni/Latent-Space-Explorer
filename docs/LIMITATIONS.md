@@ -29,7 +29,7 @@ The project does not yet measure:
 - statistically validated latent-cluster quality;
 - reconstruction of valid molecular graphs or SMILES.
 
-The current result is therefore a training baseline, not yet evidence of chemically meaningful latent organization.
+The results provide evidence that the latent representation enriches for fingerprint similarity relative to random references, but they do not establish complete chemical, biological, or functional organization.
 
 ## Dataset scope
 
@@ -57,29 +57,25 @@ Deterministic latent vectors are exported as an aligned dataset artifact. The pr
 
 Latent nearest neighbors have higher mean fingerprint similarity than random training molecules. However, the relationship between Euclidean latent distance and Tanimoto similarity is weak.
 
-The project does not yet provide:
-
-- statistically validated latent-cluster analysis;
-- repeated neighbor evaluation across multiple trained seeds;
-- alternative latent-distance metrics;
-- interpolation trajectories;
-- interactive 3D exploration.
-
-The next implementation stage is API and interactive web integration. Future paper-focused experiments should add model baselines, ablations, and stronger statistical comparisons.
-
 ## Frontend scope
 
-The frontend is currently a React and Vite foundation.
+The React, Vite, and Plotly explorer loads validated static scientific artifacts and supports:
 
-It does not yet load trained-model artifacts or display molecular data.
+- interactive PCA and UMAP visualization;
+- molecular-property coloring;
+- molecule search and selection;
+- dataset-split and property-range filtering;
+- molecular-property inspection;
+- latent-neighbor and Tanimoto comparison.
 
-The future explorer will require:
+Current frontend limitations include:
 
-- a latent-coordinate data format;
-- molecular metadata and descriptor files;
-- a 2D or 3D projection pipeline;
-- molecule selection and inspection;
-- a rendering layer such as Three.js or React Three Fiber.
+- no direct model inference in the browser;
+- no molecular-structure drawing;
+- no latent interpolation interface;
+- no three-dimensional projection;
+- neighbor tables are limited to exported held-out test queries;
+- deployment and final responsive-layout validation remain incomplete.
 
 ## Reproducibility scope
 

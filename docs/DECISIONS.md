@@ -65,12 +65,15 @@ Use a latent dimension of 16 for the initial Fingerprint VAE configuration.
 - It provides a clear baseline for dimensionality experiments.
 
 **Tradeoff:**  
-The selected dimension has not yet been compared with alternative latent sizes.
+Latent dimensionality changes compression capacity but did not materially change reconstruction performance across the tested 8-, 16-, and 32-dimensional configurations.
+
+**Outcome:**  
+Nine robustness runs across three seeds showed similar reconstruction performance for 8, 16, and 32 dimensions. The 16-dimensional configuration showed the lowest variation and remains the primary baseline.
 
 **Future reconsideration:**  
-Compare 8, 16, 32, and 64 dimensions after a larger dataset and test protocol are available.
+Reassess the latent dimension when using the complete QM9 dataset, alternative molecular representations, or graph-based architectures.
 
-## Decision 004 
+## Decision 004 - Use separate YAML configuration profiles
 
 **Date:** July 2026
 
@@ -94,7 +97,7 @@ More configuration files require clearer documentation and validation.
 **Outcome:**
 The current QM9 baseline can be reproduced from explicit dataset and training configurations.
 
-## Decision 005 
+## Decision 005 - Use a deterministic 10,000-molecule QM9 subset
 
 **Date:** July 2026
 

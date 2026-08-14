@@ -110,8 +110,20 @@ This result is stronger evidence than visual inspection of PCA or UMAP figures, 
 - The experiment uses a 10,000-molecule QM9 subset.
 - Confidence intervals and repeated-model variability have not yet been measured.
 
-## Next analysis
+## Completed reconstruction follow-up
 
-The next analysis should evaluate fingerprint reconstruction quality on the held-out test split.
+Fingerprint reconstruction quality was evaluated on the held-out test split after selecting the probability threshold exclusively on validation data.
 
-It should measure bit-level accuracy, precision, recall, F1 score, and Tanimoto similarity between original and reconstructed fingerprints.
+The selected threshold of `0.25` produced:
+
+| Metric | Result |
+|---|---:|
+| Precision | 0.6106 |
+| Recall | 0.4147 |
+| F1 score | 0.4940 |
+| Mean Tanimoto | 0.3307 |
+
+This reconstruction experiment complements the neighbor analysis: neighbor evaluation measures local organization between molecules, while reconstruction evaluation measures how well individual fingerprint information survives encoding and decoding.
+
+See [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md).
+

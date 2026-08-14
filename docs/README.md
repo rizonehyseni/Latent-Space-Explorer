@@ -1,6 +1,6 @@
 # Documentation Guide
 
-This directory is the project’s technical and research record. Documentation is updated only when the related implementation or experiment exists.
+This directory contains the project's technical and research documentation. Features and results are documented only after they have been implemented and verified.
 
 ## Documents
 
@@ -16,6 +16,7 @@ This directory is the project’s technical and research record. Documentation i
 | [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md) | Held-out fingerprint reconstruction metrics, validation-based threshold selection, figures, and limitations. |
 | [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md) | Multi-seed and latent-dimension robustness experiment, results, interpretation, and limitations. |
 | [WEB_DATA_EXPORT.md](WEB_DATA_EXPORT.md) | Browser-ready QM9 molecule, neighbor, metrics, and manifest JSON contracts. |
+| [Web application](../web/README.md) | Interactive React/Plotly explorer, local setup, features, validation, and scientific boundaries. |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | Reproducible records of completed training runs and their interpretation. |
 | [FIGURES/README.md](FIGURES/README.md) | Figure, screenshot, and video capture conventions. |
 
