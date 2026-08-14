@@ -122,7 +122,7 @@ For each batch, the objective is:
 
 `total loss = binary cross-entropy with logits + KL divergence`
 
-Both terms use sum reduction within a batch. The training loop reports per-sample total, reconstruction, and KL losses after each epoch. The configured `validation_fraction` creates a deterministic non-empty train/validation split using the experiment seed; validation runs without gradient updates and records the same three metrics. There is still no test split, early stopping, or metric logging service.
+Both terms use sum reduction within a batch. The QM9 workflow uses deterministic, non-overlapping training, validation, and held-out test splits. Training metrics are recorded after each epoch, the best checkpoint is selected using validation loss, and the held-out test split is evaluated only after checkpoint selection.
 
 At the end of training, `models/molecular_vae.pt` contains the model state dictionary, experiment name, model configuration, training configuration, seed, and in-memory training history. Processed data and checkpoints are ignored by Git.
 
@@ -134,5 +134,21 @@ At the end of training, `models/molecular_vae.pt` contains the model state dicti
 - Exported neighbor results cover the 1,000 held-out test queries.
 - The dense fingerprint VAE is a baseline architecture.
 - The browser consumes static scientific artifacts and does not perform model inference.
+- The Plotly dependency produces a relatively large production JavaScript bundle.
 
+## Browser integration
+
+The Python backend exports versioned static JSON artifacts containing:
+
+- aligned molecule identities and canonical SMILES;
+- train, validation, and test labels;
+- PCA and UMAP coordinates;
+- molecular properties;
+- nearest neighbors for held-out test queries;
+- reconstruction, neighbor, and robustness metrics;
+- schema and checksum metadata.
+
+The React frontend validates and loads these artifacts before rendering the Plotly WebGL visualization. It supports projection switching, property coloring, molecule search, split and property filtering, molecule inspection, and neighbor comparison.
+
+Scientific computation remains in the Python backend. The browser does not train the VAE, calculate latent vectors, or recompute evaluation metrics.
 </div>
