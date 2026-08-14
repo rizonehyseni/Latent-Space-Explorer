@@ -254,6 +254,39 @@ The exporter validates PCA and UMAP row alignment, molecule identities, dataset 
 
 The manifest records file sizes and SHA-256 checksums for all exported browser artifacts.
 
+## 14. Run the backend test suite
+
+Run from the repository root with the virtual environment active:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+The current suite contains 36 passing tests covering dataset splits, latent export, PCA, UMAP, property alignment, neighbor analysis, fingerprint reconstruction, robustness, figure generation, and browser-data export.
+
+## 15. Run and validate the web explorer
+
+Install the frontend dependencies:
+
+```powershell
+cd web
+npm install
+```
+
+Start the development application:
+
+```powershell
+npm run dev
+```
+
+Validate the production application:
+
+```powershell
+npm run lint
+npm run build
+```
+
+The explorer should load all 10,000 molecules and support PCA/UMAP switching, property coloring, molecule search, dataset filtering, property filtering, molecule inspection, and held-out neighbor comparison.
 
 ## Reproducibility notes
 
