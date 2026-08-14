@@ -64,7 +64,7 @@ LogP, TPSA, and ring count show visible local changes across several projected r
 
 Molecular weight and heavy-atom count again show related color patterns. Heavy-atom count is visually dominated by molecules with nine heavy atoms because this value is highly frequent in the selected subset.
 
-The visible UMAP regions must not yet be interpreted as chemically meaningful clusters. UMAP can distort global distance, region size, orientation, and separation.
+The visible UMAP regions should not be interpreted as complete chemical clusters. UMAP can distort global distance, region size, orientation, and separation, while property gradients describe only the selected molecular descriptors.
 
 ## Comparison of PCA and UMAP
 
@@ -72,7 +72,7 @@ PCA provides a linear global view, while UMAP emphasizes nonlinear local neighbo
 
 Both projections suggest that molecular properties are not distributed completely randomly across the latent space. UMAP makes local property patterns more visible, whereas PCA provides a more conservative global overview.
 
-The figures remain exploratory evidence. A quantitative analysis is required to determine whether latent-space proximity corresponds to chemical or fingerprint similarity.
+The figures provide exploratory evidence of structured property variation. The completed latent-neighbor analysis provides a separate quantitative test of whether proximity in the original 16-dimensional space corresponds to Morgan-fingerprint similarity.
 
 ## Limitations
 
@@ -82,10 +82,14 @@ The figures remain exploratory evidence. A quantitative analysis is required to 
 - Quantile clipping compresses extreme property values in the color scale.
 - Ring count and heavy-atom count are discrete properties displayed with continuous color maps.
 - Property gradients do not prove that latent neighbors are chemically similar.
-- The current analysis does not measure Morgan-fingerprint Tanimoto similarity.
+- Tanimoto similarity is evaluated separately in the original 16-dimensional latent space rather than inferred from two-dimensional plot distance.
 
-## Next analysis
+## Completed quantitative follow-up
 
-The next analysis should identify nearest neighbors in the original 16-dimensional latent space and compare latent distance with Morgan-fingerprint Tanimoto similarity.
+The latent-neighbor experiment evaluated 1,000 held-out test queries against 8,000 training references.
 
-This will test whether local latent neighborhoods contain molecules with similar fingerprint representations.
+Mean neighbor Tanimoto similarity was `0.2312`, compared with `0.0774` for the random baseline. This shows that the learned representation enriches local neighborhoods for fingerprint similarity.
+
+However, the Spearman correlation between latent distance and Tanimoto similarity was only `-0.1252`. Latent proximity is therefore informative but not a complete molecular-similarity measure.
+
+See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
