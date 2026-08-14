@@ -1,5 +1,6 @@
 # Project Status
 
+## Current phase
 The project has completed its reproducible QM9 Fingerprint VAE pipeline, latent-space analyses, reconstruction and neighbor evaluations, robustness experiments, browser-data export, and interactive web explorer.
 
 The system can prepare QM9 data, train and evaluate the model, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and interactively explore PCA and UMAP projections in the browser.
@@ -120,3 +121,20 @@ Nearest-neighbor results are available for the 1,000 held-out test queries evalu
 Tanimoto similarity measures Morgan-fingerprint overlap and should not be interpreted as complete chemical, biological, or functional similarity.
 
 The dense fingerprint VAE is a controlled baseline rather than a state-of-the-art graph-generative architecture.
+
+## Implementation status
+
+The scientific backend and the core interactive web application are functionally complete.
+
+Automated verification currently includes 36 passing backend tests, frontend lint validation, and a successful frontend production build.
+
+## Remaining finalization work
+
+- complete the documentation consistency review;
+- add final dashboard screenshots and a short demonstration GIF;
+- perform final responsive-layout and accessibility checks;
+- reduce or document the large Plotly production bundle;
+- deploy the static web application;
+- add the live-demo link to the repository;
+- finalize the Overleaf technical report;
+- create the first public project release.
