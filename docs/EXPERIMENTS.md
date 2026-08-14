@@ -57,7 +57,7 @@ The model trained on 8,000 QM9 molecules, selected the checkpoint with the lowes
 
 The test loss is close to the validation loss, suggesting that this baseline generalizes consistently across the held-out partitions. The best validation result occurred at the final epoch, indicating that the model was still improving when the 50-epoch run ended.
 
-These results establish the first meaningful Fingerprint VAE baseline for the project. They do not yet measure fingerprint reconstruction accuracy, chemical validity, latent-space neighborhood quality, or molecular-property organization.
+These results establish the main Fingerprint VAE baseline. Subsequent experiments evaluate fingerprint reconstruction, latent-neighbor quality, molecular-property organization, and robustness across seeds and latent dimensions. The model still does not establish chemical validity because it reconstructs fingerprints rather than molecular graphs.
 
 ### Retained local artifacts
 
@@ -73,3 +73,49 @@ models/qm9_fingerprint_vae_results.json
 ![QM9 Fingerprint VAE training and validation curves](FIGURES/qm9-fingerprint-vae-training-curves-v1.png)
 
 *Figure 1. Per-sample training and validation total loss, reconstruction loss, and KL divergence for the 16-dimensional Fingerprint VAE trained on the 10,000-molecule QM9 subset. Validation loss decreased throughout the 50-epoch experiment, with the best validation result occurring at epoch 50. The final held-out test loss was comparable to the validation loss, supporting consistent baseline generalization across the prepared QM9 partitions.*
+
+## Completed downstream experiments
+
+### Latent-space visualization
+
+Deterministic latent means were exported for all 10,000 molecules. PCA and UMAP were fitted using the training partition and applied consistently to validation and test molecules.
+
+Property-colored projections were generated for molecular weight, LogP, TPSA, ring count, heavy-atom count, and HOMO-LUMO gap.
+
+See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
+
+### Latent-neighbor evaluation
+
+The 1,000 held-out test molecules were used as queries against 8,000 training references.
+
+| Metric | Result |
+|---|---:|
+| Mean neighbor Tanimoto | 0.2312 |
+| Mean random-baseline Tanimoto | 0.0774 |
+| Mean improvement | 0.1537 |
+| Neighbor beats random | 94.94% |
+| Distance/Tanimoto Spearman correlation | -0.1252 |
+
+Latent neighbors were substantially more similar than random references, although latent Euclidean distance remained only weakly associated with fingerprint similarity.
+
+See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
+
+### Fingerprint reconstruction evaluation
+
+The reconstruction threshold was selected on the validation split and applied once to the held-out test split.
+
+| Metric | Result |
+|---|---:|
+| Selected threshold | 0.25 |
+| Precision | 0.6106 |
+| Recall | 0.4147 |
+| F1 score | 0.4940 |
+| Mean Tanimoto | 0.3307 |
+
+See [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md).
+
+### Robustness evaluation
+
+Nine runs compared latent dimensions 8, 16, and 32 across seeds 7, 42, and 123. Reconstruction performance remained stable across the tested settings, while the 16-dimensional configuration showed the lowest variation.
+
+See [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md).
