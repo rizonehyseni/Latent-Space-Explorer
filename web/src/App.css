@@ -187,27 +187,6 @@
   border-color: var(--text-secondary);
 }
 
-.interpretation-note {
-  margin-top: 26px;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-.interpretation-note summary {
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.interpretation-note ul {
-  display: grid;
-  gap: 10px;
-  margin: 14px 0 0;
-  padding-left: 20px;
-  line-height: 1.6;
-}
-
-/* Visualization workspace */
-
 .map-workspace {
   min-width: 0;
   padding: 24px;
@@ -417,18 +396,6 @@
   font-weight: 500;
 }
 
-/* Footer */
-
-.site-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 14px 6px 0;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-/* Loading and error states */
-
 .state-page {
   display: grid;
   min-height: 100vh;
@@ -555,11 +522,6 @@
   .molecule-summary dl,
   .evidence-strip {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .site-footer {
-    gap: 10px;
-    flex-direction: column;
   }
 }
 

@@ -271,15 +271,6 @@ return (
             onChangeMaximum={handleChangeMaximum}
             onClearFilters={handleClearFilters}
           />
-
-          <details className="interpretation-note">
-            <summary>Interpretation guidance</summary>
-            <ul>
-              {manifest.scientificWarnings.map((warning) => (
-                <li key={warning}>{warning}</li>
-              ))}
-            </ul>
-          </details>
         </aside>
 
         <section className="map-workspace">
@@ -360,13 +351,6 @@ return (
           </div>
         </section>
       </div>
-
-      <footer className="site-footer">
-        <span>Latent Space Explorer</span>
-        <span>
-          Schema v{manifest.schemaVersion} · scientific prototype
-        </span>
-      </footer>
     </main>
   )
 }
