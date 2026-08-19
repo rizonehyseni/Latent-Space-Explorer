@@ -98,6 +98,32 @@ function ExplorerDashboard({ data }) {
       effectivePropertyRange.maximum,
     ],
   )
+
+function handleSelectMolecule(molecule) {
+  if (!molecule) {
+    setSelectedMolecule(null)
+    return
+  }
+
+  setSelectedMolecule(molecule)
+
+  setActiveSplits((currentSplits) =>
+    currentSplits.includes(molecule.split)
+      ? currentSplits
+      : [...currentSplits, molecule.split],
+  )
+
+  const propertyValue =
+    molecule.properties[colorProperty]
+
+  if (
+    propertyValue < effectivePropertyRange.minimum ||
+    propertyValue > effectivePropertyRange.maximum
+  ) {
+    setPropertyRange(null)
+  }
+}  
+
   function handleMoleculeSearch(event) {
   event.preventDefault()
 
@@ -120,16 +146,9 @@ function ExplorerDashboard({ data }) {
     return
   }
 
-    setSelectedMolecule(matchingMolecule)
-  setSearchQuery(matchingMolecule.id)
-  setSearchMessage(`Selected ${matchingMolecule.id}.`)
-  setPropertyRange(null)
-
-  setActiveSplits((currentSplits) =>
-    currentSplits.includes(matchingMolecule.split)
-      ? currentSplits
-      : [...currentSplits, matchingMolecule.split],
-  )
+handleSelectMolecule(matchingMolecule)
+setSearchQuery(matchingMolecule.id)
+setSearchMessage(`Selected ${matchingMolecule.id}.`)
 }
 
 function handleToggleSplit(split) {
@@ -300,7 +319,7 @@ return (
       projection={projection}
       colorProperty={colorProperty}
       selectedMolecule={selectedMolecule}
-      onSelectMolecule={setSelectedMolecule}
+      onSelectMolecule={handleSelectMolecule}
     />
   ) : (
     <div className="empty-plot" role="status">
