@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  filterMolecules,
-  getPropertyBounds,
-} from './filterMolecules.js'
+import { filterMolecules } from './filterMolecules.js'
 
 const molecules = [
   {
@@ -28,43 +25,11 @@ const molecules = [
   },
 ]
 
-describe('getPropertyBounds', () => {
-  it('returns the minimum and maximum finite values', () => {
-    expect(
-      getPropertyBounds(molecules, 'logp'),
-    ).toEqual({
-      minimum: -1.5,
-      maximum: 2.5,
-    })
-  })
-
-  it('returns zero bounds when no finite values exist', () => {
-    expect(
-      getPropertyBounds(
-        [
-          {
-            properties: {
-              logp: Number.NaN,
-            },
-          },
-        ],
-        'logp',
-      ),
-    ).toEqual({
-      minimum: 0,
-      maximum: 0,
-    })
-  })
-})
-
 describe('filterMolecules', () => {
-  it('filters by dataset split and inclusive property range', () => {
+  it('filters molecules by dataset split', () => {
     const result = filterMolecules({
       molecules,
       activeSplits: ['train', 'validation'],
-      propertyName: 'logp',
-      propertyMinimum: -1.5,
-      propertyMaximum: 0.5,
     })
 
     expect(result.map((molecule) => molecule.id)).toEqual([
@@ -77,25 +42,21 @@ describe('filterMolecules', () => {
     const result = filterMolecules({
       molecules,
       activeSplits: [],
-      propertyName: 'logp',
-      propertyMinimum: -1.5,
-      propertyMaximum: 2.5,
     })
 
     expect(result).toEqual([])
   })
 
-  it('excludes molecules outside the selected range', () => {
+  it('returns every molecule when all splits are enabled', () => {
     const result = filterMolecules({
       molecules,
       activeSplits: ['train', 'validation', 'test'],
-      propertyName: 'logp',
-      propertyMinimum: 0,
-      propertyMaximum: 1,
     })
 
     expect(result.map((molecule) => molecule.id)).toEqual([
+      'train-low',
       'validation-middle',
+      'test-high',
     ])
   })
 })

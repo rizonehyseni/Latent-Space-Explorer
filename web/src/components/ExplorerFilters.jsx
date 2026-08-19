@@ -6,14 +6,9 @@ const splitLabels = {
 
 export function ExplorerFilters({
   activeSplits,
-  propertyLabel,
-  propertyBounds,
-  propertyRange,
   visibleCount,
   totalCount,
   onToggleSplit,
-  onChangeMinimum,
-  onChangeMaximum,
   onClearFilters,
 }) {
   return (
@@ -42,53 +37,6 @@ export function ExplorerFilters({
           ),
         )}
       </fieldset>
-
-      <div className="property-range-filter">
-        <p>{propertyLabel} range</p>
-
-        <div className="range-inputs">
-          <label>
-            <span>Minimum</span>
-            <input
-              type="number"
-              step="any"
-              min={propertyBounds.minimum}
-              max={propertyBounds.maximum}
-              value={propertyRange.minimum}
-              onChange={(event) => {
-                if (Number.isFinite(event.target.valueAsNumber)) {
-                  onChangeMinimum(
-                    event.target.valueAsNumber,
-                  )
-                }
-              }}
-            />
-          </label>
-
-          <label>
-            <span>Maximum</span>
-            <input
-              type="number"
-              step="any"
-              min={propertyBounds.minimum}
-              max={propertyBounds.maximum}
-              value={propertyRange.maximum}
-              onChange={(event) => {
-                if (Number.isFinite(event.target.valueAsNumber)) {
-                  onChangeMaximum(
-                    event.target.valueAsNumber,
-                  )
-                }
-              }}
-            />
-          </label>
-        </div>
-
-        <p className="available-range">
-          Available: {propertyBounds.minimum.toFixed(3)} to{' '}
-          {propertyBounds.maximum.toFixed(3)}
-        </p>
-      </div>
 
       <p className="visible-count" aria-live="polite">
         <strong>{visibleCount.toLocaleString()}</strong> of{' '}

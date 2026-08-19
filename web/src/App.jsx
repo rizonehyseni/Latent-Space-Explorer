@@ -3,7 +3,7 @@ import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
 import { MoleculeInspector } from './components/MoleculeInspector.jsx'
 import { ExplorerFilters } from './components/ExplorerFilters.jsx'
-import {filterMolecules,getPropertyBounds } from './data/filterMolecules.js'
+import { filterMolecules } from './data/filterMolecules.js'
 
 const LatentScatterPlot = lazy(async () => {
   const module = await import(
@@ -75,35 +75,16 @@ function ExplorerDashboard({ data }) {
   const [activeSplits, setActiveSplits] = useState(
     allDatasetSplits,
   )
-  const [propertyRange, setPropertyRange] = useState(null)
-
   const neighborMetrics = metrics.neighborAnalysis
   const reconstructionMetrics = metrics.reconstructionAnalysis
-
-  const propertyBounds = useMemo(
-    () => getPropertyBounds(allMolecules, colorProperty),
-    [allMolecules, colorProperty],
-  )
-
-  const effectivePropertyRange =
-    propertyRange ?? propertyBounds
 
   const visibleMolecules = useMemo(
     () =>
       filterMolecules({
         molecules: allMolecules,
         activeSplits,
-        propertyName: colorProperty,
-        propertyMinimum: effectivePropertyRange.minimum,
-        propertyMaximum: effectivePropertyRange.maximum,
       }),
-    [
-      allMolecules,
-      activeSplits,
-      colorProperty,
-      effectivePropertyRange.minimum,
-      effectivePropertyRange.maximum,
-    ],
+    [allMolecules, activeSplits],
   )
 
 function handleSelectMolecule(molecule) {
@@ -120,15 +101,6 @@ function handleSelectMolecule(molecule) {
       : [...currentSplits, molecule.split],
   )
 
-  const propertyValue =
-    molecule.properties[colorProperty]
-
-  if (
-    propertyValue < effectivePropertyRange.minimum ||
-    propertyValue > effectivePropertyRange.maximum
-  ) {
-    setPropertyRange(null)
-  }
 }  
 
   function handleMoleculeSearch(event) {
@@ -168,34 +140,12 @@ function handleToggleSplit(split) {
   )
 }
 
-function handleChangeMinimum(value) {
-  setPropertyRange({
-    minimum: Math.max(
-      propertyBounds.minimum,
-      Math.min(value, effectivePropertyRange.maximum),
-    ),
-    maximum: effectivePropertyRange.maximum,
-  })
-}
-
-function handleChangeMaximum(value) {
-  setPropertyRange({
-    minimum: effectivePropertyRange.minimum,
-    maximum: Math.min(
-      propertyBounds.maximum,
-      Math.max(value, effectivePropertyRange.minimum),
-    ),
-  })
-}
-
 function handleClearFilters() {
   setActiveSplits(allDatasetSplits)
-  setPropertyRange(null)
 }
 
 function handleColorPropertyChange(event) {
   setColorProperty(event.target.value)
-  setPropertyRange(null)
 }
 
 return (
@@ -287,14 +237,9 @@ return (
 
           <ExplorerFilters
             activeSplits={activeSplits}
-            propertyLabel={propertyLabels[colorProperty]}
-            propertyBounds={propertyBounds}
-            propertyRange={effectivePropertyRange}
             visibleCount={visibleMolecules.length}
             totalCount={allMolecules.length}
             onToggleSplit={handleToggleSplit}
-            onChangeMinimum={handleChangeMinimum}
-            onChangeMaximum={handleChangeMaximum}
             onClearFilters={handleClearFilters}
           />
         </aside>
@@ -340,8 +285,8 @@ return (
     <div className="empty-plot" role="status">
       <h3>No molecules match these filters</h3>
       <p>
-        Adjust the dataset splits or property range to restore
-        molecules to the projection.
+        Enable at least one dataset split to restore molecules to
+        the projection.
       </p>
       <button type="button" onClick={handleClearFilters}>
         Reset filters
