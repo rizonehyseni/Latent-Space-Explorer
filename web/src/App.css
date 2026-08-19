@@ -733,3 +733,43 @@
   font-size: 1rem;
   font-weight: 600;
 }
+
+.empty-plot {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-content: center;
+  justify-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.empty-plot h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.empty-plot p {
+  max-width: 520px;
+  margin: 12px 0 22px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.empty-plot button {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.empty-plot button:hover,
+.empty-plot button:focus-visible {
+  border-color: var(--text-primary);
+}
