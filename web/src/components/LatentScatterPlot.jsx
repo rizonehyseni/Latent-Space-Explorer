@@ -153,12 +153,20 @@ export function LatentScatterPlot({
     [projection, colorProperty],
   )
 
-  function handlePointClick(event) {
-    const point = event.points[0]
-    const moleculeIndex = point.customdata[3]
+function handlePointClick(event) {
+  const point = event?.points?.[0]
+  const moleculeIndex = point?.customdata?.[3]
 
-    onSelectMolecule(molecules[moleculeIndex])
+  if (!Number.isInteger(moleculeIndex)) {
+    return
   }
+
+  const molecule = molecules[moleculeIndex]
+
+  if (molecule) {
+    onSelectMolecule(molecule)
+  }
+}
 
   return (
     <Plot
@@ -169,6 +177,13 @@ export function LatentScatterPlot({
         responsive: true,
         displaylogo: false,
         scrollZoom: true,
+        toImageButtonOptions: {
+    format: 'png',
+    filename: `qm9-${projection}-${colorProperty}`,
+    width: 1200,
+    height: 800,
+    scale: 2,
+  },
       }}
       useResizeHandler
       onClick={handlePointClick}
