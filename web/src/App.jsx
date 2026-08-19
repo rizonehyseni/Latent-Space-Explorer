@@ -294,13 +294,26 @@ return (
           </div>
 
 <div className="plot-layout">
-  <LatentScatterPlot
-    molecules={visibleMolecules}
-    projection={projection}
-    colorProperty={colorProperty}
-    selectedMolecule={selectedMolecule}
-    onSelectMolecule={setSelectedMolecule}
-  />
+  {visibleMolecules.length > 0 ? (
+    <LatentScatterPlot
+      molecules={visibleMolecules}
+      projection={projection}
+      colorProperty={colorProperty}
+      selectedMolecule={selectedMolecule}
+      onSelectMolecule={setSelectedMolecule}
+    />
+  ) : (
+    <div className="empty-plot" role="status">
+      <h3>No molecules match these filters</h3>
+      <p>
+        Adjust the dataset splits or property range to restore
+        molecules to the projection.
+      </p>
+      <button type="button" onClick={handleClearFilters}>
+        Reset filters
+      </button>
+    </div>
+  )}
 </div>
 
 <MoleculeInspector
