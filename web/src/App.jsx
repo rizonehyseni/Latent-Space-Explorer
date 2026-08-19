@@ -176,10 +176,6 @@ return (
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-symbol" aria-hidden="true">
-            LS
-          </span>
-
           <div>
             <h1>Latent Space Explorer</h1>
           </div>
