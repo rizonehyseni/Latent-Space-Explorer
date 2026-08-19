@@ -1,13 +1,20 @@
-import { useMemo, useState } from 'react'
+import {lazy,Suspense, useMemo, useState } from 'react'
 import { useExplorerData } from './hooks/useExplorerData.js'
 import './App.css'
-import { LatentScatterPlot } from './components/LatentScatterPlot.jsx'
 import { MoleculeInspector } from './components/MoleculeInspector.jsx'
 import { ExplorerFilters } from './components/ExplorerFilters.jsx'
-import {
-  filterMolecules,
-  getPropertyBounds,
-} from './data/filterMolecules.js'
+import {filterMolecules,getPropertyBounds } from './data/filterMolecules.js'
+
+const LatentScatterPlot = lazy(async () => {
+  const module = await import(
+    './components/LatentScatterPlot.jsx'
+  )
+
+  return {
+    default: module.LatentScatterPlot,
+  }
+})
+
 const numberFormatter = new Intl.NumberFormat('en-US')
 const allDatasetSplits = ['train', 'validation', 'test']
 
@@ -313,7 +320,14 @@ return (
           </div>
 
 <div className="plot-layout">
-  {visibleMolecules.length > 0 ? (
+ {visibleMolecules.length > 0 ? (
+  <Suspense
+    fallback={
+      <div className="plot-loading" role="status">
+        Loading interactive projection…
+      </div>
+    }
+  >
     <LatentScatterPlot
       molecules={visibleMolecules}
       projection={projection}
@@ -321,7 +335,8 @@ return (
       selectedMolecule={selectedMolecule}
       onSelectMolecule={handleSelectMolecule}
     />
-  ) : (
+  </Suspense>
+) : (
     <div className="empty-plot" role="status">
       <h3>No molecules match these filters</h3>
       <p>
