@@ -784,3 +784,28 @@
   font-size: 0.9rem;
   text-align: center;
 }
+
+/* Keyboard accessibility */
+
+.projection-navigation button:focus-visible,
+.filter-heading button:focus-visible,
+.search-control button:focus-visible,
+.neighbor-table button:focus-visible,
+.empty-plot button:focus-visible,
+.error-message button:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+.map-controls select:focus-visible,
+.search-control input:focus-visible,
+.range-inputs input:focus-visible {
+  border-color: var(--text-primary);
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+.split-filters input:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
