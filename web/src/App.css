@@ -360,16 +360,6 @@
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
-
-.molecule-summary dd {
-  margin: 0;
-  overflow: hidden;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* Scientific metrics */
 
 .evidence-strip {
@@ -469,17 +459,6 @@
     grid-template-columns: 270px minmax(0, 1fr);
   }
 
-  .plot-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .property-legend {
-    display: none;
-  }
-
-  .molecule-summary {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Mobile */
@@ -504,32 +483,21 @@
     justify-content: flex-start;
     margin-top: 0;
   }
-
-  .dataset-status {
-    justify-content: flex-start;
-  }
-
-  .context-panel h2 {
-    max-width: none;
-  }
-
   .map-heading,
   .map-heading-meta {
     align-items: flex-start;
     flex-direction: column;
   }
+.evidence-strip {
+  grid-template-columns: repeat(2, 1fr);
+}
 
-  .molecule-summary dl,
-  .evidence-strip {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 
 .topbar,
 .context-panel,
 .map-workspace,
-.molecule-summary,
 .state-message {
   background: transparent;
 }
@@ -543,46 +511,8 @@
   padding-top: 24px;
 }
 
-
-.topbar,
-.context-panel,
-.map-workspace,
-.molecule-summary,
-.state-message {
-  background: transparent;
-}
-
-.explorer-layout {
-  gap: 36px;
-}
-
-.context-panel,
-.map-workspace {
-  padding-top: 24px;
-}
-
-.topbar,
-.context-panel,
-.map-workspace,
-.molecule-summary,
-.state-message {
-  background: transparent;
-}
-
-.explorer-layout {
-  gap: 36px;
-}
-
-.context-panel,
-.map-workspace {
-  padding-top: 24px;
-}
 .app-shell {
   border: 0;
-}
-
-.plot-layout {
-  border: 0.5px solid #7a7a7a;
 }
 
 .plot-layout {
