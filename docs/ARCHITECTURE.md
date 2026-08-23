@@ -1,5 +1,3 @@
-<div align="justify">
-    
 # Current Architecture
 
 ## Scope and status
@@ -40,26 +38,35 @@ flowchart TD
 | `backend/model.py` | Defines `MolecularVAE`, a fully connected VAE. |
 | `backend/training.py` | Defines the VAE loss and epoch-based training loop. |
 | `backend/config.py` | Loads an experiment YAML file and checks that its required sections are present. |
-| `backend/run_preprocessing.py` | Command-line entry point for preprocessing the sample CSV. |
+| `backend/run_preprocessing.py` | Command-line entry point for fingerprint generation and deterministic dataset splitting. |
 | `backend/run_training.py` | Command-line entry point that loads an experiment configuration, trains the model, and writes a checkpoint. |
 | `backend/prepare_qm9.py` | Downloads, validates, and prepares the deterministic QM9 subset. |
 | `backend/splits.py` | Creates deterministic, non-overlapping train, validation, and test split indices. |
 | `backend/plot_training_history.py` | Generates the versioned QM9 training-history figure. |
+| `backend/export_latent_vectors.py` | Exports deterministic encoder means and aligned metadata for every molecule. |
+| `backend/plot_latent_pca.py` | Fits PCA on training latent vectors and transforms all dataset splits. |
+| `backend/plot_latent_umap.py` | Fits UMAP on training latent vectors and transforms all dataset splits. |
+| `backend/plot_latent_properties.py` | Generates aligned property-colored PCA and UMAP figures. |
+| `backend/analyze_latent_neighbors.py` | Evaluates test-to-training latent neighbors against Morgan-fingerprint Tanimoto similarity. |
+| `backend/evaluate_fingerprint_reconstruction.py` | Selects a threshold on validation data and evaluates fingerprint reconstruction on the test split. |
+| `backend/run_robustness_analysis.py` | Runs and aggregates the multi-seed, multi-latent-dimension experiment grid. |
+| `backend/export_web_data.py` | Validates aligned scientific artifacts and exports browser-ready JSON contracts. |
 | `configs/qm9_subset.yaml` | Defines deterministic QM9 subset preparation settings. |
 | `configs/qm9_processing.yaml` | Defines QM9 preprocessing and split settings. |
 | `configs/qm9_fingerprint_vae.yaml` | Defines the QM9 Fingerprint VAE baseline training settings. |
 | `configs/fingerprint_vae.yaml` | Default Fingerprint VAE experiment settings. |
+| `configs/qm9_*.yaml` | Defines each retained QM9 analysis, evaluation, robustness, and web-export workflow. |
 | `web/` | Interactive React/Vite and Plotly application for PCA/UMAP exploration, property coloring, molecule search, filtering, inspection, and neighbor comparison. |
-| `backend/export_web_data.py` | Validates aligned scientific artifacts and exports browser-ready JSON contracts. |
 | `configs/qm9_web_export.yaml` | Defines browser-export inputs, precision, properties, schema, and output paths. |
 | `web/public/data/` | Versioned molecule, neighbor, metrics, and manifest data served by the frontend. |
+| `tests/` | Automated validation for splits, exports, projections, evaluations, robustness aggregation, and browser contracts. |
 
 ## Data preprocessing
 
 Run preprocessing from the project root:
 
 ```powershell
-python -m backend.run_preprocessing
+python -m backend.run_preprocessing --config configs/qm9_processing.yaml
 ```
 
 For each valid SMILES string, RDKit creates a canonical molecular representation and the following descriptors:
@@ -73,7 +80,7 @@ For each valid SMILES string, RDKit creates a canonical molecular representation
 
 The pipeline uses an RDKit Morgan fingerprint generator with radius `2` and size `2048`. Each fingerprint is stored as a float32 binary vector. Invalid SMILES strings are counted and excluded; if no valid molecules remain, preprocessing raises an error.
 
-The resulting artifacts are written to `data/processed/`:
+The resulting QM9 artifacts are written to `data/processed/qm9/`:
 
 - `molecules_metadata.csv`: source index, ID, canonical SMILES, descriptors, and optional HOMO-LUMO gap value.
 - `morgan_fingerprints.npy`: a matrix shaped `(number_of_molecules, 2048)`.
@@ -99,18 +106,18 @@ The default configuration sets the latent dimension to `16`. The decoder returns
 
 ## Training
 
-Run the default configured training experiment after preprocessing:
+Run the QM9 baseline experiment after preprocessing:
 
 ```powershell
-python -m backend.run_training
+python -m backend.run_training --config configs/qm9_fingerprint_vae.yaml
 ```
 
-The training entry point loads the following default values from `configs/fingerprint_vae.yaml`:
+The retained baseline uses the following values from `configs/qm9_fingerprint_vae.yaml`:
 
 | Setting | Value |
 | --- | --- |
 | random seed | 42 |
-| batch size | 64 |
+| batch size | 128 |
 | learning rate | 0.001 |
 | epochs | 50 |
 | optimizer | Adam |
@@ -124,7 +131,7 @@ For each batch, the objective is:
 
 Both terms use sum reduction within a batch. The QM9 workflow uses deterministic, non-overlapping training, validation, and held-out test splits. Training metrics are recorded after each epoch, the best checkpoint is selected using validation loss, and the held-out test split is evaluated only after checkpoint selection.
 
-At the end of training, `models/molecular_vae.pt` contains the model state dictionary, experiment name, model configuration, training configuration, seed, and in-memory training history. Processed data and checkpoints are ignored by Git.
+At the end of training, `models/qm9_fingerprint_vae.pt` contains the selected model state and experiment metadata, while `models/qm9_fingerprint_vae_results.json` records the retained training and test results. Generated processed data and checkpoints are excluded from Git and can be recreated from the committed configurations.
 
 ## Current constraints
 
@@ -148,7 +155,6 @@ The Python backend exports versioned static JSON artifacts containing:
 - reconstruction, neighbor, and robustness metrics;
 - schema and checksum metadata.
 
-The React frontend validates and loads these artifacts before rendering the Plotly WebGL visualization. It supports projection switching, property coloring, molecule search, split and property filtering, molecule inspection, and neighbor comparison.
+The React frontend validates and loads these artifacts before rendering the Plotly WebGL visualization. It supports projection switching, property coloring, molecule search, dataset-split filtering, molecule inspection, neighbor comparison, and projection image export.
 
 Scientific computation remains in the Python backend. The browser does not train the VAE, calculate latent vectors, or recompute evaluation metrics.
-</div>

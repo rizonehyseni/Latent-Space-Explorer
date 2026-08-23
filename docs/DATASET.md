@@ -11,9 +11,9 @@ This three-molecule sample exists only to verify CSV ingestion, RDKit preprocess
 
 It must not be used for scientific model evaluation.
 
-## QM9 subset for baseline experiments
+## QM9 subset used for baseline experiments
 
-The next training dataset is a deterministic subset of QM9.
+The retained experiments use a deterministic 10,000-molecule subset of QM9.
 
 QM9 contains small organic molecules with quantum-chemical properties. The preparation workflow uses an SDF structure file and a companion CSV property table containing the HOMO-LUMO gap (`gap`).
 
@@ -133,7 +133,7 @@ The QM9 preparation workflow completed successfully.
 
 RDKit reported valence and sanitization errors for 1,688 source structures. These molecules were excluded because a valid canonical SMILES representation could not be created under the current RDKit sanitization rules.
 
-The generated 10,000-molecule subset is suitable for the next project step: preprocessing, deterministic train/validation/test splitting, and meaningful Fingerprint VAE evaluation.
+The generated subset was subsequently used for fingerprint preprocessing, deterministic train/validation/test splitting, Fingerprint VAE training, latent-space analyses, and held-out evaluation.
 
 ### Retained local evidence
 
@@ -170,7 +170,7 @@ data/processed/qm9/morgan_fingerprints.npy
 data/processed/qm9/split_indices.npz
 data/processed/qm9/preparation_summary.json
 ```
-## Current project status
+## Dataset pipeline status
 
 The QM9 baseline dataset pipeline is complete for the first controlled experiment:
 
