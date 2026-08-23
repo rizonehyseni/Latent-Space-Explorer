@@ -8,23 +8,35 @@ Latent Space Explorer provides an end-to-end molecular representation workflow. 
 
 ```mermaid
 flowchart TD
-    A["QM9 source data"] --> B["Deterministic subset<br/>10,000 molecules"]
-    B --> C["Morgan fingerprints<br/>and molecular properties"]
-    C --> D["Train / validation / test<br/>8,000 / 1,000 / 1,000"]
+    A[("QM9 source data")] --> B[("Deterministic subset<br/>10,000 molecules")]
+    B --> C[("Morgan fingerprints<br/>and molecular properties")]
+    C --> D[("Train / validation / test<br/>8,000 / 1,000 / 1,000")]
 
     D --> E["Fingerprint VAE<br/>training"]
-    E --> F["Checkpoint and<br/>test evaluation"]
-    E --> G["16D latent vectors"]
+    E --> F[("Selected checkpoint<br/>and test metrics")]
+    E --> G[("16D latent vectors")]
 
     G --> H["PCA and UMAP<br/>projections"]
     G --> I["Latent neighbors and<br/>Tanimoto analysis"]
     F --> J["Reconstruction and<br/>robustness evaluation"]
 
-    H --> K["Validated browser<br/>data export"]
+    H --> K[("Validated browser<br/>data export")]
     I --> K
     J --> K
 
-    K --> L["Interactive React and Plotly explorer"]
+    K --> L(["Interactive React and Plotly explorer"])
+
+    classDef source fill:#e8eef3,stroke:#526777,color:#17212b,stroke-width:1.5px
+    classDef model fill:#ede9f5,stroke:#6b5a83,color:#211a2b,stroke-width:1.5px
+    classDef analysis fill:#e8f1ec,stroke:#4d6f5a,color:#18231c,stroke-width:1.5px
+    classDef artifact fill:#f5eedf,stroke:#8a6d3b,color:#2a2112,stroke-width:1.5px
+    classDef interface fill:#f2e7e4,stroke:#8a564f,color:#2b1917,stroke-width:1.5px
+
+    class A,B,C,D source
+    class E model
+    class H,I,J analysis
+    class F,G,K artifact
+    class L interface
 ```
 
 ## Repository components

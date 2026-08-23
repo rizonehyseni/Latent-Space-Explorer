@@ -8,14 +8,26 @@ The study uses a deterministic 10,000-molecule subset of QM9, fixed train/valida
 
 ```mermaid
 flowchart LR
-    A["QM9 molecules"] --> B["Morgan fingerprints<br/>2048 bits"]
+    A[("QM9 molecules")] --> B[("Morgan fingerprints<br/>2048 bits")]
     B --> C["Fingerprint VAE<br/>16D baseline"]
     C --> D["Reconstruction<br/>evaluation"]
-    C --> E["Latent means μ"]
+    C --> E[("Latent means μ")]
     E --> F["PCA and UMAP"]
     E --> G["Latent neighbors"]
-    F --> H["Interactive explorer"]
+    F --> H(["Interactive explorer"])
     G --> H
+
+    classDef source fill:#e8eef3,stroke:#526777,color:#17212b,stroke-width:1.5px
+    classDef model fill:#ede9f5,stroke:#6b5a83,color:#211a2b,stroke-width:1.5px
+    classDef analysis fill:#e8f1ec,stroke:#4d6f5a,color:#18231c,stroke-width:1.5px
+    classDef artifact fill:#f5eedf,stroke:#8a6d3b,color:#2a2112,stroke-width:1.5px
+    classDef interface fill:#f2e7e4,stroke:#8a564f,color:#2b1917,stroke-width:1.5px
+
+    class A,B source
+    class C model
+    class D,F,G analysis
+    class E artifact
+    class H interface
 ```
 
 ## Dataset preparation

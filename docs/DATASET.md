@@ -44,17 +44,33 @@ https://figshare.com/collections/Quantum_chemistry_structures_and_properties_of_
 
 ```mermaid
 flowchart TD
-    A["QM9 source archive<br/>qm9.tar.gz"] --> B["Download and extract"]
-    B --> C["qm9.sdf<br/>Molecular structures"]
-    B --> D["qm9.sdf.csv<br/>Quantum-chemical properties"]
-    C --> E["RDKit sanitization<br/>and canonical SMILES"]
-    D --> F["Read molecule ID<br/>and HOMO-LUMO gap"]
-    E --> G["Reject invalid molecules"]
-    E --> H["Join valid structures<br/>with property rows"]
-    F --> H
-    H --> I["Deterministic subset<br/>10,000 molecules, seed 42"]
-    I --> J["qm9_subset.csv"]
-    I --> K["Provenance manifest<br/>SHA-256, seed, counts"]
+    A[("QM9 source archive<br/>qm9.tar.gz")] --> B["Download and extract"]
+    B --> C[("qm9.sdf<br/>molecular structures")]
+    B --> D[("qm9.sdf.csv<br/>property table")]
+
+    C --> E["RDKit parsing<br/>and sanitization"]
+    E --> F{"Valid molecule?"}
+    F -->|No| G["Record rejection"]
+    F -->|Yes| H["Create canonical SMILES"]
+
+    D --> I["Read molecule ID<br/>and HOMO-LUMO gap"]
+    H --> J["Join structures<br/>with property rows"]
+    I --> J
+    J --> K["Seeded selection<br/>10,000 molecules"]
+    K --> L[("qm9_subset.csv")]
+    K --> M[("Provenance manifest<br/>SHA-256, seed, counts")]
+
+    classDef source fill:#e8eef3,stroke:#526777,color:#17212b,stroke-width:1.5px
+    classDef process fill:#e8f1ec,stroke:#4d6f5a,color:#18231c,stroke-width:1.5px
+    classDef decision fill:#f5eedf,stroke:#8a6d3b,color:#2a2112,stroke-width:1.5px
+    classDef rejected fill:#f5e5e3,stroke:#9a554d,color:#321816,stroke-width:1.5px
+    classDef artifact fill:#ede9f5,stroke:#6b5a83,color:#211a2b,stroke-width:1.5px
+
+    class A,C,D source
+    class B,E,H,I,J,K process
+    class F decision
+    class G rejected
+    class L,M artifact
 ```
 
 Run:
