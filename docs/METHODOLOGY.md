@@ -49,26 +49,19 @@ RDKit descriptors are retained as metadata for interpretation rather than used a
 The encoder maps the fingerprint through fully connected layers of sizes `512` and `128`, then predicts a latent mean and log variance. The baseline latent dimension is `16`:
 
 $$
-q_\phi(z \mid x)=\mathcal{N}\left(z;\mu,\operatorname{diag}(\sigma^2)\right).
+q_\phi(z \mid x) = \mathcal{N}(z; \mu, \mathrm{diag}(\sigma^2)).
 $$
 
 During training, the reparameterization trick samples
 
 $$
-z = \mu + \sigma \odot \epsilon,
-\qquad
-\epsilon \sim \mathcal{N}(0,I).
+z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0,I).
 $$
 
 The decoder maps the latent vector through layers of sizes `128` and `512` and returns 2048 reconstruction logits.
 
 ```text
-2048 fingerprint bits
-  → 512 → 128
-  → μ and log σ² (16 dimensions)
-  → sampled z
-  → 128 → 512
-  → 2048 reconstruction logits
+2048 bits → 512 → 128 → (μ, log σ²) → z → 128 → 512 → 2048 logits
 ```
 
 ## Objective and optimization
@@ -76,11 +69,7 @@ The decoder maps the latent vector through layers of sizes `128` and `512` and r
 The training objective combines binary cross-entropy with logits and KL divergence:
 
 $$
-\mathcal{L}_{VAE}
-=
-\mathcal{L}_{reconstruction}
-+
-\mathcal{L}_{KL}.
+\mathcal{L}_{\mathrm{VAE}} = \mathcal{L}_{\mathrm{recon}} + \mathcal{L}_{\mathrm{KL}}.
 $$
 
 The implementation uses an unweighted KL term, equivalent to $\beta=1$. Both loss components use sum reduction within a batch and are reported per molecule.
