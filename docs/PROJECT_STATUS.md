@@ -1,7 +1,8 @@
 # Project Status
 
 ## Current phase
-The project has completed its reproducible QM9 Fingerprint VAE pipeline, latent-space analyses, reconstruction and neighbor evaluations, robustness experiments, browser-data export, and interactive web explorer.
+
+The scientific implementation and core interactive explorer are complete. The project is now in documentation, report, interface-polish, deployment, and release finalization.
 
 The system can prepare QM9 data, train and evaluate the model, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and interactively explore PCA and UMAP projections in the browser.
 
@@ -24,7 +25,7 @@ The system can prepare QM9 data, train and evaluate the model, export determinis
 | Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
 | Robustness evaluation | Nine runs across three seeds and three latent dimensions |
 | Browser data export | Aligned molecule, neighbor, metrics, and manifest JSON generated for the frontend |
-| Interactive web explorer | PCA/UMAP visualization, property coloring, molecule search, filtering, property inspection, and neighbor comparison |
+| Interactive web explorer | PCA/UMAP visualization, property coloring, molecule search, dataset-split filtering, property inspection, neighbor comparison, and figure export |
 
 ## Current baseline result
 
@@ -97,10 +98,10 @@ The repository currently includes:
 - test-to-training latent nearest-neighbor retrieval;
 - a deterministic random-similarity baseline;
 - quantitative latent-distance and Tanimoto analysis;
-- automated tests for artifact and row alignment.
+- automated tests for artifact and row alignment;
 - validation-selected fingerprint reconstruction evaluation;
 - nine-run seed and latent-dimension robustness comparison;
-- mean and sample-standard-deviation robustness metrics.
+- mean and sample-standard-deviation robustness metrics;
 - browser-ready data for all 10,000 aligned molecules;
 - ten training neighbors for each held-out test query;
 - compact scientific metrics and threshold-sweep data;
@@ -126,15 +127,15 @@ The dense fingerprint VAE is a controlled baseline rather than a state-of-the-ar
 
 The scientific backend and the core interactive web application are functionally complete.
 
-Automated verification currently includes 36 passing backend tests, frontend lint validation, and a successful frontend production build.
+Automated verification includes 36 passing backend tests, frontend lint validation, and a successful frontend production build. Additional frontend filtering tests are present on the active web-polishing branch and will become part of the main branch when that work is merged.
 
 ## Remaining finalization work
 
-- complete the documentation consistency review;
-- add final dashboard screenshots and a short demonstration GIF;
+- complete the Markdown documentation consistency review;
+- finalize and archive the LaTeX technical report and PDF;
+- finish the remaining visual-polish decisions on the web branch;
 - perform final responsive-layout and accessibility checks;
-- reduce or document the large Plotly production bundle;
-- deploy the static web application;
-- add the live-demo link to the repository;
-- finalize the Overleaf technical report;
-- create the first public project release.
+- document the large Plotly production bundle as a known engineering trade-off;
+- deploy the static web application and add its live link to the repository;
+- capture final dashboard screenshots and a short demonstration GIF;
+- merge the final branches and create the first public project release.

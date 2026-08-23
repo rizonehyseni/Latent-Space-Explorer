@@ -1,13 +1,23 @@
 # Documentation Guide
 
-This directory contains the project's technical and research documentation. Features and results are documented only after they have been implemented and verified.
+This directory contains the technical, scientific, and reproducibility record for Latent Space Explorer. Results are documented only after they have been implemented and verified.
 
-## Documents
+## System and methodology
 
 | Document | Purpose |
 | --- | --- |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Implemented system design, data flow, and current technical boundaries. |
+| [METHODOLOGY.md](METHODOLOGY.md) | Dataset representation, model design, training protocol, and evaluation strategy. |
+| [DATASET.md](DATASET.md) | QM9 source, deterministic subset construction, provenance, and split policy. |
 | [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed milestones, current phase, and planned sequence. |
+| [DECISIONS.md](DECISIONS.md) | Important design choices, rationale, and trade-offs. |
+| [LIMITATIONS.md](LIMITATIONS.md) | Scientific and implementation limitations. |
+| [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) | Questions used to organize the evaluation. |
+
+## Analyses and results
+
+| Document | Purpose |
+| --- | --- |
 | [LATENT_EXPORT.md](LATENT_EXPORT.md) | Latent-vector artifact schema, provenance, and reproducible export workflow. |
 | [PCA_ANALYSIS.md](PCA_ANALYSIS.md) | Reproducible PCA projection, result, interpretation, and limitations. |
 | [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md) | Reproducible UMAP projection, nonlinear latent-space interpretation, PCA comparison, and limitations. |
@@ -16,18 +26,27 @@ This directory contains the project's technical and research documentation. Feat
 | [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md) | Held-out fingerprint reconstruction metrics, validation-based threshold selection, figures, and limitations. |
 | [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md) | Multi-seed and latent-dimension robustness experiment, results, interpretation, and limitations. |
 | [WEB_DATA_EXPORT.md](WEB_DATA_EXPORT.md) | Browser-ready QM9 molecule, neighbor, metrics, and manifest JSON contracts. |
-| [Web application](../web/README.md) | Interactive React/Plotly explorer, local setup, features, validation, and scientific boundaries. |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | Reproducible records of completed training runs and their interpretation. |
+
+## Reproducibility and reference
+
+| Document | Purpose |
+| --- | --- |
+| [REPRODUCIBILITY.md](REPRODUCIBILITY.md) | End-to-end commands for reproducing data, training, analyses, exports, and tests. |
+| [GLOSSARY.md](GLOSSARY.md) | Definitions of machine-learning, visualization, and cheminformatics terms. |
 | [FIGURES/README.md](FIGURES/README.md) | Figure, screenshot, and video capture conventions. |
+| [Web application](../web/README.md) | Interactive React/Plotly explorer, local setup, features, validation, and scientific boundaries. |
 
-## Documentation rule for each completed feature
+## Maintenance rule
 
-When a feature branch delivers working behavior, update only the documents affected by that behavior:
+When implemented behavior changes:
 
 1. Update `ARCHITECTURE.md` if the system flow, data contract, or component responsibilities changed.
-2. Update `PROJECT_STATUS.md` when a milestone is completed or the next milestone changes.
-3. Add an entry to `EXPERIMENTS.md` when a training run produces a result worth retaining.
-4. Save a figure or short recording only when it demonstrates a meaningful result or interaction.
+2. Update `METHODOLOGY.md` when the scientific procedure changes.
+3. Update `PROJECT_STATUS.md` when a milestone or release state changes.
+4. Add an `EXPERIMENTS.md` entry when a retained run produces reportable evidence.
+5. Update `REPRODUCIBILITY.md` whenever commands, dependencies, or artifact paths change.
+6. Save a figure or recording only when it communicates a meaningful result or interaction.
 
 Do not document planned functionality as implemented functionality.
 

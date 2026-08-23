@@ -4,7 +4,7 @@
 An interactive and reproducible analysis of molecular representations learned by a fingerprint variational autoencoder.
 </p>
 
-### System Understanding
+## System understanding
 
 | Document | Description |
 |---|---|
@@ -14,7 +14,7 @@ An interactive and reproducible analysis of molecular representations learned by
 | [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Current completed milestones, known limitations, and the next planned step. |
 
 
-### Research Process
+## Research process
 
 | Document | Description |
 |---|---|
@@ -24,7 +24,7 @@ An interactive and reproducible analysis of molecular representations learned by
 
 
 
-### Experiments and Reproducibility
+## Experiments and reproducibility
 
 | Document | Description |
 |---|---|
@@ -33,12 +33,9 @@ An interactive and reproducible analysis of molecular representations learned by
 
 
 
-### Reference
+## Reference
 
 | Document | Description |
 |---|---|
 | [GLOSSARY.md](docs/GLOSSARY.md) | Machine learning and cheminformatics terminology. |
 | [FIGURES/README.md](docs/FIGURES/README.md) | Documentation assets and visualization guidelines. |
-
-
-</div>
