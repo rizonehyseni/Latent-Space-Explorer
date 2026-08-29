@@ -122,12 +122,6 @@ Tanimoto similarity measures Morgan-fingerprint overlap and should not be interp
 
 The dense fingerprint VAE is a controlled baseline rather than a state-of-the-art graph-generative architecture.
 
-## Implementation status
-
-The scientific backend and the core interactive web application are functionally complete.
-
-Automated verification currently includes 36 passing backend tests, frontend lint validation, and a successful frontend production build.
-
 ## Remaining finalization work
 
 - complete the documentation consistency review;
