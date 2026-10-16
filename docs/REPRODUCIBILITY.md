@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This guide describes how to reproduce the QM9 Fingerprint VAE baseline, deterministic latent-vector export, PCA and UMAP projections, and molecular-property-colored visualizations.
+This guide describes how to reproduce every documented result: the QM9 Fingerprint VAE baseline, deterministic latent-vector export, PCA and UMAP projections, property-colored visualizations, latent-neighbor and reconstruction evaluations, the robustness analysis, and the browser data used by the web explorer.
 
-The workflow prepares a deterministic QM9 subset, creates train/validation/test partitions, trains and evaluates the model, exports latent vectors, and generates the documented scientific figures.
+The workflow prepares a deterministic QM9 subset, creates train/validation/test partitions, trains and evaluates the model, exports latent vectors, generates the documented scientific figures, and exports the browser data.
 
 ## Requirements
 
@@ -76,7 +76,7 @@ The default split sizes are:
 Run:
 
 ```bash
-python -m unittest discover -s .\tests -p "test_*.py" -v
+python -m unittest tests.test_splits -v
 ```
 
 The tests verify that split generation is deterministic, non-overlapping, and correctly sized.
@@ -118,7 +118,9 @@ python -m backend.plot_training_history
 
 Run:
 
-`python -m backend.export_latent_vectors --config configs/qm9_latent_export.yaml`
+```bash
+python -m backend.export_latent_vectors --config configs/qm9_latent_export.yaml
+```
 
 Expected artifacts:
 
@@ -130,7 +132,9 @@ Expected artifacts:
 
 Run:
 
-`python -m backend.plot_latent_pca --config configs/qm9_latent_pca.yaml`
+```bash
+python -m backend.plot_latent_pca --config configs/qm9_latent_pca.yaml
+```
 
 Expected artifacts:
 
@@ -143,7 +147,9 @@ Expected artifacts:
 
 Run:
 
-`python -m backend.plot_latent_umap --config configs/qm9_latent_umap.yaml`
+```bash
+python -m backend.plot_latent_umap --config configs/qm9_latent_umap.yaml
+```
 
 Expected artifacts:
 
@@ -158,7 +164,9 @@ UMAP is fitted only on the training split and then used to transform validation 
 
 Run:
 
-`python -m backend.plot_latent_properties --config configs/qm9_property_visualizations.yaml`
+```bash
+python -m backend.plot_latent_properties --config configs/qm9_property_visualizations.yaml
+```
 
 Expected artifacts:
 
@@ -173,7 +181,9 @@ The workflow validates molecule and property alignment between PCA and UMAP meta
 
 Run:
 
-`python -m backend.analyze_latent_neighbors --config configs/qm9_latent_neighbor_tanimoto.yaml`
+```bash
+python -m backend.analyze_latent_neighbors --config configs/qm9_latent_neighbor_tanimoto.yaml
+```
 
 Expected generated artifacts:
 
@@ -198,7 +208,9 @@ Expected recorded results:
 
 Run:
 
-`python -m backend.evaluate_fingerprint_reconstruction --config configs/qm9_fingerprint_reconstruction.yaml`
+```bash
+python -m backend.evaluate_fingerprint_reconstruction --config configs/qm9_fingerprint_reconstruction.yaml
+```
 
 The workflow selects the probability threshold using only the validation split and evaluates the selected threshold on the held-out test split.
 
@@ -225,7 +237,9 @@ Expected recorded results:
 
 Run:
 
-`python -m backend.run_robustness_analysis --config configs/qm9_robustness.yaml --execute`
+```bash
+python -m backend.run_robustness_analysis --config configs/qm9_robustness.yaml --execute
+```
 
 The experiment trains nine models using three random seeds and latent dimensions `8`, `16`, and `32`. Completed runs are reused automatically if execution is interrupted.
 
@@ -248,7 +262,9 @@ Expected aggregate results:
 
 Run:
 
-`python -m backend.export_web_data --config configs/qm9_web_export.yaml`
+```bash
+python -m backend.export_web_data --config configs/qm9_web_export.yaml
+```
 
 Expected generated artifacts:
 
@@ -269,15 +285,15 @@ Run from the repository root with the virtual environment active:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 36 passing tests covering dataset splits, latent export, PCA, UMAP, property alignment, neighbor analysis, fingerprint reconstruction, robustness, figure generation, and browser-data export.
+The suite contains 36 tests covering dataset splits, latent export, PCA, UMAP, property alignment, neighbor analysis, fingerprint reconstruction, robustness, figure generation, and browser-data export. The tests use small synthetic data, so they do not need the generated pipeline artifacts. GitHub Actions runs them on Python 3.12 for every pull request.
 
 ## 15. Run and validate the web explorer
 
-Install the frontend dependencies:
+The web explorer requires Node.js 20.19+ or 22.12+. Install the frontend dependencies:
 
 ```bash
 cd web
-npm install
+npm ci
 ```
 
 Start the development application:
@@ -306,6 +322,7 @@ The repository stores:
 - split-generation logic;
 - tests;
 - documentation;
-- the first training-history figure.
+- all documented figures in `docs/FIGURES/`;
+- the validated browser data in `web/public/data/`.
 
 The dataset manifest records the source URL, archive checksum, subset size, random seed, rejected-molecule count, and output schema.
