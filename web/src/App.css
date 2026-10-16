@@ -564,6 +564,11 @@
     gap: 16px;
   }
 
+  /* Show the map before the controls on narrow screens. */
+  .map-workspace {
+    order: -1;
+  }
+
   .projection-navigation {
     justify-content: flex-start;
     margin-top: 0;
