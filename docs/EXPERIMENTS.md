@@ -80,7 +80,7 @@ models/qm9_fingerprint_vae_results.json
 
 Deterministic latent means were exported for all 10,000 molecules. PCA and UMAP were fitted using the training partition and applied consistently to validation and test molecules.
 
-Property-colored projections were generated for molecular weight, LogP, TPSA, ring count, heavy-atom count, and HOMO-LUMO gap.
+Property-colored projections were generated for molecular weight, LogP, TPSA, ring count, and heavy-atom count. The web explorer additionally colors molecules by HOMO-LUMO gap.
 
 See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
 

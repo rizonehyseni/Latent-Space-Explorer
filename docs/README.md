@@ -7,7 +7,12 @@ This directory contains the project's technical and research documentation. Feat
 | Document | Purpose |
 | --- | --- |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Implemented system design, data flow, and current technical boundaries. |
-| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed milestones, current phase, and planned sequence. |
+| [METHODOLOGY.md](METHODOLOGY.md) | Data representation, model design, objective, and training approach. |
+| [DATASET.md](DATASET.md) | QM9 source, preparation workflow, provenance, and generated artifacts. |
+| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed milestones, results, and known limitations. |
+| [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) | Scientific questions and the current evidence for each. |
+| [DECISIONS.md](DECISIONS.md) | Design decisions, rationale, and trade-offs. |
+| [LIMITATIONS.md](LIMITATIONS.md) | Scientific and engineering limitations. |
 | [LATENT_EXPORT.md](LATENT_EXPORT.md) | Latent-vector artifact schema, provenance, and reproducible export workflow. |
 | [PCA_ANALYSIS.md](PCA_ANALYSIS.md) | Reproducible PCA projection, result, interpretation, and limitations. |
 | [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md) | Reproducible UMAP projection, nonlinear latent-space interpretation, PCA comparison, and limitations. |
@@ -18,7 +23,9 @@ This directory contains the project's technical and research documentation. Feat
 | [WEB_DATA_EXPORT.md](WEB_DATA_EXPORT.md) | Browser-ready QM9 molecule, neighbor, metrics, and manifest JSON contracts. |
 | [Web application](../web/README.md) | Interactive React/Plotly explorer, local setup, features, validation, and scientific boundaries. |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | Reproducible records of completed training runs and their interpretation. |
-| [FIGURES/README.md](FIGURES/README.md) | Figure, screenshot, and video capture conventions. |
+| [REPRODUCIBILITY.md](REPRODUCIBILITY.md) | Environment setup and the full reproduction workflow. |
+| [GLOSSARY.md](GLOSSARY.md) | Machine learning and cheminformatics terminology. |
+| [FIGURES/README.md](FIGURES/README.md) | Figure index and capture conventions. |
 
 ## Documentation rule for each completed feature
 
