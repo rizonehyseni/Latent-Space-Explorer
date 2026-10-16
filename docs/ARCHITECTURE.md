@@ -58,7 +58,7 @@ flowchart TD
 
 Run preprocessing from the project root:
 
-```powershell
+```bash
 python -m backend.run_preprocessing
 ```
 
@@ -101,7 +101,7 @@ The default configuration sets the latent dimension to `16`. The decoder returns
 
 Run the default configured training experiment after preprocessing:
 
-```powershell
+```bash
 python -m backend.run_training
 ```
 

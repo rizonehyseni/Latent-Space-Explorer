@@ -48,7 +48,7 @@ The 8-dimensional model achieved nearly identical reconstruction performance wit
 
 Run:
 
-```powershell
+```bash
 python -m backend.run_robustness_analysis --config configs/qm9_robustness.yaml --execute
 ```
 

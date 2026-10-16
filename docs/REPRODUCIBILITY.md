@@ -20,13 +20,13 @@ The workflow prepares a deterministic QM9 subset, creates train/validation/test 
 
 Install the project dependencies in an activated virtual environment:
 
-```powershell
+```bash
 pip install -r requirements.txt
 ```
 
 The documented experiments ran on CPU. On Linux, `pip` installs the larger CUDA build of PyTorch by default. To use the CPU-only build, install PyTorch from the CPU index before installing the remaining requirements:
 
-```powershell
+```bash
 pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
@@ -265,7 +265,7 @@ The manifest records file sizes and SHA-256 checksums for all exported browser a
 
 Run from the repository root with the virtual environment active:
 
-```powershell
+```bash
 python -m unittest discover -s tests -v
 ```
 
@@ -275,20 +275,20 @@ The current suite contains 36 passing tests covering dataset splits, latent expo
 
 Install the frontend dependencies:
 
-```powershell
+```bash
 cd web
 npm install
 ```
 
 Start the development application:
 
-```powershell
+```bash
 npm run dev
 ```
 
 Validate the production application:
 
-```powershell
+```bash
 npm run lint
 npm run build
 ```

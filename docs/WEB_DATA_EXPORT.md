@@ -10,7 +10,7 @@ It converts aligned PCA, UMAP, molecular-property, neighbor, reconstruction, and
 
 Run:
 
-```powershell
+```bash
 python -m backend.export_web_data --config configs/qm9_web_export.yaml
 ```
 
@@ -117,7 +117,7 @@ The frontend must communicate that:
 
 Run:
 
-```powershell
+```bash
 python -m unittest tests.test_web_data_export -v
 ```
 
