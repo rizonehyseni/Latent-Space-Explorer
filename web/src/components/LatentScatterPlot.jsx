@@ -119,11 +119,12 @@ export function LatentScatterPlot({
       hovermode: 'closest',
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
+      // Plotly reads margins from l, r, t, and b only.
       margin: {
-        top: 20,
-        right: 100,
-        bottom: 60,
-        left: 70,
+        t: 20,
+        r: 100,
+        b: 60,
+        l: 70,
       },
       font: {
         family: 'JetBrains Mono, Cascadia Code, Consolas, monospace',
