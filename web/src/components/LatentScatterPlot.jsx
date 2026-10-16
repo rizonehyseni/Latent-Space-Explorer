@@ -70,6 +70,10 @@ export function LatentScatterPlot({
               text:
                 propertyLabels[colorProperty] ?? colorProperty,
               side: 'right',
+              font: {
+                size: 14,
+                color: '#d8dee9',
+              },
             },
             thickness: 12,
             len: 0.75,
@@ -77,10 +81,6 @@ export function LatentScatterPlot({
             tickfont: {
               size: 14,
               color: '#9ba8b5',
-            },
-            titlefont: {
-              size: 14,
-              color: '#d8dee9',
             },
           },
         },
@@ -131,7 +131,7 @@ export function LatentScatterPlot({
         color: '#9ba8b5',
       },
       xaxis: {
-        title: `${projection.toUpperCase()} 1`,
+        title: { text: `${projection.toUpperCase()} 1` },
         gridcolor: '#27313b',
         zerolinecolor: '#3a4652',
         linecolor: '#59636e',
@@ -140,7 +140,7 @@ export function LatentScatterPlot({
         },
       },
       yaxis: {
-        title: `${projection.toUpperCase()} 2`,
+        title: { text: `${projection.toUpperCase()} 2` },
         gridcolor: '#27313b',
         zerolinecolor: '#3a4652',
         linecolor: '#59636e',
