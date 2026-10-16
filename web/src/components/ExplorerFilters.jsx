@@ -19,7 +19,7 @@ export function ExplorerFilters({
   return (
     <section className="explorer-filters">
       <div className="filter-heading">
-        <h3>Map filters</h3>
+        <h2>Map filters</h2>
 
         <button type="button" onClick={onClearFilters}>
           Reset
