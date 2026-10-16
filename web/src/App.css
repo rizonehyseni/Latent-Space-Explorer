@@ -540,6 +540,10 @@
   .molecule-summary {
     grid-template-columns: 1fr;
   }
+
+  .evidence-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Mobile */
