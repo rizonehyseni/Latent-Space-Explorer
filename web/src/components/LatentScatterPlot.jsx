@@ -1,8 +1,21 @@
-import { useMemo } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
 import createPlotlyComponent from 'react-plotly.js/factory'
 import Plotly from 'plotly.js-gl2d-dist-min'
 
 const Plot = createPlotlyComponent(Plotly)
+
+// Matches the mobile breakpoint used in App.css.
+const narrowScreenQuery = '(max-width: 600px)'
+
+function subscribeToScreenWidth(onChange) {
+  const mediaQuery = window.matchMedia(narrowScreenQuery)
+  mediaQuery.addEventListener('change', onChange)
+  return () => mediaQuery.removeEventListener('change', onChange)
+}
+
+function getIsNarrowScreen() {
+  return window.matchMedia(narrowScreenQuery).matches
+}
 
 const propertyLabels = {
   molecular_weight: 'Molecular weight',
@@ -20,6 +33,12 @@ export function LatentScatterPlot({
   selectedMolecule,
   onSelectMolecule,
 }) {
+  const isNarrowScreen = useSyncExternalStore(
+    subscribeToScreenWidth,
+    getIsNarrowScreen,
+  )
+  const fontSize = isNarrowScreen ? 12 : 14
+
   const plotData = useMemo(() => {
     const x = []
     const y = []
@@ -69,17 +88,31 @@ export function LatentScatterPlot({
             title: {
               text:
                 propertyLabels[colorProperty] ?? colorProperty,
-              side: 'right',
+              side: isNarrowScreen ? 'top' : 'right',
               font: {
-                size: 14,
+                size: fontSize,
                 color: '#d8dee9',
               },
             },
-            thickness: 12,
-            len: 0.75,
+            // On phones a horizontal bar above the plot leaves the
+            // full width for the points.
+            ...(isNarrowScreen
+              ? {
+                  orientation: 'h',
+                  x: 0.5,
+                  xanchor: 'center',
+                  y: 1.02,
+                  yanchor: 'bottom',
+                  thickness: 10,
+                  len: 1,
+                }
+              : {
+                  thickness: 12,
+                  len: 0.75,
+                }),
             outlinewidth: 0,
             tickfont: {
-              size: 14,
+              size: fontSize,
               color: '#9ba8b5',
             },
           },
@@ -110,6 +143,8 @@ export function LatentScatterPlot({
     projection,
     colorProperty,
     selectedMolecule,
+    isNarrowScreen,
+    fontSize,
   ])
 
   const layout = useMemo(
@@ -119,15 +154,23 @@ export function LatentScatterPlot({
       hovermode: 'closest',
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
-      margin: {
-        top: 20,
-        right: 100,
-        bottom: 60,
-        left: 70,
-      },
+      // Plotly reads margins from l, r, t, and b only.
+      margin: isNarrowScreen
+        ? {
+            t: 64,
+            r: 16,
+            b: 48,
+            l: 44,
+          }
+        : {
+            t: 20,
+            r: 100,
+            b: 60,
+            l: 70,
+          },
       font: {
         family: 'JetBrains Mono, Cascadia Code, Consolas, monospace',
-        size: 14,
+        size: fontSize,
         color: '#9ba8b5',
       },
       xaxis: {
@@ -136,7 +179,7 @@ export function LatentScatterPlot({
         zerolinecolor: '#3a4652',
         linecolor: '#59636e',
         tickfont: {
-          size: 14,
+          size: fontSize,
         },
       },
       yaxis: {
@@ -145,12 +188,12 @@ export function LatentScatterPlot({
         zerolinecolor: '#3a4652',
         linecolor: '#59636e',
         tickfont: {
-          size: 14,
+          size: fontSize,
         },
       },
       uirevision: `${projection}-${colorProperty}`,
     }),
-    [projection, colorProperty],
+    [projection, colorProperty, isNarrowScreen, fontSize],
   )
 
   function handlePointClick(event) {
