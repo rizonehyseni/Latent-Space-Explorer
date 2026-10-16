@@ -5,7 +5,7 @@ An interactive and reproducible analysis of molecular representations learned by
 </p>
 
 <p align="center">
-<a href="https://latent-space-explorer-black.vercel.app/"><strong>Open the live explorer</strong></a>
+<a target="blank" href="https://latent-space-explorer-black.vercel.app/"><strong>Open the live explorer</strong></a>
 </p>
 
 ![Latent Space Explorer showing the UMAP projection of 10,000 QM9 molecules colored by HOMO–LUMO gap](docs/FIGURES/explorer-umap-overview-v1.png)
