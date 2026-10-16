@@ -10,7 +10,7 @@ The analysis projects deterministic 16-dimensional latent mean vectors into two 
 
 Run:
 
-```powershell
+```bash
 python -m backend.plot_latent_umap --config configs/qm9_latent_umap.yaml
 ```
 

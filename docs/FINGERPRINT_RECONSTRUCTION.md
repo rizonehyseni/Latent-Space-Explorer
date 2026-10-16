@@ -63,7 +63,7 @@ However, a mean Tanimoto similarity of `0.3307` represents partial rather than h
 
 Run:
 
-```powershell
+```bash
 python -m backend.evaluate_fingerprint_reconstruction --config configs/qm9_fingerprint_reconstruction.yaml
 ```
 

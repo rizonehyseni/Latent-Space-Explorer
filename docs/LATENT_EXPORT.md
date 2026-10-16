@@ -12,7 +12,7 @@ This artifact is the shared input for the completed PCA, UMAP, property-colored 
 
 Run:
 
-```powershell
+```bash
 python -m backend.export_latent_vectors
 ```
 

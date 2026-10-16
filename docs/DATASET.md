@@ -13,7 +13,7 @@ It must not be used for scientific model evaluation.
 
 ## QM9 subset for baseline experiments
 
-The next training dataset is a deterministic subset of QM9.
+The baseline experiments use a deterministic subset of QM9.
 
 QM9 contains small organic molecules with quantum-chemical properties. The preparation workflow uses an SDF structure file and a companion CSV property table containing the HOMO-LUMO gap (`gap`).
 

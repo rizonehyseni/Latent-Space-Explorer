@@ -5,6 +5,8 @@ The project has completed its reproducible QM9 Fingerprint VAE pipeline, latent-
 
 The system can prepare QM9 data, train and evaluate the model, export deterministic latent vectors, analyze latent organization, retrieve similar molecules, and interactively explore PCA and UMAP projections in the browser.
 
+The explorer is deployed at <https://latent-space-explorer-black.vercel.app/>.
+
 
 ## Completed work
 
@@ -19,12 +21,15 @@ The system can prepare QM9 data, train and evaluate the model, export determinis
 | Latent export | Deterministic latent mean vectors exported for all 10,000 molecules |
 | PCA visualization | Training-fitted two-dimensional PCA projection generated and documented |
 | UMAP visualization | Training-fitted two-dimensional UMAP projection generated and documented |
-| Property visualization | PCA and UMAP projections colored by five aligned molecular properties |
+| Property visualization | PCA and UMAP figures colored by five aligned molecular properties; the explorer adds HOMO–LUMO gap |
 | Neighbor evaluation | Test-to-training latent neighbors evaluated using Morgan-fingerprint Tanimoto similarity |
 | Reconstruction evaluation | Validation-selected threshold and held-out test reconstruction metrics |
 | Robustness evaluation | Nine runs across three seeds and three latent dimensions |
 | Browser data export | Aligned molecule, neighbor, metrics, and manifest JSON generated for the frontend |
 | Interactive web explorer | PCA/UMAP visualization, property coloring, molecule search, filtering, property inspection, and neighbor comparison |
+| Frontend quality | Smaller Plotly bundle, responsive phone and tablet layouts, and accessibility fixes |
+| Continuous integration | GitHub Actions runs web lint and build and the 36 backend tests on every pull request |
+| Deployment | Static explorer deployed on Vercel from `main` |
 
 ## Current baseline result
 
@@ -97,16 +102,17 @@ The repository currently includes:
 - test-to-training latent nearest-neighbor retrieval;
 - a deterministic random-similarity baseline;
 - quantitative latent-distance and Tanimoto analysis;
-- automated tests for artifact and row alignment.
+- automated tests for artifact and row alignment;
 - validation-selected fingerprint reconstruction evaluation;
 - nine-run seed and latent-dimension robustness comparison;
-- mean and sample-standard-deviation robustness metrics.
+- mean and sample-standard-deviation robustness metrics;
 - browser-ready data for all 10,000 aligned molecules;
 - ten training neighbors for each held-out test query;
 - compact scientific metrics and threshold-sweep data;
-- SHA-256 integrity checks for browser artifacts.
+- SHA-256 integrity checks for browser artifacts;
+- application screenshots and a demo GIF in [FIGURES/README.md](FIGURES/README.md).
 
-See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md), and [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
+See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md), [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md), [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md), and [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md).
 
 ## Known limitations
 
@@ -124,11 +130,6 @@ The dense fingerprint VAE is a controlled baseline rather than a state-of-the-ar
 
 ## Remaining finalization work
 
-- complete the documentation consistency review;
-- add final dashboard screenshots and a short demonstration GIF;
-- perform final responsive-layout and accessibility checks;
-- reduce or document the large Plotly production bundle;
-- deploy the static web application;
-- add the live-demo link to the repository;
+- refresh the application screenshots and demo GIF to match the current plot layout;
 - finalize the Overleaf technical report;
 - create the first public project release.

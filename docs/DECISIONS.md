@@ -78,15 +78,23 @@ Reassess the latent dimension when using the complete QM9 dataset, alternative m
 **Date:** July 2026
 
 **Choice:**  
-Use separate YAML configuration profiles for development, dataset preparation, preprocessing, and QM9 baseline training.
+Use a separate YAML configuration file for each pipeline stage.
 
 Current configuration files:
 
 ```text
-configs/fingerprint_vae.yaml
-configs/qm9_subset.yaml
-configs/qm9_processing.yaml
-configs/qm9_fingerprint_vae.yaml
+configs/fingerprint_vae.yaml                     development sample training
+configs/qm9_subset.yaml                          QM9 subset preparation
+configs/qm9_processing.yaml                      preprocessing and splits
+configs/qm9_fingerprint_vae.yaml                 baseline training
+configs/qm9_latent_export.yaml                   latent-vector export
+configs/qm9_latent_pca.yaml                      PCA projection
+configs/qm9_latent_umap.yaml                     UMAP projection
+configs/qm9_property_visualizations.yaml         property-colored figures
+configs/qm9_latent_neighbor_tanimoto.yaml        neighbor analysis
+configs/qm9_fingerprint_reconstruction.yaml      reconstruction evaluation
+configs/qm9_robustness.yaml                      robustness analysis
+configs/qm9_web_export.yaml                      browser-data export
 ```
 **Reason:**  
 Different project stages require different parameters. Keeping configurations separate makes experiments easier to reproduce and prevents development settings from being confused with QM9 baseline settings.
@@ -114,12 +122,11 @@ The subset does not represent the full QM9 collection and may not capture all mo
 **Outcome:**
 The first baseline now uses validation loss for checkpoint selection and evaluates the selected checkpoint once on a held-out test split.
 
-## Decision 006
+## Decision 006 - Select checkpoints by validation loss and reserve the test split
 
-Date:  
-July 2026
+**Date:** July 2026
 
-**Choice:** 
+**Choice:**  
 Select the QM9 Fingerprint VAE checkpoint using validation loss and reserve the test split for final evaluation.
 
 **Reason:**

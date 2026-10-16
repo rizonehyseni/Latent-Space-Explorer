@@ -1,6 +1,6 @@
 # Current Limitations
 
-This document records the current scientific and engineering limitations of the Molecular Latent Space Explorer.
+This document records the current scientific and engineering limitations of Latent Space Explorer.
 
 ## Molecular representation
 
@@ -13,7 +13,7 @@ Therefore:
 - latent-space exploration is possible;
 - fingerprint reconstruction is possible;
 - direct molecular-graph generation is not implemented;
-- generated latent vectors cannot yet be decoded into guaranteed valid SMILES strings.
+- latent vectors cannot be decoded into guaranteed valid SMILES strings.
 
 A future Graph VAE, sequence-based VAE, or molecular diffusion model would be required for chemically valid molecular generation.
 
@@ -21,7 +21,7 @@ A future Graph VAE, sequence-based VAE, or molecular diffusion model would be re
 
 The first QM9 baseline includes deterministic train, validation, and held-out test partitions.
 
-The current evaluation includes training losses, latent-neighbor similarity, and held-out fingerprint reconstruction metrics.
+The current evaluation includes training losses, latent-neighbor similarity, held-out fingerprint reconstruction metrics, and a nine-run comparison across three seeds and three latent dimensions.
 
 The project does not yet measure:
 
@@ -41,7 +41,7 @@ Future experiments should compare:
 
 - different subset sizes;
 - the full QM9 dataset where practical;
-- multiple random seeds;
+- more random seeds, including seed variation in the neighbor and property analyses;
 - additional molecular datasets;
 - property-balanced or scaffold-aware splits.
 
@@ -75,17 +75,15 @@ Current frontend limitations include:
 - no latent interpolation interface;
 - no three-dimensional projection;
 - neighbor tables are limited to exported held-out test queries;
-- deployment and final responsive-layout validation remain incomplete.
+- the map requires a browser with WebGL enabled.
 
 ## Reproducibility scope
 
-The dataset preparation, split creation, training configuration, and baseline result are reproducible.
+The dataset preparation, split creation, training configuration, and reported results are reproducible from the documented configurations. Seeds are recorded in every configuration, and GitHub Actions runs the backend tests on Python 3.12 for every pull request.
 
-However, fully repeatable research reporting will later require:
+Remaining gaps:
 
-- environment lock files;
-- recorded package versions;
-- hardware metadata;
-- seed logging for every experiment;
-- experiment comparison tables;
-- automated report generation.
+- `matplotlib`, `scikit-learn`, `umap-learn`, and `PyYAML` use minimum versions rather than exact pins;
+- the original results were produced on Windows, and the full pipeline has not been rerun end to end on another platform;
+- hardware metadata is not recorded;
+- experiment reports are written by hand rather than generated automatically.

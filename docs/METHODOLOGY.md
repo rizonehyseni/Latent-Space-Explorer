@@ -2,7 +2,7 @@
 
 ## Overview
 <div align="justify">
-The Molecular Latent Space Explorer currently implements a **Fingerprint Variational Autoencoder (VAE) baseline**.
+Latent Space Explorer implements a **Fingerprint Variational Autoencoder (VAE) baseline**.
 
 The workflow transforms molecular SMILES strings into fixed-length Morgan fingerprints, compresses them into a 16-dimensional latent representation, and reconstructs the fingerprint representation.
 
@@ -323,11 +323,11 @@ The first baseline demonstrates that the project can complete a reproducible end
 
 However, decreasing VAE loss alone does not prove that the latent space is chemically meaningful.
 
-The next stage must export latent vectors and evaluate whether molecules that are nearby in latent space also share fingerprint similarity or molecular-property patterns.
+The follow-up analyses therefore exported deterministic latent vectors and evaluated whether molecules that are nearby in latent space also share fingerprint similarity or molecular-property patterns. See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md) and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
 
 ## Training Workflow
 
-The dataset is divided into deterministic training and validation subsets using the configured random seed.
+The dataset is divided into deterministic training, validation, and test splits using the configured random seed.
 
 During each epoch:
 
@@ -335,21 +335,23 @@ During each epoch:
 2. Total loss, reconstruction loss, and KL divergence are recorded.
 3. Validation data is evaluated without gradient updates.
 4. Validation metrics are recorded.
-5. Training history and configuration metadata are saved in the checkpoint.
+5. The model state with the lowest validation loss is retained.
 
-The saved checkpoint contains:
+After training, the retained model is evaluated once on the test split. The saved checkpoint contains:
 
 - Model parameters.
 - Experiment configuration.
-- Dataset split information.
+- Dataset split sizes.
+- Best epoch and validation loss.
+- Held-out test metrics.
 - Training history.
 - Random seed.
 
 ---
 
-# Current Evaluation Scope
+# Development Sample Scope
 
-The current three-molecule development sample verifies that:
+The three-molecule development sample in `data/qm9_sample.csv` verifies that:
 
 - Molecular preprocessing executes correctly.
 - Morgan fingerprint generation works.
@@ -364,12 +366,6 @@ However, this dataset does **not** support scientific conclusions about:
 - Reconstruction quality.
 - Chemical interpretation of the latent space.
 
-A scientifically meaningful evaluation requires:
-
-- A larger documented QM9 subset.
-- Train/validation/test splits.
-- Held-out test evaluation.
-- Comparison between different model configurations.
-- Analysis of latent-space organization.
+Scientific conclusions come from the QM9 baseline described above, which uses a documented 10,000-molecule subset, train/validation/test splits, held-out test evaluation, a comparison of model configurations, and analysis of latent-space organization.
 
 </div>
