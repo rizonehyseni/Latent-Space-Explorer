@@ -190,6 +190,10 @@
   padding: 0 11px;
 }
 
+.search-control input::placeholder {
+  color: #9ba8b5;
+}
+
 .search-control button,
 .error-message button {
   border: 1px solid var(--border);
@@ -835,6 +839,11 @@
   outline-offset: 4px;
 }
 
+/* Plotly's default black focus ring is invisible on the dark background. */
+.plot-layout .js-plotly-plot .plotly .modebar-btn:focus-visible {
+  outline: 2px solid var(--text-primary);
+}
+
 .neighbor-table button:disabled {
   color: var(--text-secondary);
   cursor: default;
@@ -939,6 +948,13 @@
 
 .filter-heading button:hover {
   color: var(--text-primary);
+}
+
+@media (pointer: coarse) {
+  .filter-heading button {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .split-filters {
