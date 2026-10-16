@@ -17,6 +17,18 @@ This directory contains versioned scientific figures generated from reproducible
 | `qm9-fingerprint-reconstruction-tanimoto-v1.png` | Per-molecule original-versus-reconstructed fingerprint Tanimoto distribution. | [FINGERPRINT_RECONSTRUCTION.md](../FINGERPRINT_RECONSTRUCTION.md) |
 | `qm9-robustness-comparison-v1.png` | Mean VAE loss, reconstruction F1, and Tanimoto similarity across latent dimensions and random seeds. | [ROBUSTNESS_ANALYSIS.md](../ROBUSTNESS_ANALYSIS.md) |
 
+## Application screenshots
+
+Captured from the deployed web explorer. They show the interface, not new experimental results.
+
+| File | Description | Documentation |
+|---|---|---|
+| `explorer-umap-overview-v1.png` | Default desktop view: UMAP projection of all 10,000 molecules colored by HOMO–LUMO gap. | [Web application](../../web/README.md) |
+| `explorer-pca-ring-count-v1.png` | PCA projection colored by ring count. | [Web application](../../web/README.md) |
+| `explorer-molecule-inspector-v1.png` | Molecule inspector for held-out test molecule `gdb_10005`, with properties and its ten nearest training neighbors. | [Web application](../../web/README.md) |
+| `explorer-mobile-v1.png` | Phone layout at 390 px width, with the map shown before the controls. | [Web application](../../web/README.md) |
+| `explorer-demo-v1.gif` | Short walkthrough: switching projections and color properties, searching a molecule, and opening a neighbor. | [Web application](../../web/README.md) |
+
 Every figure added to this directory should:
 
 1. use a descriptive, versioned filename;
