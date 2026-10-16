@@ -99,16 +99,6 @@
   display: none;
 }
 
-.context-panel h2 {
-  max-width: 280px;
-  margin: 0;
-  color: var(--text-primary);
-  font-size: clamp(1.9rem, 2.8vw, 2.6rem);
-  font-weight: 500;
-  letter-spacing: -0.07em;
-  line-height: 1.08;
-}
-
 .introduction {
   margin: 20px 0 0;
   color: var(--text-secondary);
@@ -188,6 +178,10 @@
 .search-control input {
   min-width: 0;
   padding: 0 11px;
+}
+
+.search-control input::placeholder {
+  color: #9ba8b5;
 }
 
 .search-control button,
@@ -540,6 +534,10 @@
   .molecule-summary {
     grid-template-columns: 1fr;
   }
+
+  .evidence-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Mobile */
@@ -560,6 +558,11 @@
     gap: 16px;
   }
 
+  /* Show the map before the controls on narrow screens. */
+  .map-workspace {
+    order: -1;
+  }
+
   .projection-navigation {
     justify-content: flex-start;
     margin-top: 0;
@@ -567,10 +570,6 @@
 
   .dataset-status {
     justify-content: flex-start;
-  }
-
-  .context-panel h2 {
-    max-width: none;
   }
 
   .map-heading,
@@ -826,6 +825,11 @@
   outline-offset: 4px;
 }
 
+/* Plotly's default black focus ring is invisible on the dark background. */
+.plot-layout .js-plotly-plot .plotly .modebar-btn:focus-visible {
+  outline: 2px solid var(--text-primary);
+}
+
 .neighbor-table button:disabled {
   color: var(--text-secondary);
   cursor: default;
@@ -873,8 +877,20 @@
     grid-template-columns: 1fr;
   }
 
-  .neighbor-table {
-    min-width: 560px;
+  .neighbor-table,
+  .neighbor-table button {
+    font-size: 0.8125rem;
+  }
+
+  .neighbor-table th,
+  .neighbor-table td {
+    padding: 10px 4px;
+  }
+
+  .context-panel,
+  .map-workspace {
+    padding-right: 16px;
+    padding-left: 16px;
   }
 }
 
@@ -900,7 +916,7 @@
   margin-bottom: 20px;
 }
 
-.filter-heading h3 {
+.filter-heading h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: 1rem;
@@ -918,6 +934,13 @@
 
 .filter-heading button:hover {
   color: var(--text-primary);
+}
+
+@media (pointer: coarse) {
+  .filter-heading button {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .split-filters {

@@ -173,7 +173,7 @@ function handleColorPropertyChange(event) {
 }
 
 return (
-    <main className="app-shell">
+    <div className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-symbol" aria-hidden="true">
@@ -193,6 +193,7 @@ return (
               }
               key={coordinateSystem}
               type="button"
+              aria-pressed={projection === coordinateSystem}
               onClick={() => setProjection(coordinateSystem)}
             >
               {coordinateSystem.toUpperCase()}
@@ -202,7 +203,7 @@ return (
 
       </header>
 
-      <div className="explorer-layout">
+      <main className="explorer-layout">
         <aside className="context-panel">
           <p className="eyebrow">Molecular map</p>
 
@@ -363,7 +364,7 @@ return (
             </div>
           </div>
         </section>
-      </div>
+      </main>
 
       <footer className="site-footer">
         <span>Latent Space Explorer</span>
@@ -371,7 +372,7 @@ return (
           Schema v{manifest.schemaVersion} · scientific prototype
         </span>
       </footer>
-    </main>
+    </div>
   )
 }
 
