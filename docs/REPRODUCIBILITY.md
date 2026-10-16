@@ -24,6 +24,13 @@ Install the project dependencies in an activated virtual environment:
 pip install -r requirements.txt
 ```
 
+The documented experiments ran on CPU. On Linux, `pip` installs the larger CUDA build of PyTorch by default. To use the CPU-only build, install PyTorch from the CPU index before installing the remaining requirements:
+
+```powershell
+pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+pip install -r requirements.txt
+```
+
 ## 1. Prepare the QM9 subset
 
 Run:
