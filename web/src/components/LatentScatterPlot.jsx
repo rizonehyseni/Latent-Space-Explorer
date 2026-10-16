@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import createPlotlyComponent from 'react-plotly.js/factory'
-import Plotly from 'plotly.js-dist-min'
+import Plotly from 'plotly.js-gl2d-dist-min'
 
 const Plot = createPlotlyComponent(Plotly)
 
