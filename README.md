@@ -19,20 +19,32 @@ The project has two parts:
 - **A reproducible Python pipeline** that prepares the dataset, trains and evaluates the model, exports latent vectors, and measures latent-space organization, neighbor similarity, reconstruction quality, and robustness.
 - **An interactive web explorer** that displays every molecule on PCA and UMAP maps, colors them by molecular properties, and compares each held-out test molecule with its nearest latent neighbors.
 
+The pipeline, analyses, and explorer are complete. Every pull request is checked by GitHub Actions, and the explorer redeploys from `main` on Vercel.
+
 ![Demo: switching projections and color properties, searching for a molecule, and opening one of its neighbors](docs/FIGURES/explorer-demo-v1.gif)
 
 ## Key results
 
 All results come from a deterministic 10,000-molecule QM9 subset split into 8,000 training, 1,000 validation, and 1,000 held-out test molecules.
 
-| Question | Result |
-|---|---|
-| Are latent neighbors structurally similar? | Nearest latent neighbors have a mean Morgan-fingerprint Tanimoto similarity of **0.231**, compared with **0.077** for random training molecules. The nearest neighbor beats a random reference for **94.9%** of test queries. |
-| Does latent distance measure similarity? | Only weakly. The Spearman correlation between latent distance and Tanimoto similarity is **−0.125**. |
-| How well are fingerprints reconstructed? | With a validation-selected threshold, held-out reconstruction reaches an F1 score of **0.494** and a mean Tanimoto similarity of **0.331**. |
-| Are the results stable? | Across three seeds and latent sizes of 8, 16, and 32, mean reconstruction F1 stays at **0.495**, with seed-to-seed standard deviations of 0.003 to 0.012. The 16-dimensional model varies least. |
+| Question | Result | Details |
+|---|---|---|
+| Are latent neighbors structurally similar? | Nearest latent neighbors have a mean Morgan-fingerprint Tanimoto similarity of **0.231**, compared with **0.077** for random training molecules. The nearest neighbor beats a random reference for **94.9%** of test queries. | [Neighbor analysis](docs/LATENT_NEIGHBOR_ANALYSIS.md) |
+| Does latent distance measure similarity? | Only weakly. The Spearman correlation between latent distance and Tanimoto similarity is **−0.125**. | [Neighbor analysis](docs/LATENT_NEIGHBOR_ANALYSIS.md) |
+| How well are fingerprints reconstructed? | With a validation-selected threshold, held-out reconstruction reaches an F1 score of **0.494** and a mean Tanimoto similarity of **0.331**. | [Reconstruction](docs/FINGERPRINT_RECONSTRUCTION.md) |
+| Are the results stable? | Across three seeds and latent sizes of 8, 16, and 32, mean reconstruction F1 stays at **0.495**, with seed-to-seed standard deviations of 0.003 to 0.012. The 16-dimensional model varies least. | [Robustness](docs/ROBUSTNESS_ANALYSIS.md) |
 
-The latent space clearly enriches for fingerprint similarity, but it is not a complete measure of chemical similarity. See [LIMITATIONS.md](docs/LIMITATIONS.md) for the full scope.
+The latent space clearly enriches for fingerprint similarity, but it is not a complete measure of chemical similarity. Property-colored maps show further exploratory structure; see [LATENT_SPACE_ANALYSIS.md](docs/LATENT_SPACE_ANALYSIS.md).
+
+## Limitations
+
+- The model reconstructs Morgan fingerprints, not molecular graphs or SMILES, so it cannot generate guaranteed-valid molecules.
+- The study uses a deterministic 10,000-molecule subset of QM9 rather than the full dataset.
+- PCA and UMAP are two-dimensional projections and cannot preserve every relationship in the 16-dimensional latent space.
+- Tanimoto similarity measures fingerprint overlap, not complete chemical, biological, or functional similarity.
+- The dense fingerprint VAE is a controlled baseline, not a state-of-the-art graph-generative model.
+
+The full list, including planned extensions, is in [LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Quick start
 
@@ -95,7 +107,6 @@ python -m unittest discover -s tests -v
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System structure, components, and data flow. |
 | [METHODOLOGY.md](docs/METHODOLOGY.md) | Data representation, model design, and training approach. |
 | [DATASET.md](docs/DATASET.md) | Dataset source, preparation workflow, provenance, and generated artifacts. |
-| [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Completed milestones, results, and known limitations. |
 | [Web application](web/README.md) | Explorer features, local setup, deployment, and scientific boundaries. |
 
 ### Research process

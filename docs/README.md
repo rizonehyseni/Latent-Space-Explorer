@@ -9,7 +9,6 @@ This directory contains the project's technical and research documentation. Feat
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Implemented system design, data flow, and current technical boundaries. |
 | [METHODOLOGY.md](METHODOLOGY.md) | Data representation, model design, objective, and training approach. |
 | [DATASET.md](DATASET.md) | QM9 source, preparation workflow, provenance, and generated artifacts. |
-| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed milestones, results, and known limitations. |
 | [RESEARCH_QUESTIONS.md](RESEARCH_QUESTIONS.md) | Scientific questions and the current evidence for each. |
 | [DECISIONS.md](DECISIONS.md) | Design decisions, rationale, and trade-offs. |
 | [LIMITATIONS.md](LIMITATIONS.md) | Scientific and engineering limitations. |
