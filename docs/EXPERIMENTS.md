@@ -82,7 +82,7 @@ Deterministic latent means were exported for all 10,000 molecules. PCA and UMAP 
 
 Property-colored projections were generated for molecular weight, LogP, TPSA, ring count, and heavy-atom count. The web explorer additionally colors molecules by HOMO-LUMO gap.
 
-See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
+See [LATENT_SPACE_ANALYSIS.md](LATENT_SPACE_ANALYSIS.md).
 
 ### Latent-neighbor evaluation
 

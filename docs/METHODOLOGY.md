@@ -323,7 +323,7 @@ The first baseline demonstrates that the project can complete a reproducible end
 
 However, decreasing VAE loss alone does not prove that the latent space is chemically meaningful.
 
-The follow-up analyses therefore exported deterministic latent vectors and evaluated whether molecules that are nearby in latent space also share fingerprint similarity or molecular-property patterns. See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md) and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
+The follow-up analyses therefore exported deterministic latent vectors and evaluated whether molecules that are nearby in latent space also share fingerprint similarity or molecular-property patterns. See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md) and [LATENT_SPACE_ANALYSIS.md](LATENT_SPACE_ANALYSIS.md).
 
 ## Training Workflow
 

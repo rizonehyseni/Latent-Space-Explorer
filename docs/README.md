@@ -14,9 +14,7 @@ This directory contains the project's technical and research documentation. Feat
 | [DECISIONS.md](DECISIONS.md) | Design decisions, rationale, and trade-offs. |
 | [LIMITATIONS.md](LIMITATIONS.md) | Scientific and engineering limitations. |
 | [LATENT_EXPORT.md](LATENT_EXPORT.md) | Latent-vector artifact schema, provenance, and reproducible export workflow. |
-| [PCA_ANALYSIS.md](PCA_ANALYSIS.md) | Reproducible PCA projection, result, interpretation, and limitations. |
-| [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md) | Reproducible UMAP projection, nonlinear latent-space interpretation, PCA comparison, and limitations. |
-| [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md) | Molecular-property-colored PCA and UMAP visualizations, interpretation, and limitations. |
+| [LATENT_SPACE_ANALYSIS.md](LATENT_SPACE_ANALYSIS.md) | Reproducible PCA and UMAP projections, property-colored maps, interpretation, and limitations. |
 | [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md) | Quantitative latent-neighbor retrieval and Morgan-fingerprint Tanimoto similarity analysis. |
 | [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md) | Held-out fingerprint reconstruction metrics, validation-based threshold selection, figures, and limitations. |
 | [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md) | Multi-seed and latent-dimension robustness experiment, results, interpretation, and limitations. |

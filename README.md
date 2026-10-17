@@ -112,9 +112,7 @@ python -m unittest discover -s tests -v
 |---|---|
 | [EXPERIMENTS.md](docs/EXPERIMENTS.md) | Training runs, configurations, and interpretations. |
 | [LATENT_EXPORT.md](docs/LATENT_EXPORT.md) | Latent-vector export, schema, and provenance. |
-| [PCA_ANALYSIS.md](docs/PCA_ANALYSIS.md) | PCA projection and interpretation. |
-| [UMAP_ANALYSIS.md](docs/UMAP_ANALYSIS.md) | UMAP projection and comparison with PCA. |
-| [PROPERTY_ANALYSIS.md](docs/PROPERTY_ANALYSIS.md) | Property-colored latent maps. |
+| [LATENT_SPACE_ANALYSIS.md](docs/LATENT_SPACE_ANALYSIS.md) | PCA and UMAP projections and property-colored latent maps. |
 | [LATENT_NEIGHBOR_ANALYSIS.md](docs/LATENT_NEIGHBOR_ANALYSIS.md) | Latent-neighbor retrieval and Tanimoto similarity. |
 | [FINGERPRINT_RECONSTRUCTION.md](docs/FINGERPRINT_RECONSTRUCTION.md) | Held-out fingerprint reconstruction metrics. |
 | [ROBUSTNESS_ANALYSIS.md](docs/ROBUSTNESS_ANALYSIS.md) | Multi-seed and latent-dimension comparison. |
