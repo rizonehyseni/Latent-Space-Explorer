@@ -5,6 +5,10 @@ An interactive and reproducible analysis of molecular representations learned by
 </p>
 
 <p align="center">
+<a href="https://github.com/rizonehyseni/Latent-Space-Explorer/actions/workflows/ci.yml"><img src="https://github.com/rizonehyseni/Latent-Space-Explorer/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+</p>
+
+<p align="center">
 <a target="_blank" href="https://latent-space-explorer-black.vercel.app/"><strong>Open the live explorer</strong></a>
 </p>
 
