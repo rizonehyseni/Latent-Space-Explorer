@@ -82,35 +82,17 @@ Deterministic latent means were exported for all 10,000 molecules. PCA and UMAP 
 
 Property-colored projections were generated for molecular weight, LogP, TPSA, ring count, and heavy-atom count. The web explorer additionally colors molecules by HOMO-LUMO gap.
 
-See [PCA_ANALYSIS.md](PCA_ANALYSIS.md), [UMAP_ANALYSIS.md](UMAP_ANALYSIS.md), and [PROPERTY_ANALYSIS.md](PROPERTY_ANALYSIS.md).
+See [LATENT_SPACE_ANALYSIS.md](LATENT_SPACE_ANALYSIS.md).
 
 ### Latent-neighbor evaluation
 
-The 1,000 held-out test molecules were used as queries against 8,000 training references.
-
-| Metric | Result |
-|---|---:|
-| Mean neighbor Tanimoto | 0.2312 |
-| Mean random-baseline Tanimoto | 0.0774 |
-| Mean improvement | 0.1537 |
-| Neighbor beats random | 94.94% |
-| Distance/Tanimoto Spearman correlation | -0.1252 |
-
-Latent neighbors were substantially more similar than random references, although latent Euclidean distance remained only weakly associated with fingerprint similarity.
+The 1,000 held-out test molecules were used as queries against 8,000 training references. Latent neighbors had a mean Tanimoto similarity of `0.2312`, compared with `0.0774` for random references, although latent Euclidean distance remained only weakly associated with fingerprint similarity.
 
 See [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
 
 ### Fingerprint reconstruction evaluation
 
-The reconstruction threshold was selected on the validation split and applied once to the held-out test split.
-
-| Metric | Result |
-|---|---:|
-| Selected threshold | 0.25 |
-| Precision | 0.6106 |
-| Recall | 0.4147 |
-| F1 score | 0.4940 |
-| Mean Tanimoto | 0.3307 |
+The reconstruction threshold was selected on the validation split and applied once to the held-out test split, giving an F1 score of `0.4940` and a mean Tanimoto similarity of `0.3307`.
 
 See [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md).
 

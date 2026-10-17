@@ -194,15 +194,7 @@ Expected generated artifacts:
 
 The analysis uses held-out test molecules as queries, training molecules as references, and the original 16-dimensional latent vectors for nearest-neighbor retrieval.
 
-Expected recorded results:
-
-| Metric | Result |
-|---|---:|
-| Mean nearest-neighbor Tanimoto | 0.2312 |
-| Mean random-baseline Tanimoto | 0.0774 |
-| Absolute mean improvement | 0.1537 |
-| Nearest neighbor beats paired random | 94.94% |
-| Spearman distance/similarity correlation | -0.1252 |
+Compare the generated summary with the recorded results in [LATENT_NEIGHBOR_ANALYSIS.md](LATENT_NEIGHBOR_ANALYSIS.md).
 
 ## 11. Run fingerprint reconstruction evaluation
 
@@ -221,17 +213,7 @@ Expected generated artifacts:
 - `docs/FIGURES/qm9-fingerprint-reconstruction-metrics-v1.png`
 - `docs/FIGURES/qm9-fingerprint-reconstruction-tanimoto-v1.png`
 
-Expected recorded results:
-
-| Metric | Result |
-|---|---:|
-| Selected threshold | 0.25 |
-| Bit accuracy | 0.9915 |
-| Precision | 0.6106 |
-| Recall | 0.4147 |
-| F1 score | 0.4940 |
-| Mean Tanimoto | 0.3307 |
-| All-zero baseline accuracy | 0.9900 |
+Compare the generated summary with the recorded results in [FINGERPRINT_RECONSTRUCTION.md](FINGERPRINT_RECONSTRUCTION.md).
 
 ## 12. Run the robustness analysis
 
@@ -250,13 +232,7 @@ Expected generated artifacts:
 - `data/processed/qm9/robustness_summary.json`;
 - `docs/FIGURES/qm9-robustness-comparison-v1.png`.
 
-Expected aggregate results:
-
-| Latent dimensions | Reconstruction F1 | Mean Tanimoto |
-|---:|---:|---:|
-| 8 | 0.4949 ± 0.0118 | 0.3322 ± 0.0110 |
-| 16 | 0.4953 ± 0.0034 | 0.3320 ± 0.0034 |
-| 32 | 0.4949 ± 0.0098 | 0.3317 ± 0.0090 |
+Compare the generated summary with the recorded results in [ROBUSTNESS_ANALYSIS.md](ROBUSTNESS_ANALYSIS.md).
 
 ## 13. Export browser-ready QM9 data
 

@@ -114,14 +114,7 @@ This result is stronger evidence than visual inspection of PCA or UMAP figures, 
 
 Fingerprint reconstruction quality was evaluated on the held-out test split after selecting the probability threshold exclusively on validation data.
 
-The selected threshold of `0.25` produced:
-
-| Metric | Result |
-|---|---:|
-| Precision | 0.6106 |
-| Recall | 0.4147 |
-| F1 score | 0.4940 |
-| Mean Tanimoto | 0.3307 |
+The selected threshold of `0.25` produced a test-set F1 score of `0.4940` and a mean Tanimoto similarity of `0.3307`.
 
 This reconstruction experiment complements the neighbor analysis: neighbor evaluation measures local organization between molecules, while reconstruction evaluation measures how well individual fingerprint information survives encoding and decoding.
 
